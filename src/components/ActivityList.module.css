@@ -1,0 +1,26 @@
+.ActivityList {
+  color: #6c7b95;
+}
+
+.ActivityList tr {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+}
+
+.ActivityList tr:hover {
+  background-color: white;
+  border-radius: 10px;
+}
+
+.ActivityList td:first-child {
+  margin-right: 20px;
+}
+
+.ActivityList span {
+  font-style: italic;
+}
+
+span.action {
+  font-style: normal;
+}

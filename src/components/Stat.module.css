@@ -1,0 +1,27 @@
+.Stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Stat > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 40px;
+  border: 1px solid #e5e9f2;
+  padding: 12px;
+  border-radius: 15px;
+}
+
+.Stat p:first-of-type {
+  font-size: 27px;
+  margin-bottom: 5px;
+}
+
+.Stat p:last-of-type {
+  font-size: 10px;
+  margin-bottom: 50px;
+  text-transform: uppercase;
+}
