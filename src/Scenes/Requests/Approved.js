@@ -1,11 +1,9 @@
 import React, { useState, useRef } from 'react'
-import { Typography, Row, Button, Col, Menu, Dropdown, Modal, message, Table, Input, Space, Form, DatePicker, Radio, Upload, Select } from 'antd'
+import { Typography, Row, Button, Col, message, Table, Input, Space } from 'antd'
 import Highlighter from 'react-highlight-words';
-import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import ViewDetails from '../../components/ViewDetails';
 import campaignScreen from '../../images/campaignImg1.jpg'
-
-const { RangePicker } = DatePicker
 
 const data = [
   {
@@ -18,7 +16,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region, South East Region, etc.',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '2',
@@ -29,7 +27,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '3',
@@ -41,7 +39,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region, South East Region, etc.',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '4',
@@ -52,7 +50,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '5',
@@ -64,7 +62,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region, South East Region, etc.',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '6',
@@ -75,7 +73,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '7',
@@ -86,7 +84,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region, South East Region, etc.',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '8',
@@ -98,7 +96,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '9',
@@ -109,7 +107,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region, South East Region, etc.',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '10',
@@ -120,7 +118,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '11',
@@ -132,7 +130,7 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region, South East Region, etc.',
-    status: 'Pending'
+    status: 'Approved'
   },
   {
     key: '12',
@@ -144,179 +142,22 @@ const data = [
     period: 30,
     screen: campaignScreen,
     atms: 'Lagos Region',
-    status: 'Pending'
+    status: 'Approved'
   },
 
 ]
 
-
-const normFile = e => {
-  console.log('Upload event:', e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
-
-const RequestCreateForm = ({ visible, onCreate, onCancel, requestType, confirmLoading }) => {
-  const [form] = Form.useForm();
-  return (
-    <Modal
-      centered
-      visible={visible}
-      title={`${requestType === "internal" ? 'Internal Request Form' : '3rd Party Request Form'}`}
-      confirmLoading={confirmLoading}
-      okText="Create"
-      cancelText="Cancel"
-      onCancel={onCancel}
-      onOk={() => {
-        form
-          .validateFields()
-          .then(values => {
-            form.resetFields();
-            onCreate(values);
-          })
-          .catch(info => {
-            console.log('Validate Failed:', info);
-          });
-      }}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        name="request-form"
-        initialValues={{
-          approval: 'no',
-        }}
-      >
-        <Form.Item
-          name="requester-name"
-          label="Requester's Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input the requester's name!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        {requestType === "3rd-party" && (
-          <Form.Item
-            name="customer-name"
-            label="Customer's Name"
-            rules={[
-              {
-                required: true,
-                message: "Please input the customer's name!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        )}
-        <Form.Item
-          name="campaign-name"
-          label="Campaign Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input the campaign name!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="campaign-screen"
-          label="Upload Campaign Screen"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-          rules={[
-            {
-              required: true,
-              message: "Please upload campaign screen!",
-            },
-          ]}
-        >
-          <Upload accept="image/*,video/*" name="logo" action="/upload.do" listType="picture">
-            <Button>
-              <UploadOutlined /> Click to upload
-            </Button>
-          </Upload>
-        </Form.Item>
-        <Form.Item
-          name="atm-reqion"
-          label="ATM of Interest"
-          rules={[
-            {
-              required: true,
-              message: "Please select ATMs of Interest!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="date-range"
-          label="Select Date Range"
-          rules={[
-            {
-              required: true,
-              message: "Please select date range!",
-            },
-          ]}
-        >
-          <RangePicker />
-        </Form.Item>
-        <Form.Item
-          name="region"
-          label="Select Region"
-          rules={[
-            {
-              required: true,
-              message: 'Please select your country!',
-            },
-          ]}
-        >
-          <Select placeholder="Please select a region">
-            <Select.Option value="lagos-island">Lagos Island</Select.Option>
-            <Select.Option value="lagos-mainland">Lagos Mainland</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name="approval" className="request-create-form_last-form-item" label="Has GH Approval?">
-          <Radio.Group>
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Form>
-    </Modal>
-  );
-};
-
-export const Pending = () => {
+export const Approved = () => {
   let inputEl = useRef(null)
-
-  // Modal, Form Hooks
-  const [visible, toggleModal] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [requestType, setRequestType] = useState('')
 
   const [showDetails, setShowDetails] = useState(false)
   const [details, setDetails] = useState(null)
   const [declineLoading, setDeclineLoading] = useState(false)
-  const [approveLoading, setApproveLoading] = useState(false)
+  const [undoApproveLoading, setUndoApproveLoading] = useState(false)
 
   // Table Hooks
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchColumn] = useState('')
-
-  // Modal, Form Handlers
-  const handleMenuClick = ({ item, key }) => {
-    toggleModal(!visible)
-    setRequestType(key)
-  }
 
   const findDetail = id => {
     return data.find(item => item.key === id)
@@ -339,28 +180,17 @@ export const Pending = () => {
     }, 2000)
   }
 
-  const approveCampaign = () => {
-    setApproveLoading(true)
+  const undoApproveCampaign = () => {
+    setUndoApproveLoading(true)
     setTimeout(() => {
       setDetails(null)
       setShowDetails(false)
-      setApproveLoading(false)
-      message.success('Campaign name was approved successfully')
-    }, 2000)
-  }
-
-  const onCreate = values => {
-    setConfirmLoading(true)
-    setTimeout(() => {
-      toggleModal(false)
-      setConfirmLoading(false)
-      message.success('Campaign name was created successfully')
-      console.log('Received values of form: ', values)
+      setUndoApproveLoading(false)
+      message.success('Campaign name was unapproved successfully')
     }, 2000)
   }
 
   const handleCancel = () => {
-    toggleModal(false)
     setShowDetails(false)
   }
 
@@ -468,8 +298,7 @@ export const Pending = () => {
       dataIndex: 'status',
       key: 'status',
       // width: '20%',
-      render: text => <Typography.Text type="warning">{text}</Typography.Text>
-
+      render: text => <Typography.Text style={{ color: '#40A9FF' }}>{text}</Typography.Text>
     },
     {
       title: 'Action',
@@ -479,25 +308,13 @@ export const Pending = () => {
     }
   ]
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="internal">Internal Request</Menu.Item>
-      <Menu.Item key="3rd-party">3rd Party Request</Menu.Item>
-    </Menu>
-  )
-
   return (
     <div>
       <Row>
         <Col span={24} xl={20}>
           <Row gutter={[16, 32]}>
             <Col flex="auto">
-              <Typography.Title level={4}>Pending Requests</Typography.Title>
-            </Col>
-            <Col>
-              <Dropdown overlay={menu}>
-                <Button type="primary">New Request</Button>
-              </Dropdown>
+              <Typography.Title level={4}>Approved Requests</Typography.Title>
             </Col>
           </Row>
           <Row>
@@ -507,22 +324,15 @@ export const Pending = () => {
           </Row>
         </Col>
       </Row>
-      <RequestCreateForm
-        requestType={requestType}
-        visible={visible}
-        onCreate={onCreate}
-        onCancel={handleCancel}
-        confirmLoading={confirmLoading}
-      />
       {details && <ViewDetails
         details={details}
         visible={showDetails}
         onDecline={declineCampaign}
-        onApprove={approveCampaign}
+        onApprove={undoApproveCampaign}
         handleCancel={handleCancel}
-        confirmLoading={approveLoading}
+        confirmLoading={undoApproveLoading}
         declineLoading={declineLoading}
-        okText="Approve"
+        okText="Undo Approve"
       />}
     </div>
   )

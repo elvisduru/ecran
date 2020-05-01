@@ -8,6 +8,11 @@ import { Logo } from './components/Logo'
 import { Dashboard } from './Scenes/Dashboard'
 import { Pending } from './Scenes/Requests/Pending'
 import PageNotFound from './Scenes/PageNotFound'
+import { Approved } from './Scenes/Requests/Approved'
+import { Declined } from './Scenes/Requests/Declined'
+import { Monitoring } from './Scenes/Monitoring'
+import { Reporting } from './Scenes/Reporting'
+import { Profiling } from './Scenes/Profiling'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -176,6 +181,11 @@ function App() {
           <Switch>
             <Route path="/" exact component={Dashboard} />
             <Route path="/requests/pending" component={Pending} />
+            <Route path="/requests/approved" component={Approved} />
+            <Route path="/requests/declined" component={Declined} />
+            <Route path="/monitoring" component={Monitoring} />
+            <Route path="/reporting" component={Reporting} />
+            <Route path="/profiling" component={Profiling} />
             <Route component={PageNotFound} />
           </Switch>
         </Content>
