@@ -2,36 +2,124 @@ import React, { useState, useRef } from 'react'
 import { Typography, Row, Button, Col, Menu, Dropdown, Modal, message, Table, Input, Space } from 'antd'
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
+import { Link, useRouteMatch, Route, useHistory, useParams } from 'react-router-dom';
 
 const data = [
   {
     key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
+    name: 'Xmas Promo',
+    startDate: '25/12/2020',
+    endDate: '27/12/2020',
+    period: 30,
+    atms: 'Lagos Region, South East Region, etc.',
+    status: 'Pending'
   },
   {
     key: '2',
-    name: 'Joe Black',
-    age: 42,
-    address: 'London No. 1 Lake Park',
+    name: 'New Year Promo',
+    startDate: '1/1/2020',
+    endDate: '27/1/2020',
+    period: 30,
+    atms: 'Lagos Region',
+    status: 'Pending'
   },
   {
     key: '3',
-    name: 'Jim Green',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
+    name: 'Xmas Promo',
+    startDate: '25/12/2020',
+    endDate: '27/12/2020',
+    period: 30,
+    atms: 'Lagos Region, South East Region, etc.',
+    status: 'Pending'
   },
   {
     key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    name: 'New Year Promo',
+    startDate: '1/1/2020',
+    endDate: '27/1/2020',
+    period: 30,
+    atms: 'Lagos Region',
+    status: 'Pending'
   },
+  {
+    key: '5',
+    name: 'Xmas Promo',
+    startDate: '25/12/2020',
+    endDate: '27/12/2020',
+    period: 30,
+    atms: 'Lagos Region, South East Region, etc.',
+    status: 'Pending'
+  },
+  {
+    key: '6',
+    name: 'New Year Promo',
+    startDate: '1/1/2020',
+    endDate: '27/1/2020',
+    period: 30,
+    atms: 'Lagos Region',
+    status: 'Pending'
+  },
+  {
+    key: '7',
+    name: 'Xmas Promo',
+    startDate: '25/12/2020',
+    endDate: '27/12/2020',
+    period: 30,
+    atms: 'Lagos Region, South East Region, etc.',
+    status: 'Pending'
+  },
+  {
+    key: '8',
+    name: 'New Year Promo',
+    startDate: '1/1/2020',
+    endDate: '27/1/2020',
+    period: 30,
+    atms: 'Lagos Region',
+    status: 'Pending'
+  },
+  {
+    key: '9',
+    name: 'Xmas Promo',
+    startDate: '25/12/2020',
+    endDate: '27/12/2020',
+    period: 30,
+    atms: 'Lagos Region, South East Region, etc.',
+    status: 'Pending'
+  },
+  {
+    key: '10',
+    name: 'New Year Promo',
+    startDate: '1/1/2020',
+    endDate: '27/1/2020',
+    period: 30,
+    atms: 'Lagos Region',
+    status: 'Pending'
+  },
+  {
+    key: '11',
+    name: 'Xmas Promo',
+    startDate: '25/12/2020',
+    endDate: '27/12/2020',
+    period: 30,
+    atms: 'Lagos Region, South East Region, etc.',
+    status: 'Pending'
+  },
+  {
+    key: '12',
+    name: 'New Year Promo',
+    startDate: '1/1/2020',
+    endDate: '27/1/2020',
+    period: 30,
+    atms: 'Lagos Region',
+    status: 'Pending'
+  },
+
 ]
 
 export const Pending = () => {
   let inputEl = useRef(null)
+  const match = useRouteMatch()
+  const history = useHistory()
 
   // Modal, Form Hooks
   const [visible, toggleModal] = useState(false)
@@ -126,25 +214,54 @@ export const Pending = () => {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Campaign Name',
       dataIndex: 'name',
       key: 'name',
-      width: '30%',
+      width: '20%',
       ...getColumnSearchProps('name'),
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      width: '20%',
-      ...getColumnSearchProps('age'),
+      title: 'Start Date',
+      dataIndex: 'startDate',
+      key: 'startDate',
+      width: '12%',
+      ...getColumnSearchProps('startDate'),
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      ...getColumnSearchProps('address'),
+      title: 'End Date',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      width: '12%',
+      ...getColumnSearchProps('endDate'),
     },
+    {
+      title: 'Period',
+      dataIndex: 'period',
+      key: 'period',
+      width: '5%',
+      ...getColumnSearchProps('period'),
+    },
+    {
+      title: 'ATM of Interest',
+      dataIndex: 'atms',
+      key: 'atms',
+      // width: '30%',
+      ...getColumnSearchProps('atms'),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      // width: '20%',
+      render: text => <Typography.Text type="warning">{text}</Typography.Text>
+
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      width: '12%',
+      render: (text, record) => <Link to={`${match.url}/${record.key}`}>View Details</Link>
+    }
   ]
 
   const menu = (
@@ -184,6 +301,21 @@ export const Pending = () => {
       >
         <p>Modal Content</p>
       </Modal>
+      <Route path={`${match.url}/:id`}>
+        <ViewDetail onCancel={() => history.replace(match.url)} />
+      </Route>
     </div>
   )
+}
+
+const ViewDetail = ({ onCancel }) => {
+  let { id } = useParams()
+  return <Modal
+    title={`Campaign ID ${id}`}
+    visible={true}
+    onCancel={onCancel}
+    onOk={onCancel}
+  >
+    <p>Modal Content</p>
+  </Modal>
 }
