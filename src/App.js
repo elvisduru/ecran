@@ -13,6 +13,8 @@ import { Declined } from './Scenes/Requests/Declined'
 import { Monitoring } from './Scenes/Monitoring'
 import { Reporting } from './Scenes/Reporting'
 import { Profiling } from './Scenes/Profiling'
+import { Auditing } from './Scenes/Auditing'
+import { Maintenance } from './Scenes/Maintenance/Maintenance'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -186,6 +188,8 @@ function App() {
             <Route path="/monitoring" component={Monitoring} />
             <Route path="/reporting" component={Reporting} />
             <Route path="/profiling" component={Profiling} />
+            <Route path="/maintenance" component={Maintenance} />
+            <Route path="/auditing" component={Auditing} />
             <Route component={PageNotFound} />
           </Switch>
         </Content>
