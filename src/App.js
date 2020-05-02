@@ -15,6 +15,7 @@ import { Reporting } from './Scenes/Reporting'
 import { Profiling } from './Scenes/Profiling'
 import { Auditing } from './Scenes/Auditing'
 import { Maintenance } from './Scenes/Maintenance/Maintenance'
+import { Campaigns } from './Scenes/Campaigns'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -39,16 +40,8 @@ const links = [
     path: "/requests/declined"
   },
   {
-    value: 'Recent Campaigns',
-    path: "/campaigns/recent"
-  },
-  {
-    value: 'Pending Campaigns',
-    path: "/campaigns/pending"
-  },
-  {
-    value: 'All Campaigns',
-    path: "/campaigns/all"
+    value: 'Campaigns',
+    path: "/campaigns"
   },
   {
     value: 'Monitoring',
@@ -81,7 +74,7 @@ function App() {
   const [options, setOptions] = useState([])
 
   // Menu Hooks
-  const rootSubmenuKeys = ['sub1', 'sub2']
+  const rootSubmenuKeys = ['sub1']
   const [openKeys, setOpenKeys] = useState([])
 
   // Router hooks
@@ -136,11 +129,7 @@ function App() {
             <Menu.Item key="/requests/approved">Approved</Menu.Item>
             <Menu.Item key="/requests/declined">Declined</Menu.Item>
           </SubMenu>
-          <SubMenu key="sub2" icon={<NotificationOutlined />} title="Campaigns">
-            <Menu.Item key="/campaigns/recent">Recent</Menu.Item>
-            <Menu.Item key="/campaigns/pending">Pending</Menu.Item>
-            <Menu.Item key="/campaigns/all">View All</Menu.Item>
-          </SubMenu>
+          <Menu.Item key="/campaigns" icon={<NotificationOutlined />}>Campaigns</Menu.Item>
           <Menu.Item key="/monitoring" icon={<SignalFilled />}>Monitoring</Menu.Item>
           <Menu.Item key="/reporting" icon={<TableOutlined />}>Reporting</Menu.Item>
           <Menu.Item key="/profiling" icon={<IdcardOutlined />}>Profiling</Menu.Item>
@@ -185,6 +174,7 @@ function App() {
             <Route path="/requests/pending" component={Pending} />
             <Route path="/requests/approved" component={Approved} />
             <Route path="/requests/declined" component={Declined} />
+            <Route path="/campaigns" component={Campaigns} />
             <Route path="/monitoring" component={Monitoring} />
             <Route path="/reporting" component={Reporting} />
             <Route path="/profiling" component={Profiling} />
