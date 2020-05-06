@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Switch, Route, useHistory } from 'react-router-dom'
 import moment from 'moment'
 
-import { Layout, Menu, AutoComplete, Input, Space, Badge, Avatar, Typography, Tooltip, Button } from 'antd'
+import { Layout, Menu, AutoComplete, Input, Space, Badge, Avatar, Typography, Tooltip, Button, Affix } from 'antd'
 import { AppstoreOutlined, CloudDownloadOutlined, NotificationOutlined, TableOutlined, IdcardOutlined, SignalFilled, ControlOutlined, OrderedListOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { Logo } from './components/Logo'
 import { Dashboard } from './Scenes/Dashboard'
@@ -110,7 +110,12 @@ function App() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
+      <Sider style={{
+        overflow: 'auto',
+        height: '100vh',
+        position: 'fixed',
+        left: 0,
+      }} collapsible collapsed={collapsed} onCollapse={onCollapse}>
         <div className="sider-logo">
           <Logo style={{ fontSize: '20px', color: 'white' }} /> {!collapsed ? <span style={{ marginLeft: '10px' }}>Ecran</span> : null}
         </div>
@@ -137,37 +142,39 @@ function App() {
           <Menu.Item key="/auditing" icon={<OrderedListOutlined />}>Auditing</Menu.Item>
         </Menu>
       </Sider>
-      <Layout className="site-layout">
-        <Header className="site-header">
-          <AutoComplete
-            value={value}
-            options={options}
-            onSelect={onSelect}
-            onChange={onChange}
-            onSearch={onSearch}
-          >
-            <Search placeholder="Search" />
-          </AutoComplete>
-          <Space size="large" style={{ marginRight: '30px' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Badge dot>
-                <BellOutlined style={{ fontSize: '20px' }} />
-              </Badge>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar size={40} icon={<UserOutlined />} />
-            </div>
-            <div style={{ lineHeight: '14px' }}>
-              <Text strong style={{ fontSize: '12px' }}>User12345</Text>
-              <br />
-              <Text style={{ fontSize: '11px' }}>Administrator</Text>
-            </div>
-            <Tooltip title="Logout">
-              <Button icon={<LogoutOutlined />} />
-            </Tooltip>
-          </Space>
-        </Header>
 
+      <Layout className="site-layout" style={{ marginLeft: `${collapsed ? '80px' : '200px'}` }}>
+        <Affix>
+          <Header className="site-header">
+            <AutoComplete
+              value={value}
+              options={options}
+              onSelect={onSelect}
+              onChange={onChange}
+              onSearch={onSearch}
+            >
+              <Search placeholder="Search" />
+            </AutoComplete>
+            <Space size="large" style={{ marginRight: '30px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Badge dot>
+                  <BellOutlined style={{ fontSize: '20px' }} />
+                </Badge>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Avatar size={40} icon={<UserOutlined />} />
+              </div>
+              <div style={{ lineHeight: '14px' }}>
+                <Text strong style={{ fontSize: '12px' }}>User12345</Text>
+                <br />
+                <Text style={{ fontSize: '11px' }}>Administrator</Text>
+              </div>
+              <Tooltip title="Logout">
+                <Button icon={<LogoutOutlined />} />
+              </Tooltip>
+            </Space>
+          </Header>
+        </Affix>
         <Content style={{ margin: '30px 50px' }}>
           <Switch>
             <Route path="/" exact component={Dashboard} />

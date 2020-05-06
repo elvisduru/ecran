@@ -1,119 +1,132 @@
-import React from 'react'
-import { Row, Col, Space, Typography, Card, List } from 'antd'
+import React, { useState } from 'react'
+import styles from './Dashboard.module.css'
+import { Row, Col, Space, Typography, Card, List, Carousel, Statistic } from 'antd'
 import Stat from '../components/Stat'
 import checkmarkCircleImg from '../images/ionic-ios-checkmark-circle.svg'
 import archiveImg from '../images/ionic-ios-archive.svg'
 import deleteImg from '../images/material-cancel.svg'
 import ActivityList from '../components/ActivityList'
 import campaignImg1 from '../images/campaignImg1.jpg'
-import campaignImg2 from '../images/campaignImg2.jpg'
 
-const activities = [
-  {
-    campaign: 'HB Easter Promo',
-    action: 'archived',
-    time: '3.27',
-    user: 'User12345'
-  },
-  {
-    campaign: 'HB Savings Xtra',
-    action: 'deleted',
-    time: '3.25',
-    user: 'User12345'
-  },
-  {
-    campaign: 'GTB Xmas Promo',
-    action: 'uploaded',
-    time: '3.22',
-    user: 'User12345'
-  },
-  {
-    campaign: 'HB Easter Promo',
-    action: 'archived',
-    time: '3.20',
-    user: 'User12345'
-  },
-  {
-    campaign: 'HB Savings Xtra',
-    action: 'deleted',
-    time: '3.19',
-    user: 'User12345'
-  },
-  {
-    campaign: 'HB Savings Lite',
-    action: 'deleted',
-    time: '3.15',
-    user: 'User12345'
-  },
-]
+import ad1 from '../images/ad1.jpg'
+import ad2 from '../images/ad2.jpg'
+import ad3 from '../images/ad3.jpg'
+import ad4 from '../images/ad4.jpg'
+import ad5 from '../images/ad5.jpg'
 
 const campaigns = [
   {
-    title: 'GTB Xmas Promo',
+    title: 'Idle Screen',
+    image: ad1
+  },
+  {
+    title: 'Welcome Screen',
+    image: ad2
+  },
+  {
+    title: 'Please Enter Pin Screen',
+    image: ad3
+  },
+  {
+    title: 'Please Wait Screen',
+    image: ad4
+  },
+  {
+    title: 'Unable to Dispense Screen',
+    image: ad5
+  },
+  {
+    title: 'Thank You Screen',
     image: campaignImg1
-  },
-  {
-    title: 'HB Easter Saver',
-    image: campaignImg2
-  },
-  {
-    title: 'GTB Xmas Promo',
-    image: campaignImg1
-  },
-  {
-    title: 'HB Easter Saver',
-    image: campaignImg2
-  },
-  {
-    title: 'GTB Xmas Promo',
-    image: campaignImg1
-  },
-  {
-    title: 'HB Easter Saver',
-    image: campaignImg2
   },
 ]
 
 export const Dashboard = () => {
+  // const [slided, setSlided] = useState(false)
   return (
     <div>
-      <Row>
+      <Row gutter={[24, 12]}>
         <Col span={12}>
-          <Typography.Title level={4}>ATMs</Typography.Title>
-          <Space size="large">
-            <Stat title="current campaigns" count={3500} icon={checkmarkCircleImg} />
-            <Stat title="old campaigns" count={3500} icon={archiveImg} />
-            <Stat title="no campaigns" count={3500} icon={deleteImg} />
-          </Space>
+          <Row>
+            <Col offset={20}>
+              <Typography.Text disabled strong>Advert Screens</Typography.Text>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Carousel
+                autoplay
+              >
+                {campaigns.map(({ title, image }, index) =>
+                  <div className={styles.Slide}
+                    key={`${title}-screen-${index}`}
+                    style={{
+                      backgroundColor: '#4a9c8c',
+                    }}
+                  >
+                    <img src={image} alt="" />
+                    <div data-type="caption">
+                      <p>{title}</p>
+                    </div>
+                  </div>
+                )}
+              </Carousel>
+            </Col>
+          </Row>
         </Col>
         <Col span={12}>
-          <Typography.Title level={4}>Recent Activity</Typography.Title>
-          <ActivityList activities={activities} />
+          <Row>
+            <Col offset={20}>
+              <Typography.Text disabled strong>Default Screens</Typography.Text>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Carousel
+                autoplay
+              >
+                {campaigns.map(({ title, image }, index) =>
+                  <div className={styles.Slide}
+                    key={`${title}-screen-${index}`}
+                    style={{
+                      backgroundColor: '#4a9c8c',
+                    }}
+                  >
+                    <img src={image} alt="" />
+                    <div data-type="caption">
+                      <p>{title}</p>
+                    </div>
+                  </div>
+                )}
+              </Carousel>
+            </Col>
+          </Row>
         </Col>
       </Row>
-      <Row style={{ marginTop: '50px' }}>
-        <Col span={24}>
-          <Card>
-            <Typography.Title level={4} style={{ marginBottom: '30px' }}>Current Campaign</Typography.Title>
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 2,
-                md: 4,
-                lg: 4,
-                xl: 6,
-                xxl: 3,
-              }}
-              dataSource={campaigns}
-              renderItem={item => (
-                <List.Item>
-                  <Card hoverable cover={<img src={item.image} alt={item.title} />}>
-                    <Card.Meta description={item.title} />
-                  </Card>
-                </List.Item>
-              )}
-            />
+      <Row justify="space-between">
+        <Col span={4}>
+          <Card bodyStyle={{ height: '140px' }}>
+            <Statistic valueStyle={{ fontSize: '30px', color: '#008C00' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Current Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card bodyStyle={{ height: '140px' }}>
+            <Statistic valueStyle={{ fontSize: '30px', color: 'rgba(0, 0, 0, 0.4' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Old Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card bodyStyle={{ height: '140px' }}>
+            <Statistic valueStyle={{ fontSize: '30px', color: 'rgb(255, 9, 9)' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="No Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card bodyStyle={{ height: '140px' }}>
+            <Statistic valueStyle={{ fontSize: '30px', color: 'brown' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Incomplete Default Screen" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+          </Card>
+        </Col>
+        <Col span={4}>
+          <Card bodyStyle={{ height: '140px' }}>
+            <Statistic valueStyle={{ fontSize: '30px' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="No Default Screen" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
           </Card>
         </Col>
       </Row>
