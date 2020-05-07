@@ -1,11 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styles from './Dashboard.module.css'
-import { Row, Col, Space, Typography, Card, List, Carousel, Statistic } from 'antd'
-import Stat from '../components/Stat'
-import checkmarkCircleImg from '../images/ionic-ios-checkmark-circle.svg'
-import archiveImg from '../images/ionic-ios-archive.svg'
-import deleteImg from '../images/material-cancel.svg'
-import ActivityList from '../components/ActivityList'
+import { Row, Col, Typography, Card, Carousel, Statistic } from 'antd'
 import campaignImg1 from '../images/campaignImg1.jpg'
 
 import ad1 from '../images/ad1.jpg'

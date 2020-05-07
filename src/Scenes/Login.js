@@ -1,6 +1,6 @@
 import React from 'react'
 import styles from './Login.module.css'
-import { Row, Carousel, Col, Form, Input, Button, Checkbox } from 'antd'
+import { Row, Carousel, Col, Form, Input, Button } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 import scene1 from '../images/scene1.jpg'

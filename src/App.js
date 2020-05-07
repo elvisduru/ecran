@@ -4,7 +4,6 @@ import moment from 'moment'
 
 import { Layout, Menu, AutoComplete, Input, Space, Badge, Avatar, Typography, Tooltip, Button, Affix } from 'antd'
 import { AppstoreOutlined, CloudDownloadOutlined, NotificationOutlined, TableOutlined, IdcardOutlined, SignalFilled, ControlOutlined, OrderedListOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
-// import { Logo } from './components/Logo'
 import Logo from './images/logo-white.png'
 import { Dashboard } from './Scenes/Dashboard'
 import { Pending } from './Scenes/Requests/Pending'
