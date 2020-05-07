@@ -4,7 +4,8 @@ import moment from 'moment'
 
 import { Layout, Menu, AutoComplete, Input, Space, Badge, Avatar, Typography, Tooltip, Button, Affix } from 'antd'
 import { AppstoreOutlined, CloudDownloadOutlined, NotificationOutlined, TableOutlined, IdcardOutlined, SignalFilled, ControlOutlined, OrderedListOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
-import { Logo } from './components/Logo'
+// import { Logo } from './components/Logo'
+import Logo from './images/logo-white.png'
 import { Dashboard } from './Scenes/Dashboard'
 import { Pending } from './Scenes/Requests/Pending'
 import PageNotFound from './Scenes/PageNotFound'
@@ -16,6 +17,7 @@ import { Profiling } from './Scenes/Profiling'
 import { Auditing } from './Scenes/Auditing'
 import { Maintenance } from './Scenes/Maintenance/Maintenance'
 import { Campaigns } from './Scenes/Campaigns'
+import { Login } from './Scenes/Login'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -108,7 +110,13 @@ function App() {
     }
   }
 
-  return (
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const handleLogin = () => {
+    setIsLoggedIn(!isLoggedIn)
+  }
+
+  return isLoggedIn ? (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider style={{
         overflow: 'auto',
@@ -117,7 +125,7 @@ function App() {
         left: 0,
       }} collapsible collapsed={collapsed} onCollapse={onCollapse}>
         <div className="sider-logo">
-          <Logo style={{ fontSize: '20px', color: 'white' }} /> {!collapsed ? <span style={{ marginLeft: '10px' }}>Ecran</span> : null}
+          {collapsed ? <span style={{ marginLeft: '9px', fontSize: '35px', textTransform: 'lowercase' }}>&#233;</span> : <img width={150} src={Logo} alt="" />}
         </div>
         <Menu
           theme="dark"
@@ -194,7 +202,9 @@ function App() {
         <Footer className="site-footer">Ecran ATM Software ©{moment().year()} Created by&nbsp;<a rel="noopener noreferrer" target="_blank" href="https://elvisduru.com">Elvis Duru</a></Footer>
       </Layout>
     </Layout>
-  );
+  ) : (
+      <Login handleLogin={handleLogin} />
+    )
 }
 
 export default App
