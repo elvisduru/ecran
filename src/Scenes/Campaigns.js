@@ -1,37 +1,42 @@
-import React, { useState, useRef } from 'react'
-import { Row, Col, Typography, Card, List, Button, Form, Modal, Upload, message, Input, Table, Space } from 'antd'
-import Highlighter from 'react-highlight-words';
-import { SearchOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons';
+import React, { useState } from 'react'
+import styles from './Dashboard.module.css'
+import { Row, Col, Typography, Button, Form, Modal, Upload, message, Input, Table, Carousel } from 'antd'
+import { EyeOutlined, UploadOutlined } from '@ant-design/icons';
 import campaignImg1 from '../images/campaignImg1.jpg'
 import campaignImg2 from '../images/campaignImg2.jpg'
 
+import ad1 from '../images/ad1.jpg'
+import ad2 from '../images/ad2.jpg'
+import ad3 from '../images/ad3.jpg'
+import ad4 from '../images/ad4.jpg'
+import ad5 from '../images/ad5.jpg'
+
 const campaigns = [
   {
-    title: 'HB Easter Saver',
-    image: campaignImg2
+    title: 'Idle Screen',
+    image: ad1
   },
   {
-    title: 'HB Easter Saver',
-    image: campaignImg2
+    title: 'Welcome Screen',
+    image: ad2
   },
   {
-    title: 'GTB Xmas Promo',
+    title: 'Please Enter Pin Screen',
+    image: ad3
+  },
+  {
+    title: 'Please Wait Screen',
+    image: ad4
+  },
+  {
+    title: 'Unable to Dispense Screen',
+    image: ad5
+  },
+  {
+    title: 'Thank You Screen',
     image: campaignImg1
-  },
-  {
-    title: 'HB Easter Saver',
-    image: campaignImg2
-  },
-  {
-    title: 'GTB Xmas Promo',
-    image: campaignImg1
-  },
-  {
-    title: 'HB Easter Saver',
-    image: campaignImg2
   },
 ]
-
 
 const data = [
   {
@@ -166,8 +171,6 @@ const normFile = e => {
 }
 
 export const Campaigns = () => {
-  let inputEl = useRef(null)
-
   // Preview
   const [preview, setPreview] = useState(false)
   const [previewImage, setPreviewImage] = useState(null)
@@ -175,10 +178,6 @@ export const Campaigns = () => {
     setPreviewImage(image)
     setPreview(!preview)
   }
-
-  // Table Hooks
-  const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchColumn] = useState('')
 
   // Upload Screen Hooks
   const [visible, setVisible] = useState(false)
@@ -263,93 +262,54 @@ export const Campaigns = () => {
     );
   };
 
-  // Table Handlers
-  const getColumnSearchProps = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={node => {
-            inputEl = node;
-          }}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => inputEl.select());
-      }
-    },
-    render: text =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text.toString()}
-        />
-      ) : (
-          text
-        ),
-  });
+  const [filterTable, setFilterTable] = useState(null)
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm()
-    setSearchText(selectedKeys[0])
-    setSearchColumn(dataIndex)
-  }
+  const search = value => {
+    console.log("PASS", { value });
 
-  const handleReset = clearFilters => {
-    clearFilters()
-    setSearchText('')
-  }
+    const filterTable = data.filter(o =>
+      Object.keys(o).some(k =>
+        String(o[k])
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      )
+    );
 
+    setFilterTable(filterTable);
+  };
 
   const columns = [
     {
       title: 'Terminal ID',
       dataIndex: 'id',
       key: 'id',
-      ...getColumnSearchProps('id'),
+      sorter: {
+        compare: (a, b) => a.id.localeCompare(b.id)
+      }
     },
     {
       title: 'Short Name',
       dataIndex: 'name',
       key: 'name',
-      ...getColumnSearchProps('name'),
+      sorter: {
+        compare: (a, b) => a.name.localeCompare(b.name)
+      }
     },
     {
       title: 'Last Trasaction',
       dataIndex: 'lastTransaction',
       key: 'lastTransaction',
-      ...getColumnSearchProps('lastTransaction'),
+      sorter: {
+        compare: (a, b) => a.lastTransaction.localeCompare(b.lastTransaction)
+      }
     },
     {
       title: 'IP Address',
       dataIndex: 'ip',
       key: 'ip',
-      ...getColumnSearchProps('ip'),
+      sorter: {
+        compare: (a, b) => a.ip.localeCompare(b.ip)
+      }
     },
     {
       title: 'Default Screen',
@@ -381,7 +341,9 @@ export const Campaigns = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      ...getColumnSearchProps('status'),
+      sorter: {
+        compare: (a, b) => a.status.localeCompare(b.status)
+      },
       render: text => <Typography.Text type={text === "Pending" ? "warning" : text === "Declined" ? "danger" : null} style={text === "Active" ? { color: '#40A9FF' } : null}>{text}</Typography.Text>
     },
     {
@@ -399,33 +361,66 @@ export const Campaigns = () => {
           <Typography.Title level={4}>Current Campaigns</Typography.Title>
         </Col>
       </Row>
-      <Row>
-        <Col span={24} xl={20}>
-          <Card>
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 2,
-                md: 6,
-                lg: 6,
-                xl: 6,
-                xxl: 3,
-              }}
-              dataSource={campaigns}
-              renderItem={item => (
-                <List.Item>
-                  <Card hoverable cover={<img src={item.image} alt={item.title} />}>
-                    <Card.Meta description={item.title} />
-                  </Card>
-                </List.Item>
-              )}
-            />
-          </Card>
+      <Row gutter={[24, 12]}>
+        <Col span={12}>
+          <Row>
+            <Col offset={20}>
+              <Typography.Text disabled strong>Advert Screens</Typography.Text>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Carousel
+                autoplay
+              >
+                {campaigns.map(({ title, image }, index) =>
+                  <div className={styles.Slide}
+                    key={`${title}-screen-${index}`}
+                    style={{
+                      backgroundColor: '#4a9c8c',
+                    }}
+                  >
+                    <img src={image} alt="" />
+                    <div data-type="caption">
+                      <p>{title}</p>
+                    </div>
+                  </div>
+                )}
+              </Carousel>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={12}>
+          <Row>
+            <Col offset={20}>
+              <Typography.Text disabled strong>Default Screens</Typography.Text>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Carousel
+                autoplay
+              >
+                {campaigns.map(({ title, image }, index) =>
+                  <div className={styles.Slide}
+                    key={`${title}-screen-${index}`}
+                    style={{
+                      backgroundColor: '#4a9c8c',
+                    }}
+                  >
+                    <img src={image} alt="" />
+                    <div data-type="caption">
+                      <p>{title}</p>
+                    </div>
+                  </div>
+                )}
+              </Carousel>
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row style={{ marginTop: '60px' }}>
-        <Col span={24} xl={20}>
+        <Col span={24}>
           <Row gutter={[16, 20]}>
             <Col flex="auto">
               <Typography.Title level={4}>All Campaigns</Typography.Title>
@@ -436,7 +431,13 @@ export const Campaigns = () => {
           </Row>
           <Row>
             <Col flex="auto">
-              <Table columns={columns} dataSource={data} />
+              <Input.Search
+                style={{ margin: "0 0 10px 0", width: '300px' }}
+                placeholder="Search table..."
+                enterButton
+                onSearch={search}
+              />
+              <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
             </Col>
           </Row>
         </Col>

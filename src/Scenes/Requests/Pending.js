@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react'
-import { Typography, Row, Button, Col, Menu, Dropdown, Modal, message, Table, Input, Space, Form, DatePicker, Radio, Upload, Select } from 'antd'
-import Highlighter from 'react-highlight-words';
-import { SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import React, { useState } from 'react'
+import { Typography, Row, Button, Col, Menu, Dropdown, Modal, message, Table, Input, Form, DatePicker, Radio, Upload, Select } from 'antd'
+import { UploadOutlined } from '@ant-design/icons';
 import ViewDetails from '../../components/ViewDetails';
 import campaignScreen from '../../images/campaignImg1.jpg'
 
@@ -296,8 +295,6 @@ const RequestCreateForm = ({ visible, onCreate, onCancel, requestType, confirmLo
 };
 
 export const Pending = () => {
-  let inputEl = useRef(null)
-
   // Modal, Form Hooks
   const [visible, toggleModal] = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -307,10 +304,6 @@ export const Pending = () => {
   const [details, setDetails] = useState(null)
   const [declineLoading, setDeclineLoading] = useState(false)
   const [approveLoading, setApproveLoading] = useState(false)
-
-  // Table Hooks
-  const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchColumn] = useState('')
 
   // Modal, Form Handlers
   const handleMenuClick = ({ item, key }) => {
@@ -364,68 +357,21 @@ export const Pending = () => {
     setShowDetails(false)
   }
 
-  // Table Handlers
-  const getColumnSearchProps = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={node => {
-            inputEl = node;
-          }}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => inputEl.select());
-      }
-    },
-    render: text =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text.toString()}
-        />
-      ) : (
-          text
-        ),
-  });
+  const [filterTable, setFilterTable] = useState(null)
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm()
-    setSearchText(selectedKeys[0])
-    setSearchColumn(dataIndex)
-  }
+  const search = value => {
+    console.log("PASS", { value });
 
-  const handleReset = clearFilters => {
-    clearFilters()
-    setSearchText('')
-  }
+    const filterTable = data.filter(o =>
+      Object.keys(o).some(k =>
+        String(o[k])
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      )
+    );
 
+    setFilterTable(filterTable);
+  };
 
   const columns = [
     {
@@ -433,43 +379,50 @@ export const Pending = () => {
       dataIndex: 'name',
       key: 'name',
       width: '20%',
-      ...getColumnSearchProps('name'),
+      sorter: {
+        compare: (a, b) => a.name.localeCompare(b.name)
+      }
     },
     {
       title: 'Start Date',
       dataIndex: 'startDate',
       key: 'startDate',
       width: '12%',
-      ...getColumnSearchProps('startDate'),
+      sorter: {
+        compare: (a, b) => a.startDate.localeCompare(b.startDate)
+      }
     },
     {
       title: 'End Date',
       dataIndex: 'endDate',
       key: 'endDate',
       width: '12%',
-      ...getColumnSearchProps('endDate'),
+      sorter: {
+        compare: (a, b) => a.endDate.localeCompare(b.endDate)
+      }
     },
     {
       title: 'Period',
       dataIndex: 'period',
       key: 'period',
       width: '5%',
-      ...getColumnSearchProps('period'),
+      sorter: {
+        compare: (a, b) => a.period.localeCompare(b.period)
+      }
     },
     {
       title: 'ATM of Interest',
       dataIndex: 'atms',
       key: 'atms',
-      // width: '30%',
-      ...getColumnSearchProps('atms'),
+      sorter: {
+        compare: (a, b) => a.atms.localeCompare(b.atms)
+      }
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      // width: '20%',
       render: text => <Typography.Text type="warning">{text}</Typography.Text>
-
     },
     {
       title: 'Action',
@@ -489,7 +442,7 @@ export const Pending = () => {
   return (
     <div>
       <Row>
-        <Col span={24} xl={20}>
+        <Col span={24}>
           <Row gutter={[16, 32]}>
             <Col flex="auto">
               <Typography.Title level={4}>Pending Requests</Typography.Title>
@@ -502,7 +455,13 @@ export const Pending = () => {
           </Row>
           <Row>
             <Col flex="auto">
-              <Table columns={columns} dataSource={data} />
+              <Input.Search
+                style={{ margin: "0 0 10px 0", width: '300px' }}
+                placeholder="Search table..."
+                enterButton
+                onSearch={search}
+              />
+              <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
             </Col>
           </Row>
         </Col>

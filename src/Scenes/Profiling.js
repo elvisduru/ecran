@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { Typography, Row, Button, Col, Table, Input, Space, Modal, Form, Upload, Select, message } from 'antd'
-import Highlighter from 'react-highlight-words';
-import { SearchOutlined, UploadOutlined, LoadingOutlined, CheckOutlined } from '@ant-design/icons';
+import { UploadOutlined, LoadingOutlined, CheckOutlined } from '@ant-design/icons';
 
 const data = [
   {
@@ -205,7 +204,6 @@ const UserCreateForm = ({ visible, onCreate, onCancel, confirmLoading }) => {
 };
 
 export const Profiling = () => {
-  let inputEl = useRef(null)
   const [form] = Form.useForm();
 
   // Modal, Form Hooks
@@ -257,103 +255,62 @@ export const Profiling = () => {
     }, 2000)
   }
 
-  // Table Hooks
-  const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchColumn] = useState('')
+  const [filterTable, setFilterTable] = useState(null)
 
-  // Table Handlers
-  const getColumnSearchProps = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={node => {
-            inputEl = node;
-          }}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => inputEl.select());
-      }
-    },
-    render: text =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text.toString()}
-        />
-      ) : (
-          text
-        ),
-  });
+  const search = value => {
+    console.log("PASS", { value });
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm()
-    setSearchText(selectedKeys[0])
-    setSearchColumn(dataIndex)
-  }
+    const filterTable = data.filter(o =>
+      Object.keys(o).some(k =>
+        String(o[k])
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      )
+    );
 
-  const handleReset = clearFilters => {
-    clearFilters()
-    setSearchText('')
-  }
-
+    setFilterTable(filterTable);
+  };
 
   const columns = [
     {
       title: 'Username',
       dataIndex: 'name',
       key: 'name',
-      ...getColumnSearchProps('name'),
+      sorter: {
+        compare: (a, b) => a.name.localeCompare(b.name)
+      }
     },
     {
       title: 'Date Created',
       dataIndex: 'created',
       key: 'created',
-      ...getColumnSearchProps('created'),
+      sorter: {
+        compare: (a, b) => a.created.localeCompare(b.created)
+      }
     },
     {
       title: 'Phone Number',
       dataIndex: 'phone',
       key: 'phone',
-      ...getColumnSearchProps('phone'),
+      sorter: {
+        compare: (a, b) => a.phone.localeCompare(b.phone)
+      }
     },
     {
       title: 'Assigned Role',
       dataIndex: 'role',
       key: 'role',
-      ...getColumnSearchProps('role'),
+      sorter: {
+        compare: (a, b) => a.role.localeCompare(b.role)
+      }
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      ...getColumnSearchProps('status'),
+      sorter: {
+        compare: (a, b) => a.status.localeCompare(b.status)
+      },
       render: text => <Typography.Text type={text === "Pending" ? "warning" : text === "Inactive" ? "danger" : null} style={text === "Active" ? { color: '#40A9FF' } : null}>{text}</Typography.Text>
     },
     {
@@ -373,7 +330,7 @@ export const Profiling = () => {
   return (
     <div>
       <Row>
-        <Col span={24} xl={20}>
+        <Col span={24}>
           <Row gutter={[16, 32]}>
             <Col flex="auto">
               <Typography.Title level={4}>Profiling</Typography.Title>
@@ -387,7 +344,13 @@ export const Profiling = () => {
           </Row>
           <Row>
             <Col flex="auto">
-              <Table columns={columns} dataSource={data} />
+              <Input.Search
+                style={{ margin: "0 0 10px 0", width: '300px' }}
+                placeholder="Search table..."
+                enterButton
+                onSearch={search}
+              />
+              <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
             </Col>
           </Row>
         </Col>
