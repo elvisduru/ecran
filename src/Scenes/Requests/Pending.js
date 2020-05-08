@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { Typography, Row, Button, Col, Menu, Dropdown, Modal, message, Table, Input, Form, DatePicker, Radio, Upload, Select } from 'antd'
-import { UploadOutlined } from '@ant-design/icons';
+import { Typography, Row, Button, Col, message, Table, Input } from 'antd'
+import { SearchOutlined } from '@ant-design/icons';
 import ViewDetails from '../../components/ViewDetails';
 import campaignScreen from '../../images/campaignImg1.jpg'
-
-const { RangePicker } = DatePicker
 
 const data = [
   {
@@ -148,168 +146,13 @@ const data = [
 
 ]
 
-
-const normFile = e => {
-  console.log('Upload event:', e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-};
-
-const RequestCreateForm = ({ visible, onCreate, onCancel, requestType, confirmLoading }) => {
-  const [form] = Form.useForm();
-  return (
-    <Modal
-      centered
-      visible={visible}
-      title={`${requestType === "internal" ? 'Internal Request Form' : '3rd Party Request Form'}`}
-      confirmLoading={confirmLoading}
-      okText="Create"
-      cancelText="Cancel"
-      onCancel={onCancel}
-      onOk={() => {
-        form
-          .validateFields()
-          .then(values => {
-            form.resetFields();
-            onCreate(values);
-          })
-          .catch(info => {
-            console.log('Validate Failed:', info);
-          });
-      }}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        name="request-form"
-        initialValues={{
-          approval: 'no',
-        }}
-      >
-        <Form.Item
-          name="requester-name"
-          label="Requester's Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input the requester's name!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        {requestType === "3rd-party" && (
-          <Form.Item
-            name="customer-name"
-            label="Customer's Name"
-            rules={[
-              {
-                required: true,
-                message: "Please input the customer's name!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-        )}
-        <Form.Item
-          name="campaign-name"
-          label="Campaign Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input the campaign name!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="campaign-screen"
-          label="Upload Campaign Screen"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-          rules={[
-            {
-              required: true,
-              message: "Please upload campaign screen!",
-            },
-          ]}
-        >
-          <Upload accept="image/*,video/*" name="logo" action="/upload.do" listType="picture">
-            <Button>
-              <UploadOutlined /> Click to upload
-            </Button>
-          </Upload>
-        </Form.Item>
-        <Form.Item
-          name="atm-reqion"
-          label="ATM of Interest"
-          rules={[
-            {
-              required: true,
-              message: "Please select ATMs of Interest!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="date-range"
-          label="Select Date Range"
-          rules={[
-            {
-              required: true,
-              message: "Please select date range!",
-            },
-          ]}
-        >
-          <RangePicker />
-        </Form.Item>
-        <Form.Item
-          name="region"
-          label="Select Region"
-          rules={[
-            {
-              required: true,
-              message: 'Please select your country!',
-            },
-          ]}
-        >
-          <Select placeholder="Please select a region">
-            <Select.Option value="lagos-island">Lagos Island</Select.Option>
-            <Select.Option value="lagos-mainland">Lagos Mainland</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name="approval" className="request-create-form_last-form-item" label="Has GH Approval?">
-          <Radio.Group>
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Form>
-    </Modal>
-  );
-};
-
 export const Pending = () => {
   // Modal, Form Hooks
-  const [visible, toggleModal] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [requestType, setRequestType] = useState('')
 
   const [showDetails, setShowDetails] = useState(false)
   const [details, setDetails] = useState(null)
   const [declineLoading, setDeclineLoading] = useState(false)
   const [approveLoading, setApproveLoading] = useState(false)
-
-  // Modal, Form Handlers
-  const handleMenuClick = ({ item, key }) => {
-    toggleModal(!visible)
-    setRequestType(key)
-  }
 
   const findDetail = id => {
     return data.find(item => item.key === id)
@@ -342,25 +185,14 @@ export const Pending = () => {
     }, 2000)
   }
 
-  const onCreate = values => {
-    setConfirmLoading(true)
-    setTimeout(() => {
-      toggleModal(false)
-      setConfirmLoading(false)
-      message.success('Campaign name was created successfully')
-      console.log('Received values of form: ', values)
-    }, 2000)
-  }
-
   const handleCancel = () => {
-    toggleModal(false)
     setShowDetails(false)
   }
 
   const [filterTable, setFilterTable] = useState(null)
 
-  const search = value => {
-    console.log("PASS", { value });
+  const search = e => {
+    const value = e.target.value
 
     const filterTable = data.filter(o =>
       Object.keys(o).some(k =>
@@ -432,13 +264,6 @@ export const Pending = () => {
     }
   ]
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="internal">Internal Request</Menu.Item>
-      <Menu.Item key="3rd-party">3rd Party Request</Menu.Item>
-    </Menu>
-  )
-
   return (
     <div>
       <Row>
@@ -447,32 +272,20 @@ export const Pending = () => {
             <Col flex="auto">
               <Typography.Title level={4}>Pending Requests</Typography.Title>
             </Col>
-            <Col>
-              <Dropdown overlay={menu}>
-                <Button type="primary">New Request</Button>
-              </Dropdown>
-            </Col>
           </Row>
           <Row>
             <Col flex="auto">
-              <Input.Search
+              <Input
+                prefix={<SearchOutlined />}
                 style={{ margin: "0 0 10px 0", width: '300px' }}
                 placeholder="Search table..."
-                enterButton
-                onSearch={search}
+                onChange={search}
               />
               <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
             </Col>
           </Row>
         </Col>
       </Row>
-      <RequestCreateForm
-        requestType={requestType}
-        visible={visible}
-        onCreate={onCreate}
-        onCancel={handleCancel}
-        confirmLoading={confirmLoading}
-      />
       {details && <ViewDetails
         details={details}
         visible={showDetails}

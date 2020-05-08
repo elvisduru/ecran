@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Typography, Row, Button, Col, Table, Input, Space, Modal, Form, Upload, Select, message } from 'antd'
-import { UploadOutlined, LoadingOutlined, CheckOutlined } from '@ant-design/icons';
+import { UploadOutlined, LoadingOutlined, CheckOutlined, SearchOutlined } from '@ant-design/icons';
 
 const data = [
   {
@@ -257,8 +257,8 @@ export const Profiling = () => {
 
   const [filterTable, setFilterTable] = useState(null)
 
-  const search = value => {
-    console.log("PASS", { value });
+  const search = e => {
+    const value = e.target.value
 
     const filterTable = data.filter(o =>
       Object.keys(o).some(k =>
@@ -344,11 +344,11 @@ export const Profiling = () => {
           </Row>
           <Row>
             <Col flex="auto">
-              <Input.Search
+              <Input
+                prefix={<SearchOutlined />}
                 style={{ margin: "0 0 10px 0", width: '300px' }}
                 placeholder="Search table..."
-                enterButton
-                onSearch={search}
+                onChange={search}
               />
               <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
             </Col>

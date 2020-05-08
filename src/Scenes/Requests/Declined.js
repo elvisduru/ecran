@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Typography, Row, Button, Col, message, Table, Input } from 'antd'
+import { SearchOutlined } from '@ant-design/icons';
 import ViewDetails from '../../components/ViewDetails';
 import campaignScreen from '../../images/campaignImg1.jpg'
 
@@ -177,9 +178,8 @@ export const Declined = () => {
 
   const [filterTable, setFilterTable] = useState(null)
 
-  const search = value => {
-    console.log("PASS", { value });
-
+  const search = e => {
+    const value = e.target.value
     const filterTable = data.filter(o =>
       Object.keys(o).some(k =>
         String(o[k])
@@ -263,11 +263,11 @@ export const Declined = () => {
           </Row>
           <Row>
             <Col flex="auto">
-              <Input.Search
+              <Input
+                prefix={<SearchOutlined />}
                 style={{ margin: "0 0 10px 0", width: '300px' }}
                 placeholder="Search table..."
-                enterButton
-                onSearch={search}
+                onChange={search}
               />
               <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
             </Col>

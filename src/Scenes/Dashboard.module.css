@@ -1,6 +1,12 @@
 .Slide {
   position: relative;
-  height: 500px;
+  height: 600px;
+}
+
+@media screen and (max-width: 1024px) {
+  .Slide {
+    height: 450px;
+  }
 }
 
 .Slide > img {

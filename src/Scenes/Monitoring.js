@@ -1,132 +1,17 @@
 import React, { useState } from 'react'
 import { Typography, Row, Button, Col, Table, Input, Modal } from 'antd'
-import { EyeOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import campaignScreen1 from '../images/campaignImg1.jpg'
 import campaignScreen2 from '../images/campaignImg2.jpg'
 
-const data = [
-  {
-    key: '1',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
-  {
-    key: '2',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Declined'
-  },
-  {
-    key: '3',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'GTB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Pending'
-  },
-  {
-    key: '4',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Pending'
-  },
-  {
-    key: '5',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
-  {
-    key: '6',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
-  {
-    key: '7',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Pending'
-  },
-  {
-    key: '8',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
-  {
-    key: '9',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
-  {
-    key: '10',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Pending'
-  },
-  {
-    key: '11',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
-  {
-    key: '12',
-    id: '1234567890',
-    ip: '121.456.78.212',
-    name: 'HB Ikeja',
-    lastTransaction: '24/01/2020 0:00',
-    defaultScreen: campaignScreen1,
-    screen: campaignScreen2,
-    status: 'Active'
-  },
+import atms from '../atm-list.json'
 
-]
+const data = atms.map(atm => {
+  atm.defaultScreen = campaignScreen1
+  atm.screen = campaignScreen2
+  atm.key = atm["S/N"]
+  return atm
+})
 
 export const Monitoring = () => {
   // Preview
@@ -139,9 +24,8 @@ export const Monitoring = () => {
 
   const [filterTable, setFilterTable] = useState(null)
 
-  const search = value => {
-    console.log("PASS", { value });
-
+  const search = e => {
+    const value = e.target.value
     const filterTable = data.filter(o =>
       Object.keys(o).some(k =>
         String(o[k])
@@ -155,35 +39,60 @@ export const Monitoring = () => {
 
   const columns = [
     {
+      title: 'S/N',
+      dataIndex: 'S/N',
+      key: 'S/N',
+      sorter: {
+        compare: (a, b) => a['S/N'] - b['S/N']
+      }
+    },
+    {
       title: 'Terminal ID',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'Terminal ID',
+      key: 'Terminal ID',
       sorter: {
-        compare: (a, b) => a.id.localeCompare(b.id)
+        compare: (a, b) => a['Terminal ID'] - b['Terminal ID']
       }
     },
     {
-      title: 'Short Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'Sol ID',
+      dataIndex: 'Sol ID',
+      key: 'Sol ID',
       sorter: {
-        compare: (a, b) => a.name.localeCompare(b.name)
+        compare: (a, b) => a['Sol ID'] - b['Sol ID']
       }
     },
     {
-      title: 'Last Trasaction',
-      dataIndex: 'lastTransaction',
-      key: 'lastTransaction',
+      title: 'Location',
+      dataIndex: 'Location',
+      key: 'Location',
       sorter: {
-        compare: (a, b) => a.lastTransaction.localeCompare(b.lastTransaction)
+        compare: (a, b) => a['Location'].localeCompare(b['Location'])
       }
     },
     {
-      title: 'IP Address',
-      dataIndex: 'ip',
-      key: 'ip',
+      title: 'Last Txn Date',
+      dataIndex: 'Last Txn Date',
+      key: 'Last Txn Date',
       sorter: {
-        compare: (a, b) => a.ip.localeCompare(b.ip)
+        compare: (a, b) => a['Last Txn Date'].localeCompare(b['Last Txn Date'])
+      }
+    },
+    {
+      title: 'Status',
+      dataIndex: 'Status',
+      key: 'Status',
+      sorter: {
+        compare: (a, b) => a['Status'].localeCompare(b['Status'])
+      },
+      render: text => <Typography.Text type={text === "OFFLINE" ? "danger" : null} style={text === "ACTIVE" ? { color: '#008C00' } : null}>{text}</Typography.Text>
+    },
+    {
+      title: 'Address',
+      dataIndex: 'Address',
+      key: 'Address',
+      sorter: {
+        compare: (a, b) => a['Address'].localeCompare(b['Address'])
       }
     },
     {
@@ -213,14 +122,45 @@ export const Monitoring = () => {
       )
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: 'Type',
+      dataIndex: 'Type',
+      key: 'Type',
       sorter: {
-        compare: (a, b) => a.status.localeCompare(b.status)
-      },
-      render: text => <Typography.Text type={text === "Pending" ? "warning" : text === "Declined" ? "danger" : null} style={text === "Active" ? { color: '#40A9FF' } : null}>{text}</Typography.Text>
-    }
+        compare: (a, b) => a['Type'].localeCompare(b['Type'])
+      }
+    },
+    {
+      title: 'IP Address',
+      dataIndex: 'IP Address',
+      key: 'IP Address',
+      sorter: {
+        compare: (a, b) => a['IP Address'].localeCompare(b['IP Address'])
+      }
+    },
+    {
+      title: 'Location Type',
+      dataIndex: 'Location Type',
+      key: 'Location Type',
+      sorter: {
+        compare: (a, b) => a['Location Type'].localeCompare(b['Location Type'])
+      }
+    },
+    {
+      title: 'State',
+      dataIndex: 'State',
+      key: 'State',
+      sorter: {
+        compare: (a, b) => a['State'].localeCompare(b['State'])
+      }
+    },
+    {
+      title: 'Region',
+      dataIndex: 'Region',
+      key: 'Region',
+      sorter: {
+        compare: (a, b) => a['Region'].localeCompare(b['Region'])
+      }
+    },
   ]
 
   return (
@@ -234,13 +174,13 @@ export const Monitoring = () => {
           </Row>
           <Row>
             <Col flex="auto">
-              <Input.Search
+              <Input
+                prefix={<SearchOutlined />}
                 style={{ margin: "0 0 10px 0", width: '300px' }}
                 placeholder="Search table..."
-                enterButton
-                onSearch={search}
+                onChange={search}
               />
-              <Table columns={columns} dataSource={filterTable == null ? data : filterTable} />
+              <Table scroll={{ x: 1500 }} columns={columns} dataSource={filterTable == null ? data : filterTable} size="small" />
             </Col>
           </Row>
         </Col>

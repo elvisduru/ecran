@@ -40,6 +40,11 @@ export const Dashboard = () => {
   // const [slided, setSlided] = useState(false)
   return (
     <div>
+      <Row>
+        <Col>
+          <Typography.Title level={4}>Dashboard</Typography.Title>
+        </Col>
+      </Row>
       <Row gutter={[24, 12]}>
         <Col span={12}>
           <Row>
@@ -98,30 +103,30 @@ export const Dashboard = () => {
           </Row>
         </Col>
       </Row>
-      <Row justify="space-between">
+      <Row justify="space-between" style={{ marginTop: '30px' }}>
         <Col span={4}>
           <Card bodyStyle={{ height: '140px' }}>
-            <Statistic valueStyle={{ fontSize: '30px', color: '#008C00' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Current Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+            <Statistic valueStyle={{ fontSize: '40px', color: '#008C00' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Current Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
           </Card>
         </Col>
         <Col span={4}>
           <Card bodyStyle={{ height: '140px' }}>
-            <Statistic valueStyle={{ fontSize: '30px', color: 'rgba(0, 0, 0, 0.4' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Old Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+            <Statistic valueStyle={{ fontSize: '40px', color: 'rgba(0, 0, 0, 0.4' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Old Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
           </Card>
         </Col>
         <Col span={4}>
           <Card bodyStyle={{ height: '140px' }}>
-            <Statistic valueStyle={{ fontSize: '30px', color: 'rgb(255, 9, 9)' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="No Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+            <Statistic valueStyle={{ fontSize: '40px', color: 'rgb(255, 9, 9)' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="No Campaign" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
           </Card>
         </Col>
         <Col span={4}>
           <Card bodyStyle={{ height: '140px' }}>
-            <Statistic valueStyle={{ fontSize: '30px', color: 'brown' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Incomplete Default Screen" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+            <Statistic valueStyle={{ fontSize: '40px', color: 'brown' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="Incomplete Default Screen" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
           </Card>
         </Col>
         <Col span={4}>
           <Card bodyStyle={{ height: '140px' }}>
-            <Statistic valueStyle={{ fontSize: '30px' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="No Default Screen" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
+            <Statistic valueStyle={{ fontSize: '40px' }} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }} title="No Default Screen" value={new Intl.NumberFormat('en', { notation: "compact" }).format(367)} />
           </Card>
         </Col>
       </Row>

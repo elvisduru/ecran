@@ -3,7 +3,7 @@ import { Switch, Route, useHistory } from 'react-router-dom'
 import moment from 'moment'
 
 import { Layout, Menu, AutoComplete, Input, Space, Badge, Avatar, Typography, Tooltip, Button, Affix } from 'antd'
-import { AppstoreOutlined, CloudDownloadOutlined, NotificationOutlined, TableOutlined, IdcardOutlined, SignalFilled, ControlOutlined, OrderedListOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, CloudDownloadOutlined, NotificationOutlined, TableOutlined, IdcardOutlined, SignalFilled, ControlOutlined, OrderedListOutlined, QuestionCircleOutlined, BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import Logo from './images/logo-white.png'
 import { Dashboard } from './Scenes/Dashboard'
 import { Pending } from './Scenes/Requests/Pending'
@@ -17,6 +17,8 @@ import { Auditing } from './Scenes/Auditing'
 import { Maintenance } from './Scenes/Maintenance/Maintenance'
 import { Campaigns } from './Scenes/Campaigns'
 import { Login } from './Scenes/Login'
+import { Internal } from './Scenes/Requests/New/Internal'
+import { ThirdParty } from './Scenes/Requests/New/ThirdParty'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -133,10 +135,19 @@ function App() {
           mode="inline"
           openKeys={openKeys}
           onOpenChange={onOpenChange}
-          onClick={({ item, key }) => history.push(key)}
+          onClick={({ item, key }) => {
+            if (!key.startsWith('/requests')) {
+              setOpenKeys([])
+            }
+            history.push(key)
+          }}
         >
           <Menu.Item key="/" icon={<AppstoreOutlined />}>Dashboard</Menu.Item>
           <SubMenu key="sub1" icon={<CloudDownloadOutlined />} title="Requests">
+            <SubMenu key="sub2" title="New Request">
+              <Menu.Item key="/requests/new/internal">Internal</Menu.Item>
+              <Menu.Item key="/requests/new/3rd-party">3rd Party</Menu.Item>
+            </SubMenu>
             <Menu.Item key="/requests/pending">Pending</Menu.Item>
             <Menu.Item key="/requests/approved">Approved</Menu.Item>
             <Menu.Item key="/requests/declined">Declined</Menu.Item>
@@ -147,6 +158,7 @@ function App() {
           <Menu.Item key="/profiling" icon={<IdcardOutlined />}>Profiling</Menu.Item>
           <Menu.Item key="/maintenance" icon={<ControlOutlined />}>Maintenance</Menu.Item>
           <Menu.Item key="/auditing" icon={<OrderedListOutlined />}>Auditing</Menu.Item>
+          <Menu.Item key="#" icon={<QuestionCircleOutlined />}><Tooltip title="Work in progress!">User Guide</Tooltip></Menu.Item>
         </Menu>
       </Sider>
 
@@ -185,6 +197,8 @@ function App() {
         <Content style={{ margin: '30px 50px' }}>
           <Switch>
             <Route path="/" exact component={Dashboard} />
+            <Route path="/requests/new/internal" component={Internal} />
+            <Route path="/requests/new/3rd-party" component={ThirdParty} />
             <Route path="/requests/pending" component={Pending} />
             <Route path="/requests/approved" component={Approved} />
             <Route path="/requests/declined" component={Declined} />
@@ -198,7 +212,9 @@ function App() {
           </Switch>
         </Content>
 
-        <Footer className="site-footer">Ecran ATM Software ©{moment().year()} Created by&nbsp;<a rel="noopener noreferrer" target="_blank" href="https://elvisduru.com">Elvis Duru</a></Footer>
+        <Affix offsetBottom={0}>
+          <Footer className="site-footer">Ecran ATM Software ©{moment().year()} Created by&nbsp;<a rel="noopener noreferrer" target="_blank" href="https://elvisduru.com">Elvis Duru</a></Footer>
+        </Affix>
       </Layout>
     </Layout>
   ) : (
