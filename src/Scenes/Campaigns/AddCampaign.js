@@ -34,7 +34,7 @@ export const AddCampaign = () => {
           <Typography.Title level={4}>Upload Campaign Screen</Typography.Title>
         </Col>
       </Row>
-      <Row>
+      <Row style={{ marginTop: '40px' }}>
         <Col>
           <Form
             form={form}
@@ -70,7 +70,7 @@ export const AddCampaign = () => {
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Register
+                Sunmit
               </Button>
             </Form.Item>
           </Form>
