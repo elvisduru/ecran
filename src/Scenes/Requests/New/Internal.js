@@ -154,7 +154,7 @@ export const Internal = () => {
               }}
             >
               <Button type="primary" htmlType="submit">
-                Register
+                Submit
               </Button>
             </Form.Item>
           </Form>
