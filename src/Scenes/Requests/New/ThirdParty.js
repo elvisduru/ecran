@@ -7,22 +7,15 @@ const { RangePicker } = DatePicker
 export const ThirdParty = () => {
   const [form] = Form.useForm();
 
-  const handleForm = () => {
-    form
-      .validateFields()
-      .then(values => {
-        form.resetFields();
-        onCreate(values);
-      })
-      .catch(info => {
-        console.log('Validate Failed:', info);
-      });
-  }
+  const onFinish = values => {
+    message.success('User was created successfully')
+    console.log('Success:', values);
+    form.resetFields()
+  };
 
-  const onCreate = values => {
-    message.success('Campaign name was created successfully')
-    console.log('Received values of form: ', values)
-  }
+  const onFinishFailed = errorInfo => {
+    console.log('Failed:', errorInfo);
+  };
 
   const normFile = e => {
     console.log('Upload event:', e);
@@ -43,6 +36,8 @@ export const ThirdParty = () => {
         <Col>
           <Form
             form={form}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
             size="large"
             labelCol={{
               xs: {
@@ -170,7 +165,7 @@ export const ThirdParty = () => {
                 offset: 10
               }}
             >
-              <Button type="primary" htmlType="submit" onClick={handleForm}>
+              <Button type="primary" htmlType="submit">
                 Register
               </Button>
             </Form.Item>

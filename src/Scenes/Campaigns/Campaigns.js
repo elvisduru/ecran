@@ -1,47 +1,45 @@
 import React, { useState } from 'react'
-import styles from './Dashboard.module.css'
-import { Row, Col, Typography, Button, Form, Modal, Upload, message, Input, Table, Carousel } from 'antd'
-import { EyeOutlined, UploadOutlined, SearchOutlined } from '@ant-design/icons';
-import campaignImg1 from '../images/campaignImg1.jpg'
-import campaignImg2 from '../images/campaignImg2.jpg'
+import { useSelector } from 'react-redux'
+import { selectCampaigns } from './CampaignsSlice'
+import styles from '../Dashboard.module.css'
+import { Row, Col, Typography, Button, Modal, Input, Table, Carousel } from 'antd'
+import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
 
-import atms from '../atm-list.json'
+import ad1 from '../../images/ad1.png'
+import ad2 from '../../images/ad2.png'
+import ad3 from '../../images/PIC301.png'
 
-import ad1 from '../images/ad1.png'
-import ad2 from '../images/ad2.png'
-import ad3 from '../images/PIC301.png'
-
-import moreTime from '../images/PIC000.png'
-import outOfService from '../images/PIC002.png'
-import serviceInProgress from '../images/PIC003.png'
-import welcome from '../images/PIC010.png'
-import enterPin from '../images/PIC016.png'
-import wrongPin from '../images/PIC017.png'
-import whatToDo from '../images/PIC018.png'
-import chooseAmt from '../images/PIC019.png'
-import whatToDo2 from '../images/PIC022.png'
-import chooseAcct from '../images/PIC023.png'
-import transferFrom from '../images/PIC025.png'
-import transferTo2 from '../images/PIC026.png'
-import enterAmtWithdraw from '../images/PIC031.png'
-import enterAmtTransfer from '../images/PIC034.png'
-import transactionInProgress from '../images/PIC046.png'
-import noCash from '../images/PIC049.png'
-import transactionCancelled from '../images/PIC051.png'
-import transactionCompleted from '../images/PIC053.png'
-import balance from '../images/PIC054.png'
-import thankYou from '../images/PIC065.png'
-import invalidCard from '../images/PIC067.png'
-import connectBankError from '../images/PIC079.png'
-import changePin from '../images/PIC081.png'
-import changePin2 from '../images/PIC082.png'
-import takeCash from '../images/PIC086.png'
-import wantReceipt from '../images/PIC128.png'
-import transferTo from '../images/PIC154.png'
-import chooseOption from '../images/PIC527.png'
-import chooseNetwork from '../images/PIC531.png'
-import choosePayment from '../images/PIC539.png'
-import enterAccount from '../images/PIC660.png'
+import moreTime from '../../images/PIC000.png'
+import outOfService from '../../images/PIC002.png'
+import serviceInProgress from '../../images/PIC003.png'
+import welcome from '../../images/PIC010.png'
+import enterPin from '../../images/PIC016.png'
+import wrongPin from '../../images/PIC017.png'
+import whatToDo from '../../images/PIC018.png'
+import chooseAmt from '../../images/PIC019.png'
+import whatToDo2 from '../../images/PIC022.png'
+import chooseAcct from '../../images/PIC023.png'
+import transferFrom from '../../images/PIC025.png'
+import transferTo2 from '../../images/PIC026.png'
+import enterAmtWithdraw from '../../images/PIC031.png'
+import enterAmtTransfer from '../../images/PIC034.png'
+import transactionInProgress from '../../images/PIC046.png'
+import noCash from '../../images/PIC049.png'
+import transactionCancelled from '../../images/PIC051.png'
+import transactionCompleted from '../../images/PIC053.png'
+import balance from '../../images/PIC054.png'
+import thankYou from '../../images/PIC065.png'
+import invalidCard from '../../images/PIC067.png'
+import connectBankError from '../../images/PIC079.png'
+import changePin from '../../images/PIC081.png'
+import changePin2 from '../../images/PIC082.png'
+import takeCash from '../../images/PIC086.png'
+import wantReceipt from '../../images/PIC128.png'
+import transferTo from '../../images/PIC154.png'
+import chooseOption from '../../images/PIC527.png'
+import chooseNetwork from '../../images/PIC531.png'
+import choosePayment from '../../images/PIC539.png'
+import enterAccount from '../../images/PIC660.png'
 
 const screens = [
   {
@@ -185,22 +183,9 @@ const ads = [
   }
 ]
 
-const data = atms.map(atm => {
-  atm.defaultScreen = campaignImg1
-  atm.screen = campaignImg2
-  atm.key = atm["S/N"]
-  return atm
-})
-
-const normFile = e => {
-  console.log('Upload event:', e);
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e && e.fileList;
-}
-
 export const Campaigns = () => {
+  const campaigns = useSelector(selectCampaigns)
+
   // Preview
   const [preview, setPreview] = useState(false)
   const [previewImage, setPreviewImage] = useState(null)
@@ -209,95 +194,12 @@ export const Campaigns = () => {
     setPreview(!preview)
   }
 
-  // Upload Screen Hooks
-  const [visible, setVisible] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
-
-  const handleUploadScreen = () => {
-    setVisible(!visible)
-  }
-
-  const handleCancel = () => {
-    setVisible(false)
-  }
-
-  const onCreate = values => {
-    setConfirmLoading(true)
-    setTimeout(() => {
-      setVisible(false)
-      setConfirmLoading(false)
-      message.success('User was created successfully')
-      console.log('Received values of form: ', values)
-    }, 2000)
-  }
-
-  const ScreenUploadForm = ({ visible, onCreate, onCancel, confirmLoading }) => {
-    const [form] = Form.useForm();
-    return (
-      <Modal
-        centered
-        visible={visible}
-        title="Upload Campaign Screen"
-        confirmLoading={confirmLoading}
-        okText="Create"
-        cancelText="Cancel"
-        onCancel={onCancel}
-        onOk={() => {
-          form
-            .validateFields()
-            .then(values => {
-              form.resetFields();
-              onCreate(values);
-            })
-            .catch(info => {
-              console.log('Validate Failed:', info);
-            });
-        }}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          name="request-form"
-          initialValues={{
-            approval: 'no',
-          }}
-        >
-          <Form.Item
-            name="terminal"
-            label="Terminal ID"
-            rules={[
-              {
-                required: true,
-                message: "Please input the terminal ID!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="screen"
-            label="Upload Screen"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-          >
-            <Upload accept="image/*" name="logo" action="/upload.do" listType="picture">
-              <Button>
-                <UploadOutlined /> Click to upload
-            </Button>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal>
-    );
-  };
-
   const [filterTable, setFilterTable] = useState(null)
 
   const search = e => {
     const value = e.target.value
 
-    const filterTable = data.filter(o =>
+    const filterTable = campaigns.filter(o =>
       Object.keys(o).some(k =>
         String(o[k])
           .toLowerCase()
@@ -309,14 +211,14 @@ export const Campaigns = () => {
   };
 
   const columns = [
-    {
-      title: 'S/N',
-      dataIndex: 'S/N',
-      key: 'S/N',
-      sorter: {
-        compare: (a, b) => a['S/N'] - b['S/N']
-      }
-    },
+    // {
+    //   title: 'S/N',
+    //   dataIndex: 'S/N',
+    //   key: 'S/N',
+    //   sorter: {
+    //     compare: (a, b) => a['S/N'] - b['S/N']
+    //   }
+    // },
     {
       title: 'Terminal ID',
       dataIndex: 'Terminal ID',
@@ -512,9 +414,6 @@ export const Campaigns = () => {
             <Col flex="auto">
               <Typography.Title level={4}>All Campaigns</Typography.Title>
             </Col>
-            <Col>
-              <Button type="primary" onClick={handleUploadScreen}>Upload Screen</Button>
-            </Col>
           </Row>
           <Row>
             <Col flex="auto">
@@ -524,17 +423,11 @@ export const Campaigns = () => {
                 placeholder="Search table..."
                 onChange={search}
               />
-              <Table scroll={{ x: 1500 }} columns={columns} dataSource={filterTable == null ? data : filterTable} size="small" />
+              <Table scroll={{ x: 1500 }} columns={columns} dataSource={filterTable == null ? campaigns : filterTable} size="small" />
             </Col>
           </Row>
         </Col>
       </Row>
-      <ScreenUploadForm
-        visible={visible}
-        onCreate={onCreate}
-        onCancel={handleCancel}
-        confirmLoading={confirmLoading}
-      />
       {previewImage && <Modal
         visible={preview}
         footer={null}

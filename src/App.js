@@ -15,10 +15,11 @@ import { Reporting } from './Scenes/Reporting'
 import { Profiling } from './Scenes/Profiling'
 import { Auditing } from './Scenes/Auditing'
 import { Maintenance } from './Scenes/Maintenance/Maintenance'
-import { Campaigns } from './Scenes/Campaigns'
+import { Campaigns } from './Scenes/Campaigns/Campaigns'
 import { Login } from './Scenes/Login'
 import { Internal } from './Scenes/Requests/New/Internal'
 import { ThirdParty } from './Scenes/Requests/New/ThirdParty'
+import { AddCampaign } from './Scenes/Campaigns/AddCampaign'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -77,7 +78,7 @@ function App() {
   const [options, setOptions] = useState([])
 
   // Menu Hooks
-  const rootSubmenuKeys = ['sub1']
+  const rootSubmenuKeys = ['sub1', 'sub2']
   const [openKeys, setOpenKeys] = useState([])
 
   // Router hooks
@@ -136,7 +137,7 @@ function App() {
           openKeys={openKeys}
           onOpenChange={onOpenChange}
           onClick={({ item, key }) => {
-            if (!key.startsWith('/requests')) {
+            if (!key.startsWith('/requests') && !key.startsWith('/campaigns')) {
               setOpenKeys([])
             }
             history.push(key)
@@ -144,7 +145,7 @@ function App() {
         >
           <Menu.Item key="/" icon={<AppstoreOutlined />}>Dashboard</Menu.Item>
           <SubMenu key="sub1" icon={<CloudDownloadOutlined />} title="Requests">
-            <SubMenu key="sub2" title="New Request">
+            <SubMenu key="sub11" title="New Request">
               <Menu.Item key="/requests/new/internal">Internal</Menu.Item>
               <Menu.Item key="/requests/new/3rd-party">3rd Party</Menu.Item>
             </SubMenu>
@@ -152,7 +153,10 @@ function App() {
             <Menu.Item key="/requests/approved">Approved</Menu.Item>
             <Menu.Item key="/requests/declined">Declined</Menu.Item>
           </SubMenu>
-          <Menu.Item key="/campaigns" icon={<NotificationOutlined />}>Campaigns</Menu.Item>
+          <SubMenu key="sub2" title="Campaigns" icon={<NotificationOutlined />}>
+            <Menu.Item key="/campaigns/add">Upload Screen</Menu.Item>
+            <Menu.Item key="/campaigns">Campaigns</Menu.Item>
+          </SubMenu>
           <Menu.Item key="/monitoring" icon={<SignalFilled />}>Monitoring</Menu.Item>
           <Menu.Item key="/reporting" icon={<TableOutlined />}>Reporting</Menu.Item>
           <Menu.Item key="/profiling" icon={<IdcardOutlined />}>Profiling</Menu.Item>
@@ -202,6 +206,7 @@ function App() {
             <Route path="/requests/pending" component={Pending} />
             <Route path="/requests/approved" component={Approved} />
             <Route path="/requests/declined" component={Declined} />
+            <Route path="/campaigns/add" component={AddCampaign} />
             <Route path="/campaigns" component={Campaigns} />
             <Route path="/monitoring" component={Monitoring} />
             <Route path="/reporting" component={Reporting} />
