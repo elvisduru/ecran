@@ -70,7 +70,7 @@ export const AddCampaign = () => {
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">
-                Sunmit
+                Submit
               </Button>
             </Form.Item>
           </Form>
