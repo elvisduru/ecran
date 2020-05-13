@@ -16,10 +16,12 @@ import { Profiling } from './Scenes/Profiling'
 import { Auditing } from './Scenes/Auditing'
 import { Maintenance } from './Scenes/Maintenance/Maintenance'
 import { Campaigns } from './Scenes/Campaigns/Campaigns'
-import { Login } from './Scenes/Login'
 import { Internal } from './Scenes/Requests/New/Internal'
 import { ThirdParty } from './Scenes/Requests/New/ThirdParty'
 import { AddCampaign } from './Scenes/Campaigns/AddCampaign'
+import Axios from 'axios'
+
+import HBLogo from './images/hb-logo.png'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -69,7 +71,7 @@ const links = [
   },
 ]
 
-function App() {
+function App({ username }) {
   // Sider Hook
   const [collapsed, setCollapse] = useState(false)
 
@@ -112,13 +114,13 @@ function App() {
     }
   }
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  const handleLogin = () => {
-    setIsLoggedIn(!isLoggedIn)
+  const handleLogout = () => {
+    Axios.get('/logout')
+      .then(res => history.push('/login'))
+      .catch(err => console.log(err))
   }
 
-  return isLoggedIn ? (
+  return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider style={{
         overflow: 'auto',
@@ -169,15 +171,20 @@ function App() {
       <Layout className="site-layout" style={{ marginLeft: `${collapsed ? '80px' : '200px'}` }}>
         <Affix>
           <Header className="site-header">
-            <AutoComplete
-              value={value}
-              options={options}
-              onSelect={onSelect}
-              onChange={onChange}
-              onSearch={onSearch}
-            >
-              <Search placeholder="Search" />
-            </AutoComplete>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexGrow: 1, alignItems: 'center', borderRight: '1px solid #ddd', paddingRight: '30px', marginRight: '30px' }}>
+              <AutoComplete
+                value={value}
+                options={options}
+                onSelect={onSelect}
+                onChange={onChange}
+                onSearch={onSearch}
+              >
+                <Search placeholder="Search" />
+              </AutoComplete>
+              <Typography.Text strong>369 Active ATMs</Typography.Text>
+              <img height={30} src={HBLogo} alt="" />
+            </div>
+
             <Space size="large" style={{ marginRight: '30px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Badge dot>
@@ -188,12 +195,12 @@ function App() {
                 <Avatar size={40} icon={<UserOutlined />} />
               </div>
               <div style={{ lineHeight: '14px' }}>
-                <Text strong style={{ fontSize: '12px' }}>User12345</Text>
+                <Text strong style={{ fontSize: '12px' }}>{username}</Text>
                 <br />
                 <Text style={{ fontSize: '11px' }}>Administrator</Text>
               </div>
               <Tooltip title="Logout">
-                <Button icon={<LogoutOutlined />} />
+                <Button icon={<LogoutOutlined />} onClick={handleLogout} />
               </Tooltip>
             </Space>
           </Header>
@@ -222,9 +229,7 @@ function App() {
         </Affix>
       </Layout>
     </Layout>
-  ) : (
-      <Login handleLogin={handleLogin} />
-    )
+  )
 }
 
 export default App

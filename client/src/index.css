@@ -95,3 +95,11 @@ footer.site-footer {
 .preview-card:hover span {
   opacity: 1;
 }
+
+.ant-carousel ul.slick-dots {
+  margin-right: 15px;
+  width: 45%;
+  left: unset;
+  display: flex;
+  justify-content: flex-end;
+}
