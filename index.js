@@ -22,7 +22,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '/client/build')))
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
-const whitelist = ['http://localhost:3000/', 'http://localhost:5000/']
+const whitelist = ['http://localhost:3000/', 'http://localhost:5000/', 'https://ecran.herokuapp.com/']
 app.use(cors({
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
