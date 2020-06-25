@@ -5,16 +5,22 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const path = require('path')
 
+require('./db')
+
 const secret = require('./secret')
 
 const auth = require('./routes/auth')
+const campaigns = require('./routes/campaigns')
 const verifyToken = require('./verifyToken')
+
+const dir = require('node-dir')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
-require('./db')
+app.use(express.static(path.join(__dirname, '/client/build')))
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
 const whitelist = ['http://localhost:3000/', 'http://localhost:5000/']
 app.use(cors({
@@ -32,6 +38,16 @@ app.get('/api/home', verifyToken, (req, res) => {
   res.send('Welcome!')
 })
 
+app.get('/readfiles', async (req, res) => {
+  try {
+    const files = await dir.files(path.join(__dirname, 'uploads'), { sync: true, shortName: true })
+    res.json({ files })
+  } catch (err) {
+    console.log('err reading files: ', err)
+    res.send('err reading files')
+  }
+})
+
 app.get('/logout', async (req, res) => {
   try {
     res.clearCookie('token')
@@ -44,11 +60,13 @@ app.get('/logout', async (req, res) => {
 
 app.get('/checkToken', verifyToken, (req, res) => res.status(200).send(req.user))
 
+
+app.use('/api/authenticate', auth)
+app.use('/api/campaigns', campaigns)
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/client/build/index.html'))
 })
-
-app.use(auth)
 
 const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`App is listening on port: ${port}!`))

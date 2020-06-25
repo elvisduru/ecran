@@ -8,7 +8,7 @@ const user = {
   password: 'password'
 }
 
-router.post('/api/authenticate', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { username, password } = req.body
     // Send user details to Potilon here

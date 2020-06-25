@@ -13,7 +13,7 @@ const data = atms.map(atm => {
 
 export const campaignsSlice = createSlice({
   name: 'campaigns',
-  initialState: data,
+  initialState: [],
   reducers: {
     addCampaign: (state, action) => {
       const { id, screen } = action.payload

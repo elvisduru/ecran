@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const secret = require('./secret')
 
-const verufyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const token = req.cookies.token
 
   if (!token) {
@@ -20,4 +20,4 @@ const verufyToken = (req, res, next) => {
   }
 }
 
-module.exports = verufyToken
+module.exports = verifyToken
