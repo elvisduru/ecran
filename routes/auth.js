@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const secret = require('../secret')
+const secret = process.env.SECRET || require('../secret')
 
 const user = {
   username: 'admin',
