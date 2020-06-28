@@ -15,7 +15,11 @@ import {
   AutoComplete,
   Tag,
 } from "antd";
-import { UploadOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  LoadingOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import Axios from "axios";
 
 const { RangePicker } = DatePicker;
@@ -184,8 +188,9 @@ export const Internal = () => {
                   message: "Please input the campaign name!",
                 },
               ]}
+              help="Max character length is 20"
             >
-              <Input allowClear />
+              <Input allowClear maxLength="20" />
             </Form.Item>
             <Form.Item
               name="campaign-screen"
@@ -272,6 +277,9 @@ export const Internal = () => {
                       </Select.Option>
                     ))}
                 </Select>
+                <Tag icon={<EyeOutlined />} color="green">
+                  0 selected
+                </Tag>
               </Form.Item>
             )}
             {states.length > 0 && (
@@ -302,6 +310,9 @@ export const Internal = () => {
                       </Select.Option>
                     ))}
                 </Select>
+                <Tag icon={<EyeOutlined />} color="green">
+                  0 selected
+                </Tag>
               </Form.Item>
             )}
             <Form.Item
