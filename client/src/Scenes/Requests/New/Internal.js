@@ -82,12 +82,16 @@ export const Internal = () => {
   // Show Approval Upload
   const [approval, setApproval] = useState(false);
 
+  // ATM select count
+  const [count, setCount] = useState(0);
+
   const findRegions = async () => {
     try {
       const regions = await Axios.get("/regions");
       setRegions(regions.data);
       setStates([]);
       setSelectedStates([]);
+      setCount(0);
     } catch (error) {
       console.log(error);
     }
@@ -100,6 +104,7 @@ export const Internal = () => {
       console.log(states.data);
       setRegions([]);
       setSelectedRegions([]);
+      setCount(0);
     } catch (error) {
       console.log(error);
     }
@@ -265,20 +270,26 @@ export const Internal = () => {
                   placeholder="Please select region(s)"
                   value={selectedRegions}
                   onChange={(items) => setSelectedRegions(items)}
+                  onSelect={(option) => {
+                    setCount(
+                      count + regions.find((x) => x.region === option).count
+                    );
+                  }}
                   allowClear
                 >
                   {regions
-                    .filter(
-                      (x) => !selectedRegions.some((o) => o.region === x.region)
-                    )
-                    .map((item) => (
-                      <Select.Option key={item.region} value={item.region}>
+                    .filter((x) => selectedRegions.every((o) => o !== x.region))
+                    .map((item, index) => (
+                      <Select.Option
+                        key={`${index}-${item.region}`}
+                        value={item.region}
+                      >
                         {item.region} ({item.count})
                       </Select.Option>
                     ))}
                 </Select>
                 <Tag icon={<EyeOutlined />} color="green">
-                  0 selected
+                  {count} selected
                 </Tag>
               </Form.Item>
             )}
@@ -298,12 +309,15 @@ export const Internal = () => {
                   placeholder="Please select state(s)"
                   value={selectedStates}
                   onChange={(items) => setSelectedStates(items)}
+                  onSelect={(option) => {
+                    setCount(
+                      count + states.find((x) => x.state === option).count
+                    );
+                  }}
                   allowClear
                 >
                   {states
-                    .filter(
-                      (x) => !selectedStates.some((o) => o.state === x.state)
-                    )
+                    .filter((x) => selectedStates.every((o) => o !== x.state))
                     .map((item) => (
                       <Select.Option key={item.state} value={item.state}>
                         {item.state} ({item.count})
@@ -311,7 +325,7 @@ export const Internal = () => {
                     ))}
                 </Select>
                 <Tag icon={<EyeOutlined />} color="green">
-                  0 selected
+                  {count} selected
                 </Tag>
               </Form.Item>
             )}
