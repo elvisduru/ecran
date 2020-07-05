@@ -78,12 +78,16 @@ export const ThirdParty = () => {
   // Show Approval Upload
   const [approval, setApproval] = useState(false);
 
+  // ATM select count
+  const [count, setCount] = useState(0);
+
   const findRegions = async () => {
     try {
       const regions = await Axios.get("/regions");
       setRegions(regions.data);
       setStates([]);
       setSelectedStates([]);
+      setCount(0);
     } catch (error) {
       console.log(error);
     }
@@ -96,6 +100,7 @@ export const ThirdParty = () => {
       console.log(states.data);
       setRegions([]);
       setSelectedRegions([]);
+      setCount(0);
     } catch (error) {
       console.log(error);
     }
@@ -110,6 +115,7 @@ export const ThirdParty = () => {
     } else {
       setRegions([]);
       setStates([]);
+      setCount(0);
     }
   }, [atm]);
 
@@ -271,7 +277,14 @@ export const ThirdParty = () => {
                   mode="multiple"
                   placeholder="Please select region(s)"
                   value={selectedRegions}
-                  onChange={(items) => setSelectedRegions(items)}
+                  onChange={(items) => {
+                    setSelectedRegions(items);
+                    setCount(
+                      regions
+                        .filter((x) => items.some((o) => o === x.region))
+                        .reduce((a, b) => a + b.count, 0)
+                    );
+                  }}
                   allowClear
                 >
                   {regions
@@ -301,7 +314,14 @@ export const ThirdParty = () => {
                   mode="multiple"
                   placeholder="Please select state(s)"
                   value={selectedStates}
-                  onChange={(items) => setSelectedStates(items)}
+                  onChange={(items) => {
+                    setSelectedStates(items);
+                    setCount(
+                      states
+                        .filter((x) => items.some((o) => o === x.state))
+                        .reduce((a, b) => a + b.count, 0)
+                    );
+                  }}
                   allowClear
                 >
                   {states

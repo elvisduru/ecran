@@ -21,16 +21,47 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import Axios from "axios";
+import { addRequest } from "./requestsSlice";
+import { useDispatch } from "react-redux";
 
 const { RangePicker } = DatePicker;
 
 export const Internal = () => {
   const [form] = Form.useForm();
 
+  const dispatch = useDispatch();
+
   const onFinish = (values) => {
     message.success("Request was created successfully");
     console.log("Success:", values);
-    form.resetFields();
+    if (values.campaignScreen) {
+      let campaignScreen = values.campaignScreen[0].originFileObj;
+      values.campaignScreen = campaignScreen;
+    }
+    if (values.approvalDocument) {
+      let approvalDocument = values.approvalDocument[0].originFileObj;
+      console.log("ApprovalDoc:", approvalDocument);
+      values.approvalDocument = approvalDocument;
+    }
+    console.log("Modified:", values);
+
+    const formData = new FormData();
+    for (const key in values) {
+      const value = values[key];
+      if (key === "campaignScreen" || key === "approvalDocument") {
+        formData.append(key, value, value.name);
+      }
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
+      }
+    }
+    Axios.post("/api/request/new", formData)
+      .then((res) => {
+        dispatch(addRequest(res.data));
+      })
+      .catch((error) => console.log(error));
     setShowSubmit(false);
   };
 
@@ -101,7 +132,6 @@ export const Internal = () => {
     try {
       const states = await Axios.get("/states");
       setStates(states.data);
-      console.log(states.data);
       setRegions([]);
       setSelectedRegions([]);
       setCount(0);
@@ -119,8 +149,15 @@ export const Internal = () => {
     } else {
       setRegions([]);
       setStates([]);
+      setCount(0);
     }
   }, [atm]);
+
+  const dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess("ok");
+    }, 0);
+  };
 
   return (
     <div>
@@ -163,11 +200,12 @@ export const Internal = () => {
             }}
             name="request-form"
             initialValues={{
-              approval: "no",
+              approval: "false",
+              atmSelect: atm,
             }}
           >
             <Form.Item
-              name="requester-name"
+              name="requesterName"
               label="Requester's Name"
               rules={[
                 {
@@ -185,7 +223,7 @@ export const Internal = () => {
               />
             </Form.Item>
             <Form.Item
-              name="campaign-name"
+              name="campaignName"
               label="Campaign Name"
               rules={[
                 {
@@ -198,7 +236,7 @@ export const Internal = () => {
               <Input allowClear maxLength="20" />
             </Form.Item>
             <Form.Item
-              name="campaign-screen"
+              name="campaignScreen"
               label="Upload Campaign Screen"
               valuePropName="fileList"
               getValueFromEvent={normFile}
@@ -212,9 +250,9 @@ export const Internal = () => {
             >
               <Upload
                 accept="image/*,video/*"
-                name="logo"
-                action="/upload.do"
+                name="campaignScreen"
                 listType="picture"
+                customRequest={dummyRequest}
               >
                 <Button>
                   <UploadOutlined /> Click to upload
@@ -222,7 +260,7 @@ export const Internal = () => {
               </Upload>
             </Form.Item>
             <Form.Item
-              name="atm-select"
+              name="atmSelect"
               label="ATM of Interest"
               rules={[
                 {
@@ -230,7 +268,6 @@ export const Internal = () => {
                   message: "Please select ATMs of Interest!",
                 },
               ]}
-              initialValue={atm}
             >
               <Radio.Group
                 buttonStyle="solid"
@@ -255,82 +292,102 @@ export const Internal = () => {
               </Radio.Group>
             </Form.Item>
             {regions.length > 0 && (
-              <Form.Item
-                name="atm-select-region"
-                label="Select ATM Region"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select ATMs regions!",
-                  },
-                ]}
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="Please select region(s)"
-                  value={selectedRegions}
-                  onChange={(items) => setSelectedRegions(items)}
-                  onSelect={(option) => {
-                    setCount(
-                      count + regions.find((x) => x.region === option).count
-                    );
-                  }}
-                  allowClear
+              <>
+                <Form.Item
+                  name="atmSelectRegion"
+                  label="Select ATM Region"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select ATMs regions!",
+                    },
+                  ]}
+                  style={{ marginBottom: 0 }}
                 >
-                  {regions
-                    .filter((x) => selectedRegions.every((o) => o !== x.region))
-                    .map((item, index) => (
-                      <Select.Option
-                        key={`${index}-${item.region}`}
-                        value={item.region}
-                      >
-                        {item.region} ({item.count})
-                      </Select.Option>
-                    ))}
-                </Select>
-                <Tag icon={<EyeOutlined />} color="green">
+                  <Select
+                    mode="multiple"
+                    placeholder="Please select region(s)"
+                    value={selectedRegions}
+                    onChange={(items) => {
+                      setSelectedRegions(items);
+                      setCount(
+                        regions
+                          .filter((x) => items.some((o) => o === x.region))
+                          .reduce((a, b) => a + b.count, 0)
+                      );
+                    }}
+                    allowClear
+                  >
+                    {regions
+                      .filter((x) =>
+                        selectedRegions.every((o) => o !== x.region)
+                      )
+                      .map((item, index) => (
+                        <Select.Option
+                          key={`${index}-${item.region}`}
+                          value={item.region}
+                        >
+                          {item.region} ({item.count})
+                        </Select.Option>
+                      ))}
+                  </Select>
+                </Form.Item>
+                <Tag
+                  style={{ display: "inline-block", marginLeft: "37.5%" }}
+                  icon={<EyeOutlined />}
+                  color="green"
+                >
                   {count} selected
                 </Tag>
-              </Form.Item>
+              </>
             )}
             {states.length > 0 && (
-              <Form.Item
-                name="atm-select-states"
-                label="Select ATM States"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select ATM states",
-                  },
-                ]}
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="Please select state(s)"
-                  value={selectedStates}
-                  onChange={(items) => setSelectedStates(items)}
-                  onSelect={(option) => {
-                    setCount(
-                      count + states.find((x) => x.state === option).count
-                    );
-                  }}
-                  allowClear
+              <>
+                <Form.Item
+                  name="atmSelectStates"
+                  label="Select ATM States"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select ATM states",
+                    },
+                  ]}
+                  style={{ marginBottom: 0 }}
                 >
-                  {states
-                    .filter((x) => selectedStates.every((o) => o !== x.state))
-                    .map((item) => (
-                      <Select.Option key={item.state} value={item.state}>
-                        {item.state} ({item.count})
-                      </Select.Option>
-                    ))}
-                </Select>
-                <Tag icon={<EyeOutlined />} color="green">
+                  <Select
+                    mode="multiple"
+                    placeholder="Please select state(s)"
+                    value={selectedStates}
+                    onChange={(items) => {
+                      setSelectedStates(items);
+                      setCount(
+                        states
+                          .filter((x) => items.some((o) => o === x.state))
+                          .reduce((a, b) => a + b.count, 0)
+                      );
+                    }}
+                    allowClear
+                  >
+                    {states
+                      .filter((x) => selectedStates.every((o) => o !== x.state))
+                      .map((item) => (
+                        <Select.Option key={item.state} value={item.state}>
+                          {item.state} ({item.count})
+                        </Select.Option>
+                      ))}
+                  </Select>
+                </Form.Item>
+                <Tag
+                  style={{ display: "inline-block", marginLeft: "37.5%" }}
+                  icon={<EyeOutlined />}
+                  color="green"
+                >
                   {count} selected
                 </Tag>
-              </Form.Item>
+              </>
             )}
             <Form.Item
-              name="date-range"
+              name="dateRange"
               label="Select Date Range"
               rules={[
                 {
@@ -353,29 +410,28 @@ export const Internal = () => {
             >
               <Radio.Group
                 onChange={(e) => {
-                  if (e.target.value === "yes") {
+                  if (e.target.value === "true") {
                     setApproval(true);
                   } else {
                     setApproval(false);
                   }
                 }}
               >
-                <Radio value="yes">Yes</Radio>
-                <Radio value="no">No</Radio>
+                <Radio value="true">Yes</Radio>
+                <Radio value="false">No</Radio>
               </Radio.Group>
             </Form.Item>
             {approval && (
               <Form.Item
-                name="aproval-document"
+                name="approvalDocument"
                 label="Upload Approval"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 help="Recommended size: 1024 x 768 (4:3)"
               >
                 <Upload
-                  accept="image/*,video/*"
-                  name="logo"
-                  action="/upload.do"
+                  name="approvalDocument"
+                  customRequest={dummyRequest}
                   listType="picture"
                 >
                   <Button>
