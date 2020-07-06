@@ -189,6 +189,24 @@ export const Pending = () => {
       ),
     },
     {
+      title: "Approval",
+      dataIndex: "approval",
+      key: "approval",
+      render: (text) => (
+        <Typography.Text>{text ? "Yes" : "No"}</Typography.Text>
+      ),
+    },
+    {
+      title: "Approval Document",
+      dataIndex: "approvalDocument",
+      key: "approvalDocument",
+      render: (text) => (
+        <Button type="link">
+          <a href={`${text}`}>Download</a>
+        </Button>
+      ),
+    },
+    {
       title: "Action",
       key: "action",
       width: "12%",
