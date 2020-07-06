@@ -74,36 +74,10 @@ export const Internal = () => {
 
   const normFile = (e) => {
     console.log("Upload event:", e);
-    const file = e.file.originFileObj;
-    getSignedRequest(file);
     if (Array.isArray(e)) {
       return e;
     }
     return e && e.fileList;
-  };
-
-  const getSignedRequest = (file) => {
-    Axios.get(`/sign-s3?file-name=${file.name}&file-type=${file.type}`)
-      .then((res) => {
-        console.log(res);
-        uploadFile(file, res.data.signedRequest, res.data.url);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const uploadFile = (file, signedRequest, url) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", signedRequest);
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          alert("uploaded file successfully");
-        } else {
-          alert("Could not upload file.");
-        }
-      }
-    };
-    xhr.send(file);
   };
 
   // Autocomplete

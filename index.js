@@ -5,16 +5,6 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
 
-const aws = require("aws-sdk");
-
-const S3_BUCKET = process.env.S3_BUCKET_NAME || "ecran-bucket";
-const AWS_ID = process.env.AWS_ACCESS_KEY_ID || "AKIAXAF2IGJBKNU3HIFK";
-const AWS_SECRET =
-  process.env.AWS_SECRET_ACCESS_KEY ||
-  "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";
-
-aws.config.region = "eu-east-2";
-
 const db = require("./db");
 
 const secret = process.env.SECRET || require("./secret");
@@ -114,32 +104,6 @@ app.get("/logout", async (req, res) => {
 app.get("/checkToken", verifyToken, (req, res) =>
   res.status(200).send(req.user)
 );
-
-app.get("/sign-s3", (req, res) => {
-  const s3 = new aws.S3();
-  const fileName = req.query["file-name"];
-  const fileType = req.query["file-type"];
-  const s3Params = {
-    Bucket: S3_BUCKET,
-    Key: fileName,
-    Expires: 60,
-    ContentType: fileType,
-    ACL: "public-read",
-  };
-
-  s3.getSignedUrl("putObject", s3Params, (err, data) => {
-    if (err) {
-      console.log(err);
-      return res.end();
-    }
-    const returnData = {
-      signedRequest: data,
-      url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`,
-    };
-    res.write(JSON.stringify(returnData));
-    res.end();
-  });
-});
 
 app.use("/api/authenticate", auth);
 app.use("/api/campaigns", campaigns);

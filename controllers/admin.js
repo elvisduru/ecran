@@ -50,6 +50,7 @@ const addRequest = async (req, res) => {
             if (error) console.log(error);
           });
         }
+        console.log(file);
         cloudinary.v2.uploader.upload(file.path, (err, result) => {
           if (err) {
             console.log(err);
