@@ -49,10 +49,9 @@ const addRequest = async (req, res) => {
       //   // request[name] = "/uploads/campaigns/" + file.name;
       // })
       .on("end", async () => {
-        console.log(request);
         const newRequest = new Request(request);
-        await newRequest.save();
-        res.status(200).json(request);
+        const savedRequest = await newRequest.save();
+        res.status(200).json(savedRequest);
       });
   } catch (error) {
     console.log(error);

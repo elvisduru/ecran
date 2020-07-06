@@ -21,10 +21,7 @@ export const requestsSlice = createSlice({
   name: "requests",
   initialState,
   reducers: {
-    addRequest(state, action) {
-      console.log(action.payload);
-      state.push(action.payload);
-    },
+    addRequest: requestsAdapter.addOne,
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRequests.fulfilled, requestsAdapter.upsertMany);

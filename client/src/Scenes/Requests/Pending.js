@@ -210,7 +210,7 @@ export const Pending = () => {
       key: "approvalDocument",
       render: (text) => (
         <Button type="link">
-          <a href={`${text}`}>Download</a>
+          <a href={`${text}`}>{text && "Download"}</a>
         </Button>
       ),
     },
@@ -264,7 +264,7 @@ export const Pending = () => {
               />
               <Table
                 scroll={{ x: 1500 }}
-                loading={requests == null ? true : false}
+                loading={requests.length < 1 ? true : false}
                 columns={columns}
                 dataSource={filterTable == null ? requests : filterTable}
               />
