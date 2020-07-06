@@ -92,9 +92,19 @@ export const Internal = () => {
   };
 
   const uploadFile = (file, signedRequest, url) => {
-    Axios.put(signedRequest, file)
-      .then(() => console.log("Uploaded", url))
-      .catch((err) => console.log(err));
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", signedRequest);
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          document.getElementById("preview").src = url;
+          document.getElementById("avatar-url").value = url;
+        } else {
+          alert("Could not upload file.");
+        }
+      }
+    };
+    xhr.send(file);
   };
 
   // Autocomplete
