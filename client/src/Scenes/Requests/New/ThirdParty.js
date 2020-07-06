@@ -275,7 +275,7 @@ export const ThirdParty = () => {
               />
             </Form.Item>
             <Form.Item
-              name="customer-name"
+              name="customerName"
               label="Customer's Name"
               rules={[
                 {

@@ -106,6 +106,14 @@ export const Pending = () => {
       },
     },
     {
+      title: "Customer's Name",
+      dataIndex: "customerName",
+      key: "customerName",
+      sorter: {
+        compare: (a, b) => a.customerName.localeCompare(b.customerName),
+      },
+    },
+    {
       title: "Campaign Name",
       dataIndex: "campaignName",
       key: "campaignName",
@@ -209,7 +217,8 @@ export const Pending = () => {
     {
       title: "Action",
       key: "action",
-      width: "12%",
+      width: 150,
+      fixed: "right",
       render: (text, record) => (
         <div
           style={{
@@ -254,6 +263,7 @@ export const Pending = () => {
                 onChange={search}
               />
               <Table
+                scroll={{ x: 1500 }}
                 loading={requests == null ? true : false}
                 columns={columns}
                 dataSource={filterTable == null ? requests : filterTable}

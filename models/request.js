@@ -10,6 +10,7 @@ const requestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    customerName: String,
     approval: {
       type: Boolean,
       default: false,
