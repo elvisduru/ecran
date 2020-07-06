@@ -12,6 +12,7 @@ const secret = process.env.SECRET || require("./secret");
 const auth = require("./routes/auth");
 const campaigns = require("./routes/campaigns");
 const request = require("./routes/request");
+const atms = require("./routes/atms");
 const verifyToken = require("./verifyToken");
 
 const dir = require("node-dir");
@@ -107,6 +108,7 @@ app.get("/checkToken", verifyToken, (req, res) =>
 app.use("/api/authenticate", auth);
 app.use("/api/campaigns", campaigns);
 app.use("/api/request", request);
+app.use("/api/atms", atms);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build/index.html"));

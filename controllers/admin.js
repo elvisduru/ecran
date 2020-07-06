@@ -2,6 +2,7 @@ const formidable = require("formidable");
 const path = require("path");
 const fs = require("fs");
 const { Screen, Request } = require("../models/");
+const db = require("../db");
 
 const fetchScreens = async (req, res) => {
   try {
@@ -63,6 +64,23 @@ const fetchRequests = async (req, res) => {
   }
 };
 
+// ATMS
+
+const fetchATMs = async (req, res) => {
+  try {
+    const atms = JSON.parse(req.query.atms);
+    const type = req.query.type === "regions" ? "Region" : "State";
+    const foundATMs = await db
+      .collection("atms")
+      .find({ [type]: { $in: atms } })
+      .toArray();
+    res.status(200).json(foundATMs);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.fetchScreens = fetchScreens;
 exports.addRequest = addRequest;
 exports.fetchRequests = fetchRequests;
+exports.fetchATMs = fetchATMs;

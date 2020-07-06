@@ -14,6 +14,8 @@ import {
   message,
   AutoComplete,
   Tag,
+  Modal,
+  Table,
 } from "antd";
 import {
   UploadOutlined,
@@ -157,6 +159,46 @@ export const Internal = () => {
     setTimeout(() => {
       onSuccess("ok");
     }, 0);
+  };
+
+  const [visible, setVisible] = useState(false);
+  const [data, setData] = useState([]);
+
+  const columns = [
+    {
+      title: "Terminal ID",
+      dataIndex: ["Terminal ID"],
+    },
+    {
+      title: "Address",
+      dataIndex: "Address",
+    },
+    {
+      title: "State",
+      dataIndex: "State",
+    },
+    {
+      title: "Region",
+      dataIndex: "Region",
+    },
+  ];
+
+  const loadATMs = async (type) => {
+    const res = await Axios.get(
+      `/api/atms/${type}?type=${type}&atms=${
+        type === "regions"
+          ? encodeURIComponent(JSON.stringify(selectedRegions))
+          : encodeURIComponent(JSON.stringify(selectedStates))
+      }`
+    );
+    const atms = res.data;
+
+    atms.forEach((atm) => {
+      atm.key = atm._id;
+    });
+
+    setData(atms);
+    setVisible(true);
   };
 
   return (
@@ -333,9 +375,15 @@ export const Internal = () => {
                   </Select>
                 </Form.Item>
                 <Tag
-                  style={{ display: "inline-block", marginLeft: "37.5%" }}
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "37.5%",
+                    cursor: "pointer",
+                  }}
                   icon={<EyeOutlined />}
                   color="green"
+                  title="Click to view selected atms"
+                  onClick={() => loadATMs("regions")}
                 >
                   {count} selected
                 </Tag>
@@ -378,9 +426,15 @@ export const Internal = () => {
                   </Select>
                 </Form.Item>
                 <Tag
-                  style={{ display: "inline-block", marginLeft: "37.5%" }}
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "37.5%",
+                    cursor: "pointer",
+                  }}
                   icon={<EyeOutlined />}
                   color="green"
+                  title="Click to view selected atms"
+                  onClick={() => loadATMs("states")}
                 >
                   {count} selected
                 </Tag>
@@ -453,6 +507,22 @@ export const Internal = () => {
           </Form>
         </Col>
       </Row>
+      <Modal
+        onCancel={() => setVisible(false)}
+        visible={visible}
+        title="Selected ATMs"
+        footer={null}
+      >
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={{
+            defaultPageSize: 5,
+            pageSizeOptions: ["5", "10", "20", "50", "100"],
+          }}
+          size="small"
+        />
+      </Modal>
     </div>
   );
 };

@@ -12,6 +12,7 @@ export const fetchScreens = async () => {
 export const getRequests = async () => {
   try {
     const res = await axios.get("/api/request/");
+    res.data.forEach((item) => (item.key = item._id));
     return res.data;
   } catch (err) {
     console.log(err);
