@@ -236,6 +236,7 @@ export const Pending = () => {
                 onChange={search}
               />
               <Table
+                loading={requests == null ? true : false}
                 columns={columns}
                 dataSource={filterTable == null ? requests : filterTable}
               />
