@@ -14,19 +14,57 @@ import {
   message,
   AutoComplete,
   Tag,
+  Modal,
+  Table,
 } from "antd";
-import { UploadOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  LoadingOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import Axios from "axios";
+import { addRequest } from "./requestsSlice";
+import { useDispatch } from "react-redux";
 
 const { RangePicker } = DatePicker;
 
 export const ThirdParty = () => {
   const [form] = Form.useForm();
 
+  const dispatch = useDispatch();
+
   const onFinish = (values) => {
     message.success("Request was created successfully");
     console.log("Success:", values);
-    form.resetFields();
+    if (values.campaignScreen) {
+      let campaignScreen = values.campaignScreen[0].originFileObj;
+      values.campaignScreen = campaignScreen;
+    }
+    if (values.approvalDocument) {
+      let approvalDocument = values.approvalDocument[0].originFileObj;
+      console.log("ApprovalDoc:", approvalDocument);
+      values.approvalDocument = approvalDocument;
+    }
+    values.requestType = "Third party";
+    console.log("Modified:", values);
+
+    const formData = new FormData();
+    for (const key in values) {
+      const value = values[key];
+      if (key === "campaignScreen" || key === "approvalDocument") {
+        formData.append(key, value, value.name);
+      }
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
+      }
+    }
+    Axios.post("/api/request/new", formData)
+      .then((res) => {
+        dispatch(addRequest(res.data));
+      })
+      .catch((error) => console.log(error));
     setShowSubmit(false);
   };
 
@@ -97,7 +135,6 @@ export const ThirdParty = () => {
     try {
       const states = await Axios.get("/states");
       setStates(states.data);
-      console.log(states.data);
       setRegions([]);
       setSelectedRegions([]);
       setCount(0);
@@ -119,11 +156,59 @@ export const ThirdParty = () => {
     }
   }, [atm]);
 
+  const dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess("ok");
+    }, 0);
+  };
+
+  const [visible, setVisible] = useState(false);
+  const [data, setData] = useState([]);
+
+  const columns = [
+    {
+      title: "Terminal ID",
+      dataIndex: ["Terminal ID"],
+    },
+    {
+      title: "Address",
+      dataIndex: "Address",
+    },
+    {
+      title: "State",
+      dataIndex: "State",
+    },
+    {
+      title: "Region",
+      dataIndex: "Region",
+    },
+  ];
+
+  const loadATMs = async (type) => {
+    const res = await Axios.get(
+      `/api/atms/${type}?type=${type}&atms=${
+        type === "regions"
+          ? encodeURIComponent(JSON.stringify(selectedRegions))
+          : encodeURIComponent(JSON.stringify(selectedStates))
+      }`
+    );
+    const atms = res.data;
+
+    atms.forEach((atm) => {
+      atm.key = atm._id;
+    });
+
+    setData(atms);
+    setVisible(true);
+  };
+
   return (
     <div>
       <Row>
         <Col>
-          <Typography.Title level={4}>3rd Party Request Form</Typography.Title>
+          <Typography.Title level={4}>
+            Third Party Request Form
+          </Typography.Title>
         </Col>
       </Row>
       <Row style={{ marginTop: "30px" }}>
@@ -160,11 +245,12 @@ export const ThirdParty = () => {
             }}
             name="request-form"
             initialValues={{
-              approval: "no",
+              approval: "false",
+              atmSelect: atm,
             }}
           >
             <Form.Item
-              name="requester-name"
+              name="requesterName"
               label="Requester's Name"
               rules={[
                 {
@@ -194,7 +280,7 @@ export const ThirdParty = () => {
               <Input allowClear />
             </Form.Item>
             <Form.Item
-              name="campaign-name"
+              name="campaignName"
               label="Campaign Name"
               rules={[
                 {
@@ -202,11 +288,12 @@ export const ThirdParty = () => {
                   message: "Please input the campaign name!",
                 },
               ]}
+              help="Max character length is 20"
             >
-              <Input allowClear />
+              <Input allowClear maxLength="20" />
             </Form.Item>
             <Form.Item
-              name="campaign-screen"
+              name="campaignScreen"
               label="Upload Campaign Screen"
               valuePropName="fileList"
               getValueFromEvent={normFile}
@@ -220,9 +307,9 @@ export const ThirdParty = () => {
             >
               <Upload
                 accept="image/*,video/*"
-                name="logo"
-                action="/upload.do"
+                name="campaignScreen"
                 listType="picture"
+                customRequest={dummyRequest}
               >
                 <Button>
                   <UploadOutlined /> Click to upload
@@ -230,7 +317,7 @@ export const ThirdParty = () => {
               </Upload>
             </Form.Item>
             <Form.Item
-              name="atm-select"
+              name="atmSelect"
               label="ATM of Interest"
               rules={[
                 {
@@ -238,7 +325,6 @@ export const ThirdParty = () => {
                   message: "Please select ATMs of Interest!",
                 },
               ]}
-              initialValue={atm}
             >
               <Radio.Group
                 buttonStyle="solid"
@@ -263,81 +349,114 @@ export const ThirdParty = () => {
               </Radio.Group>
             </Form.Item>
             {regions.length > 0 && (
-              <Form.Item
-                name="atm-select-region"
-                label="Select ATM Region"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select ATMs regions!",
-                  },
-                ]}
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="Please select region(s)"
-                  value={selectedRegions}
-                  onChange={(items) => {
-                    setSelectedRegions(items);
-                    setCount(
-                      regions
-                        .filter((x) => items.some((o) => o === x.region))
-                        .reduce((a, b) => a + b.count, 0)
-                    );
-                  }}
-                  allowClear
+              <>
+                <Form.Item
+                  name="atmSelectRegion"
+                  label="Select ATM Region"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select ATMs regions!",
+                    },
+                  ]}
+                  style={{ marginBottom: 0 }}
                 >
-                  {regions
-                    .filter(
-                      (x) => !selectedRegions.some((o) => o.region === x.region)
-                    )
-                    .map((item) => (
-                      <Select.Option key={item.region} value={item.region}>
-                        {item.region} ({item.count})
-                      </Select.Option>
-                    ))}
-                </Select>
-              </Form.Item>
+                  <Select
+                    mode="multiple"
+                    placeholder="Please select region(s)"
+                    value={selectedRegions}
+                    onChange={(items) => {
+                      setSelectedRegions(items);
+                      setCount(
+                        regions
+                          .filter((x) => items.some((o) => o === x.region))
+                          .reduce((a, b) => a + b.count, 0)
+                      );
+                    }}
+                    allowClear
+                  >
+                    {regions
+                      .filter((x) =>
+                        selectedRegions.every((o) => o !== x.region)
+                      )
+                      .map((item, index) => (
+                        <Select.Option
+                          key={`${index}-${item.region}`}
+                          value={item.region}
+                        >
+                          {item.region} ({item.count})
+                        </Select.Option>
+                      ))}
+                  </Select>
+                </Form.Item>
+                <Tag
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "37.5%",
+                    cursor: "pointer",
+                  }}
+                  icon={<EyeOutlined />}
+                  color="green"
+                  title="Click to view selected atms"
+                  onClick={() => loadATMs("regions")}
+                >
+                  {count} selected
+                </Tag>
+              </>
             )}
             {states.length > 0 && (
-              <Form.Item
-                name="atm-select-states"
-                label="Select ATM States"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select ATM states",
-                  },
-                ]}
-              >
-                <Select
-                  mode="multiple"
-                  placeholder="Please select state(s)"
-                  value={selectedStates}
-                  onChange={(items) => {
-                    setSelectedStates(items);
-                    setCount(
-                      states
-                        .filter((x) => items.some((o) => o === x.state))
-                        .reduce((a, b) => a + b.count, 0)
-                    );
-                  }}
-                  allowClear
+              <>
+                <Form.Item
+                  name="atmSelectStates"
+                  label="Select ATM States"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select ATM states",
+                    },
+                  ]}
+                  style={{ marginBottom: 0 }}
                 >
-                  {states
-                    .filter(
-                      (x) => !selectedStates.some((o) => o.state === x.state)
-                    )
-                    .map((item) => (
-                      <Select.Option key={item.state} value={item.state}>
-                        {item.state} ({item.count})
-                      </Select.Option>
-                    ))}
-                </Select>
-              </Form.Item>
+                  <Select
+                    mode="multiple"
+                    placeholder="Please select state(s)"
+                    value={selectedStates}
+                    onChange={(items) => {
+                      setSelectedStates(items);
+                      setCount(
+                        states
+                          .filter((x) => items.some((o) => o === x.state))
+                          .reduce((a, b) => a + b.count, 0)
+                      );
+                    }}
+                    allowClear
+                  >
+                    {states
+                      .filter((x) => selectedStates.every((o) => o !== x.state))
+                      .map((item) => (
+                        <Select.Option key={item.state} value={item.state}>
+                          {item.state} ({item.count})
+                        </Select.Option>
+                      ))}
+                  </Select>
+                </Form.Item>
+                <Tag
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "37.5%",
+                    cursor: "pointer",
+                  }}
+                  icon={<EyeOutlined />}
+                  color="green"
+                  title="Click to view selected atms"
+                  onClick={() => loadATMs("states")}
+                >
+                  {count} selected
+                </Tag>
+              </>
             )}
             <Form.Item
-              name="date-range"
+              name="dateRange"
               label="Select Date Range"
               rules={[
                 {
@@ -360,29 +479,28 @@ export const ThirdParty = () => {
             >
               <Radio.Group
                 onChange={(e) => {
-                  if (e.target.value === "yes") {
+                  if (e.target.value === "true") {
                     setApproval(true);
                   } else {
                     setApproval(false);
                   }
                 }}
               >
-                <Radio value="yes">Yes</Radio>
-                <Radio value="no">No</Radio>
+                <Radio value="true">Yes</Radio>
+                <Radio value="false">No</Radio>
               </Radio.Group>
             </Form.Item>
             {approval && (
               <Form.Item
-                name="aproval-document"
+                name="approvalDocument"
                 label="Upload Approval"
                 valuePropName="fileList"
                 getValueFromEvent={normFile}
                 help="Recommended size: 1024 x 768 (4:3)"
               >
                 <Upload
-                  accept="image/*,video/*"
-                  name="logo"
-                  action="/upload.do"
+                  name="approvalDocument"
+                  customRequest={dummyRequest}
                   listType="picture"
                 >
                   <Button>
@@ -404,6 +522,22 @@ export const ThirdParty = () => {
           </Form>
         </Col>
       </Row>
+      <Modal
+        onCancel={() => setVisible(false)}
+        visible={visible}
+        title="Selected ATMs"
+        footer={null}
+      >
+        <Table
+          columns={columns}
+          dataSource={data}
+          pagination={{
+            defaultPageSize: 5,
+            pageSizeOptions: ["5", "10", "20", "50", "100"],
+          }}
+          size="small"
+        />
+      </Modal>
     </div>
   );
 };

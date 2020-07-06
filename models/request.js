@@ -28,7 +28,7 @@ const requestSchema = new mongoose.Schema(
     dateRange: [Date],
     requestType: {
       type: String,
-      default: "internal",
+      default: "Internal",
     },
   },
   { timestamps: true }
