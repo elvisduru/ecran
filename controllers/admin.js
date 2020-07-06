@@ -23,7 +23,7 @@ const fetchScreens = async (req, res) => {
 const addRequest = async (req, res) => {
   try {
     const form = new formidable.IncomingForm();
-    form.uploadDir = path.join(__basedir, "/uploads/campaigns");
+    // form.uploadDir = path.join(__basedir, "/uploads/campaigns");
     form.keepExtensions = true;
 
     let request = {};
@@ -41,15 +41,22 @@ const addRequest = async (req, res) => {
           request[name] = value;
         }
       })
-      .on("fileBegin", (name, file) => {
-        file.path = form.uploadDir + "\\" + file.name;
-      })
+      // .on("fileBegin", (name, file) => {
+      //   file.path = form.uploadDir + "\\" + file.name;
+      // })
       .on("file", (name, file) => {
         if (file.size === 0) {
           fs.unlink(file.path, (error) => {
             if (error) console.log(error);
           });
         }
+        cloudinary.v2.uploader.upload(file.path, (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(result);
+          }
+        });
         request[name] = "/uploads/campaigns/" + file.name;
       })
       .on("end", async () => {

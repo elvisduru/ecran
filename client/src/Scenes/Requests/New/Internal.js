@@ -65,6 +65,7 @@ export const Internal = () => {
       })
       .catch((error) => console.log(error));
     setShowSubmit(false);
+    form.resetFields();
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -73,10 +74,27 @@ export const Internal = () => {
 
   const normFile = (e) => {
     console.log("Upload event:", e);
+    const file = e.file.originFileObj;
+    getSignedRequest(file);
     if (Array.isArray(e)) {
       return e;
     }
     return e && e.fileList;
+  };
+
+  const getSignedRequest = (file) => {
+    Axios.get(`/sign-s3?file-name=${file.name}&file-type=${file.type}`)
+      .then((res) => {
+        console.log(res);
+        uploadFile(file, res.data.signedRequest, res.data.url);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const uploadFile = (file, signedRequest, url) => {
+    Axios.put(signedRequest, file)
+      .then(() => console.log("Uploaded", url))
+      .catch((err) => console.log(err));
   };
 
   // Autocomplete
@@ -156,6 +174,7 @@ export const Internal = () => {
   }, [atm]);
 
   const dummyRequest = ({ file, onSuccess }) => {
+    console.log(file);
     setTimeout(() => {
       onSuccess("ok");
     }, 0);

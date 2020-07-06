@@ -66,6 +66,7 @@ export const ThirdParty = () => {
       })
       .catch((error) => console.log(error));
     setShowSubmit(false);
+    form.resetFields();
   };
 
   const onFinishFailed = (errorInfo) => {
