@@ -61,18 +61,19 @@ const addRequest = async (req, res) => {
         request[name] = "/uploads/campaigns/" + file.name;
       })
       .on("end", async () => {
-        cloudinary.v2.uploader.upload(
-          __basedir + request.campaignScreen,
-          async (err, result) => {
-            if (err) console.log(err);
-            console.log(result);
-            request.campaignScreen = result.secure_url;
-            console.log(request);
-            const newRequest = new Request(request);
-            await newRequest.save();
-            res.status(200).json(request);
-          }
-        );
+        // cloudinary.v2.uploader.upload(
+        //   __basedir + request.campaignScreen,
+        //   async (err, result) => {
+        //     if (err) console.log(err);
+        //     console.log(result);
+        //     request.campaignScreen = result.secure_url;
+        //     console.log(request);
+
+        //   }
+        // );
+        const newRequest = new Request(request);
+        await newRequest.save();
+        res.status(200).json(request);
       });
   } catch (error) {
     console.log(error);
