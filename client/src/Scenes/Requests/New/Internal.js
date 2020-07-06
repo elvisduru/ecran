@@ -97,8 +97,7 @@ export const Internal = () => {
     xhr.onreadystatechange = () => {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
-          document.getElementById("preview").src = url;
-          document.getElementById("avatar-url").value = url;
+          alert("uploaded file successfully");
         } else {
           alert("Could not upload file.");
         }
