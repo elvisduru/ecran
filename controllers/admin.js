@@ -6,9 +6,9 @@ const db = require("../db");
 const cloudinary = require("cloudinary");
 
 cloudinary.config({
-  cloud_name: "techspark",
-  api_key: "498576454111458",
-  api_secret: "MKfoudAN2D_1k9ZYcOBqwq9iu10",
+  cloud_name: "hvfo0iheq",
+  api_key: "238623868329878",
+  api_secret: "YkrHgc8FeWOe8fDefw458VgtUw8",
 });
 
 const fetchScreens = async (req, res) => {
