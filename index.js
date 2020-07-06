@@ -7,8 +7,6 @@ const path = require("path");
 
 const db = require("./db");
 
-const secret = process.env.SECRET || require("./secret");
-
 const auth = require("./routes/auth");
 const campaigns = require("./routes/campaigns");
 const request = require("./routes/request");

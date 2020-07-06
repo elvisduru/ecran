@@ -25,6 +25,7 @@ import {
 import Axios from "axios";
 import { addRequest } from "./requestsSlice";
 import { useDispatch } from "react-redux";
+import { storageRef } from "../../../client_utils";
 
 const { RangePicker } = DatePicker;
 
@@ -75,6 +76,11 @@ export const ThirdParty = () => {
 
   const normFile = (e) => {
     console.log("Upload event:", e);
+    storageRef
+      .child(e.file.name)
+      .put(e.file.originFileObj, { contentType: e.file.type })
+      .then(() => console.log("File uploaded successfully"))
+      .catch((error) => console.log(error));
     if (Array.isArray(e)) {
       return e;
     }

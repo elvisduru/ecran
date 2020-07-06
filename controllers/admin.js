@@ -3,13 +3,6 @@ const path = require("path");
 const fs = require("fs");
 const { Screen, Request } = require("../models/");
 const db = require("../db");
-const cloudinary = require("cloudinary");
-
-cloudinary.config({
-  cloud_name: "hvfo0iheq",
-  api_key: "238623868329878",
-  api_secret: "YkrHgc8FeWOe8fDefw458VgtUw8",
-});
 
 const fetchScreens = async (req, res) => {
   try {
@@ -41,36 +34,22 @@ const addRequest = async (req, res) => {
           request[name] = value;
         }
       })
-      // .on("fileBegin", (name, file) => {
-      //   file.path = form.uploadDir + "\\" + file.name;
-      // })
-      .on("file", (name, file) => {
-        if (file.size === 0) {
-          fs.unlink(file.path, (error) => {
-            if (error) console.log(error);
-          });
-        }
-        console.log(file);
-        cloudinary.v2.uploader.upload(file.path, (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(result);
-          }
-        });
-        request[name] = "/uploads/campaigns/" + file.name;
+      .on("fileBegin", (name, file) => {
+        // file.path = form.uploadDir + "\\" + file.name;
+        request[
+          name
+        ] = `https://firebasestorage.googleapis.com/v0/b/ecran-fe278.appspot.com/o/${file.name}?alt=media`;
       })
+      // .on("file", (name, file) => {
+      //   if (file.size === 0) {
+      //     fs.unlink(file.path, (error) => {
+      //       if (error) console.log(error);
+      //     });
+      //   }
+      //   // request[name] = "/uploads/campaigns/" + file.name;
+      // })
       .on("end", async () => {
-        // cloudinary.v2.uploader.upload(
-        //   __basedir + request.campaignScreen,
-        //   async (err, result) => {
-        //     if (err) console.log(err);
-        //     console.log(result);
-        //     request.campaignScreen = result.secure_url;
-        //     console.log(request);
-
-        //   }
-        // );
+        console.log(request);
         const newRequest = new Request(request);
         await newRequest.save();
         res.status(200).json(request);

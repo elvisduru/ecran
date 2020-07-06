@@ -1,34 +1,33 @@
-const express = require('express')
-const router = express.Router()
-const jwt = require('jsonwebtoken')
-const secret = process.env.SECRET || require('../secret')
+const express = require("express");
+const router = express.Router();
+const jwt = require("jsonwebtoken");
+const secret = process.env.SECRET || require("../utils").secret;
 
 const user = {
-  username: 'admin',
-  password: 'password'
-}
+  username: "admin",
+  password: "password",
+};
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const { username, password } = req.body
+    const { username, password } = req.body;
     // Send user details to Potilon here
 
     if (!username || !password) {
-      throw 'Something is wrong with your input!'
+      throw "Something is wrong with your input!";
     }
 
     if (username !== user.username || password !== user.password) {
-      throw 'Incorrect username or password!'
+      throw "Incorrect username or password!";
     }
 
-    const payload = { username }
-    const token = jwt.sign(payload, secret, { expiresIn: '1h' })
-    res.cookie('token', token, { httpOnly: true }).sendStatus(200)
-
+    const payload = { username };
+    const token = jwt.sign(payload, secret, { expiresIn: "1h" });
+    res.cookie("token", token, { httpOnly: true }).sendStatus(200);
   } catch (err) {
-    console.log(err)
-    res.status(401).json({ error: 'Incorrect email or password' })
+    console.log(err);
+    res.status(401).json({ error: "Incorrect email or password" });
   }
-})
+});
 
-module.exports = router
+module.exports = router;
