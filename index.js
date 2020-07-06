@@ -7,7 +7,11 @@ const path = require("path");
 
 const aws = require("aws-sdk");
 
-const S3_BUCKET = process.env.S3_BUCKET || "ecran-bucket";
+const S3_BUCKET = process.env.S3_BUCKET_NAME || "ecran-bucket";
+const AWS_ID = process.env.AWS_ACCESS_KEY_ID || "AKIAXAF2IGJBKNU3HIFK";
+const AWS_SECRET =
+  process.env.AWS_SECRET_ACCESS_KEY ||
+  "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";
 
 aws.config.region = "eu-east-2";
 
