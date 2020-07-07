@@ -210,7 +210,15 @@ export const Declined = () => {
                   id: record.key,
                   status: "Pending",
                 })
-              );
+              )
+                .then(() =>
+                  message.success(
+                    `${record.campaignName} has been set as 'Pending'`
+                  )
+                )
+                .catch(() =>
+                  message.error("There was an error updating the request")
+                );
             }}
           />
           <Button

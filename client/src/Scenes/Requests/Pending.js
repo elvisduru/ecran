@@ -213,7 +213,15 @@ export const Pending = () => {
                   id: record.key,
                   status: "Approved",
                 })
-              );
+              )
+                .then(() =>
+                  message.success(
+                    `${record.campaignName} has been successfully approved`
+                  )
+                )
+                .catch(() =>
+                  message.error("There was an error updating the request")
+                );
             }}
           />
           <Button
@@ -228,7 +236,15 @@ export const Pending = () => {
                   id: record.key,
                   status: "Declined",
                 })
-              );
+              )
+                .then(() =>
+                  message.success(
+                    `${record.campaignName} has been successfully declined`
+                  )
+                )
+                .catch(() =>
+                  message.error("There was an error updating the request")
+                );
             }}
           />
           <Button
