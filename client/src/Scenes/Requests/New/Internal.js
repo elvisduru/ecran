@@ -217,7 +217,7 @@ export const Internal = () => {
         </Col>
       </Row>
       <Row style={{ marginTop: "30px" }}>
-        <Col md={16} xl={10}>
+        <Col md={18} xl={12}>
           <Form
             form={form}
             onFinish={onFinish}
