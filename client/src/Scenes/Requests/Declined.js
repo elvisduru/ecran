@@ -16,7 +16,6 @@ import {
   UndoOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import ViewDetails from "../../components/ViewDetails";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectAllRequests,
@@ -45,45 +44,8 @@ export const Declined = () => {
     setPreview(!preview);
   };
 
-  // Modal, Form Hooks
-  const [showDetails, setShowDetails] = useState(false);
-  const [details, setDetails] = useState(null);
-  const [declineLoading, setDeclineLoading] = useState(false);
-  const [approveLoading, setApproveLoading] = useState(false);
-
   const findDetail = (id) => {
     return requests.find((item) => item.key === id);
-  };
-
-  const handleDetails = (id) => {
-    setShowDetails(!showDetails);
-
-    const details = findDetail(id);
-    setDetails(details);
-  };
-
-  const declineCampaign = () => {
-    setDeclineLoading(true);
-    setTimeout(() => {
-      setDetails(null);
-      setShowDetails(false);
-      setDeclineLoading(false);
-      message.success("Campaign name was declined successfully");
-    }, 2000);
-  };
-
-  const approveCampaign = () => {
-    setApproveLoading(true);
-    setTimeout(() => {
-      setDetails(null);
-      setShowDetails(false);
-      setApproveLoading(false);
-      message.success("Campaign name was approved successfully");
-    }, 2000);
-  };
-
-  const handleCancel = () => {
-    setShowDetails(false);
   };
 
   const [filterTable, setFilterTable] = useState(null);
@@ -291,18 +253,6 @@ export const Declined = () => {
           </Row>
         </Col>
       </Row>
-      {details && (
-        <ViewDetails
-          details={details}
-          visible={showDetails}
-          onDecline={declineCampaign}
-          onApprove={approveCampaign}
-          handleCancel={handleCancel}
-          confirmLoading={approveLoading}
-          declineLoading={declineLoading}
-          okText="Approve"
-        />
-      )}
       {previewImage && (
         <Modal
           visible={preview}
