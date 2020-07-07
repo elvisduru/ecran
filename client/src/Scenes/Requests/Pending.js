@@ -10,10 +10,20 @@ import {
   Modal,
   Tag,
 } from "antd";
-import { SearchOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  EyeOutlined,
+  StopOutlined,
+  CheckOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import ViewDetails from "../../components/ViewDetails";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAllRequests, fetchRequests } from "./New/requestsSlice";
+import {
+  selectAllRequests,
+  fetchRequests,
+  updateRequest,
+} from "./New/requestsSlice";
 import { useEffect } from "react";
 
 export const Pending = () => {
@@ -23,7 +33,10 @@ export const Pending = () => {
     dispatch(fetchRequests());
   }, []);
 
-  const requests = useSelector(selectAllRequests);
+  const allRequests = useSelector(selectAllRequests);
+  const requests = allRequests.filter(
+    (request) => request.status === "Pending"
+  );
 
   // Preview
   const [preview, setPreview] = useState(false);
@@ -193,7 +206,7 @@ export const Pending = () => {
       dataIndex: "status",
       key: "status",
       render: (text) => (
-        <Typography.Text type="warning">{text}Pending</Typography.Text>
+        <Typography.Text type="warning">{text}</Typography.Text>
       ),
     },
     {
@@ -209,8 +222,8 @@ export const Pending = () => {
       dataIndex: "approvalDocument",
       key: "approvalDocument",
       render: (text) => (
-        <Button type="link">
-          <a href={`${text}`}>{text && "Download"}</a>
+        <Button type="link" href={`${text}`} style={{ padding: 0 }}>
+          {text && "Download"}
         </Button>
       ),
     },
@@ -230,15 +243,39 @@ export const Pending = () => {
           <Button
             type="primary"
             size="small"
-            onClick={() => console.log(record, record.key)}
-          >
-            Approve
-          </Button>
+            title="Approve Request"
+            icon={<CheckOutlined />}
+            onClick={() => {
+              dispatch(
+                updateRequest({
+                  id: record.key,
+                  status: "Approved",
+                })
+              );
+            }}
+          />
           <Button
             type="primary"
+            title="Decline Request"
             danger
-            icon={<DeleteOutlined />}
+            icon={<StopOutlined />}
             size="small"
+            onClick={() => {
+              dispatch(
+                updateRequest({
+                  id: record.key,
+                  status: "Declined",
+                })
+              );
+            }}
+          />
+          <Button
+            type="primary"
+            title="Edit Request"
+            style={{ backgroundColor: "#FAAD14", borderColor: "#FAAD14" }}
+            icon={<EditOutlined />}
+            size="small"
+            href="https://elvisduru.com"
           />
         </div>
       ),
@@ -285,7 +322,11 @@ export const Pending = () => {
         />
       )}
       {previewImage && (
-        <Modal visible={preview} footer={null} onCancel={handlePreview}>
+        <Modal
+          visible={preview}
+          footer={null}
+          onCancel={() => setPreview(false)}
+        >
           <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
         </Modal>
       )}

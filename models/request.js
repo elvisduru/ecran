@@ -31,6 +31,10 @@ const requestSchema = new mongoose.Schema(
       type: String,
       default: "Internal",
     },
+    status: {
+      type: String,
+      default: "Pending",
+    },
   },
   { timestamps: true }
 );

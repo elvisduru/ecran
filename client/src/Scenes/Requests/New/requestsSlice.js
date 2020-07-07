@@ -2,13 +2,31 @@ import {
   createSlice,
   createAsyncThunk,
   createEntityAdapter,
+  createSelector,
 } from "@reduxjs/toolkit";
-import { getRequests } from "../../../helpers";
+import { getRequests, updateRequestByID } from "../../../helpers";
 
 export const fetchRequests = createAsyncThunk("requests/fetchAll", async () => {
-  const requests = await getRequests();
-  return requests;
+  try {
+    const requests = await getRequests();
+    return requests;
+  } catch (error) {
+    console.log(error);
+  }
 });
+
+export const updateRequest = createAsyncThunk(
+  "requests/update",
+  async (requestData, { rejectWithValue }) => {
+    const { id, ...fields } = requestData;
+    try {
+      const request = await updateRequestByID(id, fields);
+      return request;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 export const requestsAdapter = createEntityAdapter({
   selectId: (request) => request._id,
@@ -25,6 +43,7 @@ export const requestsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(fetchRequests.fulfilled, requestsAdapter.upsertMany);
+    builder.addCase(updateRequest.fulfilled, requestsAdapter.updateOne);
   },
 });
 
@@ -33,4 +52,5 @@ export const { addRequest } = requestsSlice.actions;
 export const { selectAll: selectAllRequests } = requestsAdapter.getSelectors(
   (state) => state.requests
 );
+
 export default requestsSlice.reducer;

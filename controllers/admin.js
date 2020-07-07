@@ -67,6 +67,16 @@ const fetchRequests = async (req, res) => {
   }
 };
 
+const updateRequest = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    const request = await Request.findByIdAndUpdate(id, status, { new: true });
+    res.status(200).json({ id, changes: status });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // ATMS
 
 const fetchATMs = async (req, res) => {
@@ -87,3 +97,4 @@ exports.fetchScreens = fetchScreens;
 exports.addRequest = addRequest;
 exports.fetchRequests = fetchRequests;
 exports.fetchATMs = fetchATMs;
+exports.updateRequest = updateRequest;
