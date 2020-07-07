@@ -204,9 +204,7 @@ export const Declined = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text) => (
-        <Typography.Text type="warning">{text}</Typography.Text>
-      ),
+      render: (text) => <Typography.Text type="danger">{text}</Typography.Text>,
     },
     {
       title: "Approval",
