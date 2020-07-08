@@ -17,19 +17,15 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  selectAllRequests,
-  fetchRequests,
-  updateRequest,
-} from "./New/requestsSlice";
-import { useEffect } from "react";
+import { selectAllRequests, updateRequest } from "./requestsSlice";
+import { useHistory } from "react-router-dom";
+import TextArea from "antd/lib/input/TextArea";
+
+const ReachableContext = React.createContext();
 
 export const Declined = () => {
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchRequests());
-  }, []);
+  const history = useHistory();
 
   const allRequests = useSelector(selectAllRequests);
   const requests = allRequests.filter(
@@ -60,6 +56,45 @@ export const Declined = () => {
     );
 
     setFilterTable(filterTable);
+  };
+
+  const [modal, contextHolder] = Modal.useModal();
+
+  let [comment, setComment] = useState();
+
+  let generateConfig = (request) => {
+    let modalConfig = {
+      title: "Confirm Action!",
+      content: (
+        <TextArea
+          rows={4}
+          placeholder="Write your comments here..."
+          onChange={(e) => setComment(e.target.value)}
+        />
+      ),
+      maskClosable: true,
+      onOk() {
+        console.log("comment", comment);
+
+        return dispatch(
+          updateRequest({
+            id: request.key,
+            status: "Pending",
+            undoComment: comment,
+          })
+        )
+          .then(() =>
+            message.success(
+              `${request.campaignName} has been restored successfully`
+            )
+          )
+          .catch(() =>
+            message.error("There was an error updating the request")
+          );
+      },
+    };
+
+    return modalConfig;
   };
 
   const columns = [
@@ -205,20 +240,7 @@ export const Declined = () => {
             title="Undo decline"
             icon={<UndoOutlined />}
             onClick={() => {
-              dispatch(
-                updateRequest({
-                  id: record.key,
-                  status: "Pending",
-                })
-              )
-                .then(() =>
-                  message.success(
-                    `${record.campaignName} has been set as 'Pending'`
-                  )
-                )
-                .catch(() =>
-                  message.error("There was an error updating the request")
-                );
+              modal.confirm(generateConfig(record));
             }}
           />
           <Button
@@ -227,7 +249,9 @@ export const Declined = () => {
             style={{ backgroundColor: "#FAAD14", borderColor: "#FAAD14" }}
             icon={<EditOutlined />}
             size="small"
-            href="https://elvisduru.com"
+            onClick={() => {
+              history.push(`/requests/edit/${record.key}`);
+            }}
           />
         </div>
       ),
@@ -235,41 +259,44 @@ export const Declined = () => {
   ];
 
   return (
-    <div>
-      <Row>
-        <Col span={24}>
-          <Row gutter={[16, 32]}>
-            <Col flex="auto">
-              <Typography.Title level={4}>Declined Requests</Typography.Title>
-            </Col>
-          </Row>
-          <Row>
-            <Col flex="auto">
-              <Input
-                prefix={<SearchOutlined />}
-                style={{ margin: "0 0 10px 0", width: "300px" }}
-                placeholder="Search table..."
-                onChange={search}
-              />
-              <Table
-                scroll={{ x: 1500 }}
-                loading={requests.length < 1 ? true : false}
-                columns={columns}
-                dataSource={filterTable == null ? requests : filterTable}
-              />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      {previewImage && (
-        <Modal
-          visible={preview}
-          footer={null}
-          onCancel={() => setPreview(false)}
-        >
-          <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
-        </Modal>
-      )}
-    </div>
+    <ReachableContext.Provider>
+      <div>
+        <Row>
+          <Col span={24}>
+            <Row gutter={[16, 32]}>
+              <Col flex="auto">
+                <Typography.Title level={4}>Declined Requests</Typography.Title>
+              </Col>
+            </Row>
+            <Row>
+              <Col flex="auto">
+                <Input
+                  prefix={<SearchOutlined />}
+                  style={{ margin: "0 0 10px 0", width: "300px" }}
+                  placeholder="Search table..."
+                  onChange={search}
+                />
+                <Table
+                  scroll={{ x: 1500 }}
+                  loading={requests.length < 1 ? true : false}
+                  columns={columns}
+                  dataSource={filterTable == null ? requests : filterTable}
+                />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        {previewImage && (
+          <Modal
+            visible={preview}
+            footer={null}
+            onCancel={() => setPreview(false)}
+          >
+            <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
+          </Modal>
+        )}
+        {contextHolder}
+      </div>
+    </ReachableContext.Provider>
   );
 };

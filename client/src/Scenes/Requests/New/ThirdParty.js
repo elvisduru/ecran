@@ -23,7 +23,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import Axios from "axios";
-import { addRequest } from "./requestsSlice";
+import { addRequest } from "../requestsSlice";
 import { useDispatch } from "react-redux";
 import { storageRef } from "../../../client_utils";
 
@@ -76,6 +76,8 @@ export const ThirdParty = () => {
 
   const normFile = (e) => {
     console.log("Upload event:", e);
+    let fileList = [...e.fileList];
+    fileList = fileList.slice(-1);
     storageRef
       .child(e.file.name)
       .put(e.file.originFileObj, { contentType: e.file.type })
@@ -84,7 +86,7 @@ export const ThirdParty = () => {
     if (Array.isArray(e)) {
       return e;
     }
-    return e && e.fileList;
+    return e && fileList;
   };
 
   // Autocomplete

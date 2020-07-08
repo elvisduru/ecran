@@ -35,6 +35,9 @@ const requestSchema = new mongoose.Schema(
       type: String,
       default: "Pending",
     },
+    approveComment: String,
+    declineComment: String,
+    undoComment: String,
   },
   { timestamps: true }
 );

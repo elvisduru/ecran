@@ -69,9 +69,22 @@ const fetchRequests = async (req, res) => {
 
 const updateRequest = async (req, res) => {
   try {
-    const { id, status } = req.body;
-    const request = await Request.findByIdAndUpdate(id, status, { new: true });
-    res.status(200).json({ id, changes: status });
+    const { id, fields } = req.body;
+    if (fields.atmSelect === "region") {
+      fields.atmSelectStates = [];
+    }
+    if (fields.atmSelect === "state") {
+      fields.atmSelectRegion = [];
+    }
+    if (fields.approval) {
+      fields.approval = JSON.parse(fields.approval);
+      if (fields.approval === false) {
+        fields.approvalDocument = null;
+      }
+    }
+
+    const request = await Request.findByIdAndUpdate(id, fields, { new: true });
+    res.status(200).json({ id, changes: fields });
   } catch (error) {
     console.log(error);
   }

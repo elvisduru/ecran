@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-import { getRequests, updateRequestByID } from "../../../helpers";
+import { getRequests, updateRequestByID } from "../../helpers";
 
 export const fetchRequests = createAsyncThunk("requests/fetchAll", async () => {
   try {
@@ -48,8 +48,9 @@ export const requestsSlice = createSlice({
 
 export const { addRequest } = requestsSlice.actions;
 
-export const { selectAll: selectAllRequests } = requestsAdapter.getSelectors(
-  (state) => state.requests
-);
+export const {
+  selectAll: selectAllRequests,
+  selectById: selectRequestById,
+} = requestsAdapter.getSelectors((state) => state.requests);
 
 export default requestsSlice.reducer;

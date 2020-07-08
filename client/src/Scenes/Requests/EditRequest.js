@@ -23,50 +23,47 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import Axios from "axios";
-import { addRequest } from "../requestsSlice";
-import { useDispatch } from "react-redux";
-import { storageRef } from "../../../client_utils";
+import { selectRequestById, updateRequest } from "../Requests/requestsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { storageRef } from "../../client_utils";
+import { useParams } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
 
-export const Internal = () => {
+export const EditRequest = () => {
+  const { id } = useParams();
+
+  const request = useSelector((state) => selectRequestById(state, id));
+
   const [form] = Form.useForm();
 
   const dispatch = useDispatch();
 
   const onFinish = (values) => {
-    message.success("Request was created successfully");
+    message.success("Request was updated successfully");
     console.log("Success:", values);
-    if (values.campaignScreen) {
-      let campaignScreen = values.campaignScreen[0].originFileObj;
-      values.campaignScreen = campaignScreen;
-    }
-    if (values.approvalDocument) {
-      let approvalDocument = values.approvalDocument[0].originFileObj;
-      console.log("ApprovalDoc:", approvalDocument);
-      values.approvalDocument = approvalDocument;
-    }
-    console.log("Modified:", values);
 
-    const formData = new FormData();
-    for (const key in values) {
-      const value = values[key];
-      if (key === "campaignScreen" || key === "approvalDocument") {
-        formData.append(key, value, value.name);
-      }
-      if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
+    if (values.campaignScreen[0].name === request.campaignScreen) {
+      values.campaignScreen = `https://firebasestorage.googleapis.com/v0/b/ecran-fe278.appspot.com/o/${request.campaignScreen}?alt=media`;
+    } else {
+      values.campaignScreen = `https://firebasestorage.googleapis.com/v0/b/ecran-fe278.appspot.com/o/${values.campaignScreen[0].name}?alt=media`;
+    }
+
+    if (values.approvalDocument) {
+      if (values.approvalDocument[0].name === request.approvalDocument) {
+        values.approvalDocument = `https://firebasestorage.googleapis.com/v0/b/ecran-fe278.appspot.com/o/${request.approvalDocument}?alt=media`;
       } else {
-        formData.append(key, value);
+        values.approvalDocument = `https://firebasestorage.googleapis.com/v0/b/ecran-fe278.appspot.com/o/${values.approvalDocument[0].name}?alt=media`;
       }
     }
-    Axios.post("/api/request/new", formData)
-      .then((res) => {
-        dispatch(addRequest(res.data));
+
+    values.status = request.status;
+
+    dispatch(updateRequest({ id, ...values }))
+      .then(() => {
+        form.resetFields();
       })
       .catch((error) => console.log(error));
-    setShowSubmit(false);
-    form.resetFields();
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -77,14 +74,64 @@ export const Internal = () => {
     console.log("Upload event:", e);
     let fileList = [...e.fileList];
     fileList = fileList.slice(-1);
+    const oldImage = request.campaignScreen;
     storageRef
       .child(e.file.name)
       .put(e.file.originFileObj, { contentType: e.file.type })
-      .then(() => console.log("File uploaded successfully"))
+      .then(() => {
+        console.log("File uploaded successfully");
+        return storageRef
+          .child(
+            oldImage.substring(
+              oldImage.indexOf("/o/") + 3,
+              oldImage.indexOf("?")
+            )
+          )
+          .delete();
+      })
+      .then(() => console.log("old image deleted successfully"))
       .catch((error) => console.log(error));
+
     if (Array.isArray(e)) {
       return e;
     }
+
+    return e && fileList;
+  };
+  const normFileDoc = (e) => {
+    console.log("Upload event:", e);
+    let fileList = [...e.fileList];
+    fileList = fileList.slice(-1);
+    if (request.approvalDocument) {
+      const oldDocument = request.approvalDocument;
+      storageRef
+        .child(
+          oldDocument.substring(
+            oldDocument.indexOf("/o/") + 3,
+            oldDocument.indexOf("?")
+          )
+        )
+        .delete()
+        .then(() => {
+          console.log("old document deleted successfully");
+          return storageRef
+            .child(e.file.name)
+            .put(e.file.originFileObj, { contentType: e.file.type });
+        })
+        .then(() => console.log("File uploaded successfully"))
+        .catch((error) => console.log(error));
+    } else {
+      storageRef
+        .child(e.file.name)
+        .put(e.file.originFileObj, { contentType: e.file.type })
+        .then(() => console.log("File uploaded successfully"))
+        .catch((error) => console.log(error));
+    }
+
+    if (Array.isArray(e)) {
+      return e;
+    }
+
     return e && fileList;
   };
 
@@ -112,17 +159,16 @@ export const Internal = () => {
   };
 
   // ATM Select
-  const [atm, setATM] = useState("all");
+  const [atm, setATM] = useState(request.atmSelect);
   const [regions, setRegions] = useState([]);
   const [states, setStates] = useState([]);
-  const [selectedRegions, setSelectedRegions] = useState([]);
-  const [selectedStates, setSelectedStates] = useState([]);
-
-  // Show Submit Button
-  const [showSubmit, setShowSubmit] = useState(false);
+  const [selectedRegions, setSelectedRegions] = useState(
+    request.atmSelectRegion
+  );
+  const [selectedStates, setSelectedStates] = useState(request.atmSelectStates);
 
   // Show Approval Upload
-  const [approval, setApproval] = useState(false);
+  const [approval, setApproval] = useState(request.approval);
 
   // ATM select count
   const [count, setCount] = useState(0);
@@ -133,7 +179,11 @@ export const Internal = () => {
       setRegions(regions.data);
       setStates([]);
       setSelectedStates([]);
-      setCount(0);
+      setCount(
+        regions.data
+          .filter((x) => selectedRegions.some((o) => o === x.region))
+          .reduce((a, b) => a + b.count, 0)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -145,7 +195,11 @@ export const Internal = () => {
       setStates(states.data);
       setRegions([]);
       setSelectedRegions([]);
-      setCount(0);
+      setCount(
+        states.data
+          .filter((x) => selectedStates.some((o) => o === x.state))
+          .reduce((a, b) => a + b.count, 0)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -215,7 +269,7 @@ export const Internal = () => {
     <div>
       <Row>
         <Col>
-          <Typography.Title level={4}>Internal Request Form</Typography.Title>
+          <Typography.Title level={4}>Edit Request Form</Typography.Title>
         </Col>
       </Row>
       <Row style={{ marginTop: "30px" }}>
@@ -224,17 +278,6 @@ export const Internal = () => {
             form={form}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            onFieldsChange={(changedFields, allFields) => {
-              if (
-                allFields
-                  .slice(0, allFields.length - 1)
-                  .every((field) => field.value)
-              ) {
-                setShowSubmit(true);
-              } else {
-                setShowSubmit(false);
-              }
-            }}
             size="large"
             scrollToFirstError
             labelCol={{
@@ -252,8 +295,35 @@ export const Internal = () => {
             }}
             name="request-form"
             initialValues={{
-              approval: "false",
               atmSelect: atm,
+              requesterName: request.requesterName,
+              campaignName: request.campaignName,
+              atmSelectStates: request.atmSelectStates,
+              atmSelectRegion: request.atmSelectRegion,
+              dateRange: request.dateRange.map((date) => moment(date)),
+              campaignScreen: [
+                {
+                  uid: "1",
+                  name: request.campaignScreen.substring(
+                    request.campaignScreen.indexOf("/o/") + 3,
+                    request.campaignScreen.indexOf("?")
+                  ),
+                  status: "done",
+                  url: request.campaignScreen,
+                },
+              ],
+              approvalDocument: request.approvalDocument && [
+                {
+                  uid: "1",
+                  name: request.approvalDocument.substring(
+                    request.approvalDocument.indexOf("/o/") + 3,
+                    request.approvalDocument.indexOf("?")
+                  ),
+                  status: "done",
+                  url: request.approvalDocument,
+                },
+              ],
+              approval: request.approval ? "true" : "false",
             }}
           >
             <Form.Item
@@ -302,7 +372,7 @@ export const Internal = () => {
             >
               <Upload
                 accept="image/*,video/*"
-                name="campaignScreen"
+                name="file"
                 listType="picture"
                 customRequest={dummyRequest}
               >
@@ -481,7 +551,7 @@ export const Internal = () => {
                   }
                 }}
               >
-                <Radio value="true">Yes</Radio>
+                <Radio value="true">true</Radio>
                 <Radio value="false">No</Radio>
               </Radio.Group>
             </Form.Item>
@@ -490,11 +560,11 @@ export const Internal = () => {
                 name="approvalDocument"
                 label="Upload Approval"
                 valuePropName="fileList"
-                getValueFromEvent={normFile}
+                getValueFromEvent={normFileDoc}
                 help="Recommended size: 1024 x 768 (4:3)"
               >
                 <Upload
-                  name="approvalDocument"
+                  name="doc"
                   customRequest={dummyRequest}
                   listType="picture"
                 >
@@ -510,7 +580,7 @@ export const Internal = () => {
                 offset: 9,
               }}
             >
-              <Button type="primary" htmlType="submit" disabled={!showSubmit}>
+              <Button type="primary" htmlType="submit">
                 Submit
               </Button>
             </Form.Item>
