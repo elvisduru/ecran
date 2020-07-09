@@ -278,7 +278,7 @@ export const Declined = () => {
                 />
                 <Table
                   scroll={{ x: 1500 }}
-                  loading={requests.length < 1 ? true : false}
+                  // loading={requests.length < 1 ? true : false}
                   columns={columns}
                   dataSource={filterTable == null ? requests : filterTable}
                 />
