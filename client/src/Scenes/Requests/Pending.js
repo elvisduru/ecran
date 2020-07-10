@@ -63,9 +63,9 @@ export const Pending = () => {
 
   let [comment, setComment] = useState();
 
-  let generateConfig = (request) => {
+  let generateConfig = (request, reason = "Approval") => {
     let modalConfig = {
-      title: "Confirm Approval!",
+      title: `Confirm ${reason}!`,
       content: (
         <TextArea
           rows={4}
@@ -80,13 +80,15 @@ export const Pending = () => {
         return dispatch(
           updateRequest({
             id: request.key,
-            status: "Approved",
+            status: reason === "Decline" ? "Declined" : "Approved",
             approveComment: comment,
           })
         )
           .then(() =>
             message.success(
-              `${request.campaignName} has been successfully approved`
+              `${request.campaignName} has been successfully ${
+                reason === "Decline" ? "Declined" : "Approved"
+              }`
             )
           )
           .catch(() =>
@@ -253,20 +255,7 @@ export const Pending = () => {
             icon={<StopOutlined />}
             size="small"
             onClick={() => {
-              dispatch(
-                updateRequest({
-                  id: record.key,
-                  status: "Declined",
-                })
-              )
-                .then(() =>
-                  message.success(
-                    `${record.campaignName} has been successfully declined`
-                  )
-                )
-                .catch(() =>
-                  message.error("There was an error updating the request")
-                );
+              modal.confirm(generateConfig(record, "Decline"));
             }}
           />
           <Button
