@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import moment from "moment";
 import {
   Typography,
   Row,
@@ -96,6 +97,16 @@ export const Approved = () => {
   };
 
   const columns = [
+    {
+      title: "Date",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      sorter: {
+        compare: (a, b) => a.createdAt.localeCompare(b.createdAt),
+      },
+      render: (text) => <span>{moment(text).format("DD/MM/YYYY h:mm a")}</span>,
+      defaultSortOrder: "descend",
+    },
     {
       title: "Request Type",
       dataIndex: "requestType",
