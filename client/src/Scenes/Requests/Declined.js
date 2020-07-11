@@ -22,8 +22,6 @@ import { selectAllRequests, updateRequest } from "./requestsSlice";
 import { useHistory } from "react-router-dom";
 import TextArea from "antd/lib/input/TextArea";
 
-const ReachableContext = React.createContext();
-
 export const Declined = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -55,44 +53,9 @@ export const Declined = () => {
     setFilterTable(filterTable);
   };
 
-  const [modal, contextHolder] = Modal.useModal();
-
-  let [comment, setComment] = useState();
-
-  let generateConfig = (request) => {
-    let modalConfig = {
-      title: "Confirm Action!",
-      content: (
-        <TextArea
-          rows={4}
-          placeholder="Write your comments here..."
-          onChange={(e) => setComment(e.target.value)}
-        />
-      ),
-      maskClosable: true,
-      onOk() {
-        console.log("comment", comment);
-
-        return dispatch(
-          updateRequest({
-            id: request.key,
-            status: "Pending",
-            undoComment: comment,
-          })
-        )
-          .then(() =>
-            message.success(
-              `${request.campaignName} has been restored successfully`
-            )
-          )
-          .catch(() =>
-            message.error("There was an error updating the request")
-          );
-      },
-    };
-
-    return modalConfig;
-  };
+  const [comment, setComment] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState();
+  const [confirmAction, setConfirmAction] = useState(false);
 
   const columns = [
     {
@@ -229,6 +192,11 @@ export const Declined = () => {
       ),
     },
     {
+      title: "Comment",
+      dataIndex: "declineComment",
+      key: "declineComment",
+    },
+    {
       title: "Action",
       key: "action",
       width: 150,
@@ -247,7 +215,8 @@ export const Declined = () => {
             title="Undo decline"
             icon={<UndoOutlined />}
             onClick={() => {
-              modal.confirm(generateConfig(record));
+              setConfirmAction(true);
+              setSelectedRequest(record);
             }}
           />
           <Button
@@ -266,44 +235,73 @@ export const Declined = () => {
   ];
 
   return (
-    <ReachableContext.Provider>
-      <div>
-        <Row>
-          <Col span={24}>
-            <Row gutter={[16, 32]}>
-              <Col flex="auto">
-                <Typography.Title level={4}>Declined Requests</Typography.Title>
-              </Col>
-            </Row>
-            <Row>
-              <Col flex="auto">
-                <Input
-                  prefix={<SearchOutlined />}
-                  style={{ margin: "0 0 10px 0", width: "300px" }}
-                  placeholder="Search table..."
-                  onChange={search}
-                />
-                <Table
-                  scroll={{ x: 1500 }}
-                  // loading={requests.length < 1 ? true : false}
-                  columns={columns}
-                  dataSource={filterTable == null ? requests : filterTable}
-                />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        {previewImage && (
-          <Modal
-            visible={preview}
-            footer={null}
-            onCancel={() => setPreview(false)}
-          >
-            <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
-          </Modal>
-        )}
-        {contextHolder}
-      </div>
-    </ReachableContext.Provider>
+    <div>
+      <Row>
+        <Col span={24}>
+          <Row gutter={[16, 32]}>
+            <Col flex="auto">
+              <Typography.Title level={4}>Declined Requests</Typography.Title>
+            </Col>
+          </Row>
+          <Row>
+            <Col flex="auto">
+              <Input
+                prefix={<SearchOutlined />}
+                style={{ margin: "0 0 10px 0", width: "300px" }}
+                placeholder="Search table..."
+                onChange={search}
+              />
+              <Table
+                scroll={{ x: 1500 }}
+                // loading={requests.length < 1 ? true : false}
+                columns={columns}
+                dataSource={filterTable == null ? requests : filterTable}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      {previewImage && (
+        <Modal
+          visible={preview}
+          footer={null}
+          onCancel={() => setPreview(false)}
+        >
+          <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
+      )}
+      {confirmAction && (
+        <Modal
+          visible={confirmAction}
+          title={`Confirm Action`}
+          onOk={() => {
+            dispatch(
+              updateRequest({
+                id: selectedRequest.key,
+                status: "Pending",
+                undoComment: comment,
+              })
+            )
+              .then(() => {
+                message.success(
+                  `${selectedRequest.campaignName} has been restored successfully`
+                );
+                setConfirmAction(false);
+              })
+              .catch(() =>
+                message.error("There was an error updating the request")
+              );
+          }}
+        >
+          <TextArea
+            rows={4}
+            placeholder="Write your comments here..."
+            onChange={(e) => {
+              setComment(e.target.value);
+            }}
+          />
+        </Modal>
+      )}
+    </div>
   );
 };

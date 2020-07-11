@@ -55,46 +55,9 @@ export const Pending = () => {
   };
 
   const [comment, setComment] = useState("");
-
-  const generateConfig = (request, reason = "Approval") => {
-    const modalConfig = {
-      title: `Confirm ${reason}!`,
-      content: (
-        <TextArea
-          rows={4}
-          placeholder="Write your comments here..."
-          onChange={(e) => {
-            setComment(e.target.value);
-            console.log(comment);
-          }}
-        />
-      ),
-      maskClosable: true,
-      onOk: () => {
-        console.log("comment:", comment);
-
-        dispatch(
-          updateRequest({
-            id: request.key,
-            status: reason === "Decline" ? "Declined" : "Approved",
-            approveComment: comment,
-          })
-        )
-          .then(() =>
-            message.success(
-              `${request.campaignName} has been successfully ${
-                reason === "Decline" ? "Declined" : "Approved"
-              }`
-            )
-          )
-          .catch(() =>
-            message.error("There was an error updating the request")
-          );
-      },
-    };
-
-    return modalConfig;
-  };
+  const [selectedRequest, setSelectedRequest] = useState();
+  const [reason, setReason] = useState();
+  const [confirmAction, setConfirmAction] = useState(false);
 
   const columns = [
     {
@@ -256,8 +219,9 @@ export const Pending = () => {
             title="Approve Request"
             icon={<CheckOutlined />}
             onClick={() => {
-              const modal = Modal.confirm();
-              modal.update(generateConfig(record));
+              setConfirmAction(true);
+              setReason("Approval");
+              setSelectedRequest(record);
             }}
           />
           <Button
@@ -267,9 +231,9 @@ export const Pending = () => {
             icon={<StopOutlined />}
             size="small"
             onClick={() => {
-              console.log(comment);
-              const modal = Modal.confirm();
-              modal.update(generateConfig(record, "Decline"));
+              setConfirmAction(true);
+              setReason("Decline");
+              setSelectedRequest(record);
             }}
           />
           <Button
@@ -321,6 +285,42 @@ export const Pending = () => {
           onCancel={() => setPreview(false)}
         >
           <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
+      )}
+      {confirmAction && (
+        <Modal
+          visible={confirmAction}
+          title={`Confirm ${reason}`}
+          onOk={() => {
+            dispatch(
+              updateRequest({
+                id: selectedRequest.key,
+                status: reason === "Decline" ? "Declined" : "Approved",
+                [reason === "Decline"
+                  ? "declineComment"
+                  : "approveComment"]: comment,
+              })
+            )
+              .then(() => {
+                message.success(
+                  `${selectedRequest.campaignName} has been successfully ${
+                    reason === "Decline" ? "Declined" : "Approved"
+                  }`
+                );
+                setConfirmAction(false);
+              })
+              .catch(() =>
+                message.error("There was an error updating the request")
+              );
+          }}
+        >
+          <TextArea
+            rows={4}
+            placeholder="Write your comments here..."
+            onChange={(e) => {
+              setComment(e.target.value);
+            }}
+          />
         </Modal>
       )}
     </div>
