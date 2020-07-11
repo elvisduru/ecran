@@ -234,6 +234,11 @@ export const Pending = () => {
       ),
     },
     {
+      title: "Comment",
+      dataIndex: "undoComment",
+      key: "undoComment",
+    },
+    {
       title: "Action",
       key: "action",
       width: 150,
