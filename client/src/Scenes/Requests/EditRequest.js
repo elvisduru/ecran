@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import moment from "moment";
 import {
   Row,
@@ -70,10 +70,20 @@ export const EditRequest = () => {
     console.log("Failed:", errorInfo);
   };
 
-  const normFile = (e) => {
+  const normFileImage = (e) => {
     console.log("Upload event:", e);
     let fileList = [...e.fileList];
     fileList = fileList.slice(-1);
+    if (!/\.(jpe?g|png|gif|bmp|svg)$/i.test(e.file.name)) {
+      message.error("Wrong file type uploaded. Please upload only images");
+      return;
+    }
+    if (e.file.status === "removed") {
+      storageRef
+        .child(e.file.name)
+        .delete()
+        .then(() => console.log(`${e.file.name} removed successfully`));
+    }
     const oldImage = request.campaignScreen;
     storageRef
       .child(e.file.name)
@@ -102,6 +112,16 @@ export const EditRequest = () => {
     console.log("Upload event:", e);
     let fileList = [...e.fileList];
     fileList = fileList.slice(-1);
+    if (!/\.(pdf)$/i.test(e.file.name)) {
+      message.error("Wrong file type uploaded. Please upload only PDF");
+      return;
+    }
+    if (e.file.status === "removed") {
+      storageRef
+        .child(e.file.name)
+        .delete()
+        .then(() => console.log(`${e.file.name} removed successfully`));
+    }
     if (request.approvalDocument) {
       const oldDocument = request.approvalDocument;
       storageRef
@@ -173,7 +193,7 @@ export const EditRequest = () => {
   // ATM select count
   const [count, setCount] = useState(0);
 
-  const findRegions = async () => {
+  const findRegions = useCallback(async () => {
     try {
       const regions = await Axios.get("/regions");
       setRegions(regions.data);
@@ -187,9 +207,9 @@ export const EditRequest = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [selectedRegions]);
 
-  const findStates = async () => {
+  const findStates = useCallback(async () => {
     try {
       const states = await Axios.get("/states");
       setStates(states.data);
@@ -203,7 +223,7 @@ export const EditRequest = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [selectedStates]);
 
   useEffect(() => {
     if (atm === "region") {
@@ -216,7 +236,7 @@ export const EditRequest = () => {
       setStates([]);
       setCount(0);
     }
-  }, [atm]);
+  }, [atm, findRegions, findStates]);
 
   const dummyRequest = ({ file, onSuccess }) => {
     console.log(file);
@@ -361,7 +381,7 @@ export const EditRequest = () => {
               name="campaignScreen"
               label="Upload Campaign Screen"
               valuePropName="fileList"
-              getValueFromEvent={normFile}
+              getValueFromEvent={normFileImage}
               rules={[
                 {
                   required: true,
@@ -565,6 +585,7 @@ export const EditRequest = () => {
               >
                 <Upload
                   name="doc"
+                  accept="application/pdf"
                   customRequest={dummyRequest}
                   listType="picture"
                 >

@@ -41,10 +41,6 @@ export const Approved = () => {
     setPreview(!preview);
   };
 
-  const findDetail = (id) => {
-    return requests.find((item) => item.key === id);
-  };
-
   const [filterTable, setFilterTable] = useState(null);
 
   const search = (e) => {

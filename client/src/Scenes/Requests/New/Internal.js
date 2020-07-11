@@ -73,15 +73,70 @@ export const Internal = () => {
     console.log("Failed:", errorInfo);
   };
 
-  const normFile = (e) => {
+  const normFileImage = (e) => {
     console.log("Upload event:", e);
     let fileList = [...e.fileList];
     fileList = fileList.slice(-1);
-    storageRef
-      .child(e.file.name)
-      .put(e.file.originFileObj, { contentType: e.file.type })
-      .then(() => console.log("File uploaded successfully"))
-      .catch((error) => console.log(error));
+
+    if (!/\.(jpe?g|png|gif|bmp|svg)$/i.test(e.file.name)) {
+      message.error("Wrong file type uploaded. Please upload only images");
+      return;
+    }
+
+    const img = new Image();
+    img.src = URL.createObjectURL(e.file.originFileObj);
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      if (+aspectRatio.toFixed(2) !== 1.33) {
+        message.error(
+          "The file uploaded doesn't meet the aspect ratio requirement"
+        );
+        return;
+      } else {
+        if (e.file.status === "removed") {
+          storageRef
+            .child(e.file.name)
+            .delete()
+            .then(() => console.log(`${e.file.name} removed successfully`));
+        } else {
+          storageRef
+            .child(e.file.name)
+            .put(e.file.originFileObj, { contentType: e.file.type })
+            .then(() => console.log("File uploaded successfully"))
+            .catch((error) => console.log(error));
+        }
+      }
+    };
+
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && fileList;
+  };
+
+  const normFileDoc = (e) => {
+    console.log("Upload event:", e);
+    let fileList = [...e.fileList];
+    fileList = fileList.slice(-1);
+
+    if (!/\.(pdf)$/i.test(e.file.name)) {
+      message.error("Wrong file type uploaded. Please upload only PDF");
+      return;
+    }
+
+    if (e.file.status === "removed") {
+      storageRef
+        .child(e.file.name)
+        .delete()
+        .then(() => console.log(`${e.file.name} removed successfully`));
+    } else {
+      storageRef
+        .child(e.file.name)
+        .put(e.file.originFileObj, { contentType: e.file.type })
+        .then(() => console.log("File uploaded successfully"))
+        .catch((error) => console.log(error));
+    }
+
     if (Array.isArray(e)) {
       return e;
     }
@@ -271,7 +326,7 @@ export const Internal = () => {
                 onSelect={onSelect}
                 onSearch={onSearch}
                 placeholder="Search for user..."
-                allowClear
+                // allowClear
               />
             </Form.Item>
             <Form.Item
@@ -291,7 +346,7 @@ export const Internal = () => {
               name="campaignScreen"
               label="Upload Campaign Screen"
               valuePropName="fileList"
-              getValueFromEvent={normFile}
+              getValueFromEvent={normFileImage}
               rules={[
                 {
                   required: true,
@@ -490,11 +545,12 @@ export const Internal = () => {
                 name="approvalDocument"
                 label="Upload Approval"
                 valuePropName="fileList"
-                getValueFromEvent={normFile}
+                getValueFromEvent={normFileDoc}
                 help="Recommended size: 1024 x 768 (4:3)"
               >
                 <Upload
                   name="approvalDocument"
+                  accept="application/pdf"
                   customRequest={dummyRequest}
                   listType="picture"
                 >

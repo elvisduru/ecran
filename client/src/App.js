@@ -104,7 +104,7 @@ function App({ username }) {
   // Fetch State
   useEffect(() => {
     dispatch(fetchRequests());
-  }, []);
+  }, [dispatch]);
 
   // Sider Hook
   const [collapsed, setCollapse] = useState(false);
