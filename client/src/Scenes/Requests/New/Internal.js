@@ -546,7 +546,7 @@ export const Internal = () => {
                 label="Upload Approval"
                 valuePropName="fileList"
                 getValueFromEvent={normFileDoc}
-                help="Recommended size: 1024 x 768 (4:3)"
+                help="File must be PDF"
               >
                 <Upload
                   name="approvalDocument"

@@ -23,8 +23,6 @@ import { selectAllRequests, updateRequest } from "./requestsSlice";
 import { useHistory } from "react-router-dom";
 import TextArea from "antd/lib/input/TextArea";
 
-const ReachableContext = React.createContext();
-
 export const Pending = () => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -56,25 +54,26 @@ export const Pending = () => {
     setFilterTable(filterTable);
   };
 
-  const [modal, contextHolder] = Modal.useModal();
+  const [comment, setComment] = useState("");
 
-  let [comment, setComment] = useState();
-
-  let generateConfig = (request, reason = "Approval") => {
-    let modalConfig = {
+  const generateConfig = (request, reason = "Approval") => {
+    const modalConfig = {
       title: `Confirm ${reason}!`,
       content: (
         <TextArea
           rows={4}
           placeholder="Write your comments here..."
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => {
+            setComment(e.target.value);
+            console.log(comment);
+          }}
         />
       ),
       maskClosable: true,
-      onOk() {
-        console.log("comment", comment);
+      onOk: () => {
+        console.log("comment:", comment);
 
-        return dispatch(
+        dispatch(
           updateRequest({
             id: request.key,
             status: reason === "Decline" ? "Declined" : "Approved",
@@ -257,7 +256,8 @@ export const Pending = () => {
             title="Approve Request"
             icon={<CheckOutlined />}
             onClick={() => {
-              modal.confirm(generateConfig(record));
+              const modal = Modal.confirm();
+              modal.update(generateConfig(record));
             }}
           />
           <Button
@@ -267,7 +267,9 @@ export const Pending = () => {
             icon={<StopOutlined />}
             size="small"
             onClick={() => {
-              modal.confirm(generateConfig(record, "Decline"));
+              console.log(comment);
+              const modal = Modal.confirm();
+              modal.update(generateConfig(record, "Decline"));
             }}
           />
           <Button
@@ -286,44 +288,41 @@ export const Pending = () => {
   ];
 
   return (
-    <ReachableContext.Provider>
-      <div>
-        <Row>
-          <Col span={24}>
-            <Row gutter={[16, 32]}>
-              <Col flex="auto">
-                <Typography.Title level={4}>Pending Requests</Typography.Title>
-              </Col>
-            </Row>
-            <Row>
-              <Col flex="auto">
-                <Input
-                  prefix={<SearchOutlined />}
-                  style={{ margin: "0 0 10px 0", width: "300px" }}
-                  placeholder="Search table..."
-                  onChange={search}
-                />
-                <Table
-                  scroll={{ x: 1500 }}
-                  // loading={requests.length < 1 ? true : false}
-                  columns={columns}
-                  dataSource={filterTable == null ? requests : filterTable}
-                />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-        {previewImage && (
-          <Modal
-            visible={preview}
-            footer={null}
-            onCancel={() => setPreview(false)}
-          >
-            <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
-          </Modal>
-        )}
-        {contextHolder}
-      </div>
-    </ReachableContext.Provider>
+    <div>
+      <Row>
+        <Col span={24}>
+          <Row gutter={[16, 32]}>
+            <Col flex="auto">
+              <Typography.Title level={4}>Pending Requests</Typography.Title>
+            </Col>
+          </Row>
+          <Row>
+            <Col flex="auto">
+              <Input
+                prefix={<SearchOutlined />}
+                style={{ margin: "0 0 10px 0", width: "300px" }}
+                placeholder="Search table..."
+                onChange={search}
+              />
+              <Table
+                scroll={{ x: 1500 }}
+                // loading={requests.length < 1 ? true : false}
+                columns={columns}
+                dataSource={filterTable == null ? requests : filterTable}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      {previewImage && (
+        <Modal
+          visible={preview}
+          footer={null}
+          onCancel={() => setPreview(false)}
+        >
+          <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
+        </Modal>
+      )}
+    </div>
   );
 };
