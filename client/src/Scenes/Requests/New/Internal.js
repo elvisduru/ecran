@@ -309,6 +309,7 @@ export const Internal = () => {
             initialValues={{
               approval: "false",
               atmSelect: atm,
+              campaignType: 'default'
             }}
           >
             <Form.Item
@@ -341,6 +342,24 @@ export const Internal = () => {
               help="Max character length is 20"
             >
               <Input allowClear maxLength="20" />
+            </Form.Item>
+            <Form.Item
+              name="campaignType"
+              label="Campaign Type"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the campaign type",
+                },
+              ]}
+            >
+              <Radio.Group
+                buttonStyle="solid"
+                size="middle"
+              >
+                <Radio.Button value="default">Default</Radio.Button>
+                <Radio.Button value="advert">Advert</Radio.Button>
+              </Radio.Group>
             </Form.Item>
             <Form.Item
               name="campaignScreen"

@@ -317,7 +317,9 @@ export const EditRequest = () => {
             initialValues={{
               atmSelect: atm,
               requesterName: request.requesterName,
+              [request.customerName && 'customerName']: request.customerName,
               campaignName: request.campaignName,
+              campaignType: request.campaignType,
               atmSelectStates: request.atmSelectStates,
               atmSelectRegion: request.atmSelectRegion,
               dateRange: request.dateRange.map((date) => moment(date)),
@@ -364,6 +366,20 @@ export const EditRequest = () => {
                 allowClear
               />
             </Form.Item>
+            {request.customerName && (
+              <Form.Item
+                name="customerName"
+                label="Customer's Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the customer's name!",
+                  },
+                ]}
+              >
+                <Input allowClear />
+              </Form.Item>
+            )}
             <Form.Item
               name="campaignName"
               label="Campaign Name"
@@ -376,6 +392,21 @@ export const EditRequest = () => {
               help="Max character length is 20"
             >
               <Input allowClear maxLength="20" />
+            </Form.Item>
+            <Form.Item
+              name="campaignType"
+              label="Campaign Type"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the campaign type",
+                },
+              ]}
+            >
+              <Radio.Group buttonStyle="solid" size="middle">
+                <Radio.Button value="default">Default</Radio.Button>
+                <Radio.Button value="advert">Advert</Radio.Button>
+              </Radio.Group>
             </Form.Item>
             <Form.Item
               name="campaignScreen"

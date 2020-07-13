@@ -101,6 +101,14 @@ export const Declined = () => {
       },
     },
     {
+      title: "Campaign Type",
+      dataIndex: "campaignType",
+      key: "campaignType",
+      sorter: {
+        compare: (a, b) => a.campaignType.localeCompare(b.campaignType),
+      },
+    },
+    {
       title: "Campaign Screen",
       dataIndex: "campaignScreen",
       key: "campaignScreen",
