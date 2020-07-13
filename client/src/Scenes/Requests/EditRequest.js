@@ -404,8 +404,8 @@ export const EditRequest = () => {
               ]}
             >
               <Radio.Group buttonStyle="solid" size="middle">
-                <Radio.Button value="default">Default</Radio.Button>
-                <Radio.Button value="advert">Advert</Radio.Button>
+                <Radio.Button value="Default">Default</Radio.Button>
+                <Radio.Button value="Advert">Advert</Radio.Button>
               </Radio.Group>
             </Form.Item>
             <Form.Item
