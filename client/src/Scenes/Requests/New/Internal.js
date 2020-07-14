@@ -25,8 +25,9 @@ import {
 } from "@ant-design/icons";
 import Axios from "axios";
 import { addRequest } from "../requestsSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { storageRef } from "../../../client_utils";
+import { selectAllScreens } from "../../Campaigns/screensSlice";
 
 const { RangePicker } = DatePicker;
 
@@ -34,6 +35,7 @@ export const Internal = () => {
   const [form] = Form.useForm();
 
   const dispatch = useDispatch();
+  const screens = useSelector(selectAllScreens);
 
   const onFinish = (values) => {
     message.success("Request was created successfully");
@@ -169,6 +171,7 @@ export const Internal = () => {
 
   // ATM Select
   const [atm, setATM] = useState("all");
+  const [campaignType, setCampaignType] = useState("Default");
   const [regions, setRegions] = useState([]);
   const [states, setStates] = useState([]);
   const [selectedRegions, setSelectedRegions] = useState([]);
@@ -267,19 +270,27 @@ export const Internal = () => {
     setVisible(true);
   };
 
-  const [dates, setDates] = useState([])
+  const [dates, setDates] = useState([]);
 
   const getDisableDates = async () => {
-    const res = await Axios.get('/dates')
-    const dateArray = res.data.map(range => {
-      return eachDayOfInterval({start: new Date(range.dateRange[0]), end: new Date(range.dateRange[1])})
-    }).flat(1).map(s => s.getTime()).filter((s, i, a) => a.indexOf(s) === i).map(s => moment(new Date(s)).format('YYYY-MM-DD'));
-    setDates(dateArray)
-  }
+    const res = await Axios.get("/dates");
+    const dateArray = res.data
+      .map((range) => {
+        return eachDayOfInterval({
+          start: new Date(range.dateRange[0]),
+          end: new Date(range.dateRange[1]),
+        });
+      })
+      .flat(1)
+      .map((s) => s.getTime())
+      .filter((s, i, a) => a.indexOf(s) === i)
+      .map((s) => moment(new Date(s)).format("YYYY-MM-DD"));
+    setDates(dateArray);
+  };
 
   useEffect(() => {
-    getDisableDates()
-  }, [])
+    getDisableDates();
+  }, []);
 
   return (
     <div>
@@ -324,7 +335,7 @@ export const Internal = () => {
             initialValues={{
               approval: "false",
               atmSelect: atm,
-              campaignType: 'Default'
+              campaignType: "Default",
             }}
           >
             <Form.Item
@@ -369,12 +380,33 @@ export const Internal = () => {
               ]}
             >
               <Radio.Group
+                onChange={(e) => setCampaignType(e.target.value)}
                 buttonStyle="solid"
                 size="middle"
               >
                 <Radio.Button value="Default">Default</Radio.Button>
                 <Radio.Button value="Advert">Advert</Radio.Button>
               </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              name="selectedScreen"
+              label={`Select ${campaignType} Screen`}
+              rules={[
+                {
+                  required: true,
+                  message: "Please choose the screen you'll like to replace",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select a screen"
+                options={screens
+                  .filter((x) => x.type === campaignType)
+                  .map(({ title }) => ({
+                    label: title,
+                    value: title,
+                  }))}
+              />
             </Form.Item>
             <Form.Item
               name="campaignScreen"
@@ -551,7 +583,10 @@ export const Internal = () => {
               help="Note: Campaign processing requires 48hrs minimum."
             >
               <RangePicker
-                disabledDate={(current) => current && (current < moment().endOf("day") || dates.includes(current.format('YYYY-MM-DD'))) 
+                disabledDate={(current) =>
+                  current &&
+                  (current < moment().endOf("day") ||
+                    dates.includes(current.format("YYYY-MM-DD")))
                 }
               />
             </Form.Item>

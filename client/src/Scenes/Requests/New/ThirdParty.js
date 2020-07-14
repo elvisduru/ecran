@@ -24,9 +24,10 @@ import {
 } from "@ant-design/icons";
 import Axios from "axios";
 import { addRequest } from "../requestsSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { storageRef } from "../../../client_utils";
 import { eachDayOfInterval } from "date-fns";
+import { selectAllScreens } from "../../Campaigns/screensSlice";
 
 const { RangePicker } = DatePicker;
 
@@ -34,6 +35,7 @@ export const ThirdParty = () => {
   const [form] = Form.useForm();
 
   const dispatch = useDispatch();
+  const screens = useSelector(selectAllScreens);
 
   const onFinish = (values) => {
     message.success("Request was created successfully");
@@ -170,6 +172,7 @@ export const ThirdParty = () => {
 
   // ATM Select
   const [atm, setATM] = useState("all");
+  const [campaignType, setCampaignType] = useState("Default");
   const [regions, setRegions] = useState([]);
   const [states, setStates] = useState([]);
   const [selectedRegions, setSelectedRegions] = useState([]);
@@ -267,27 +270,27 @@ export const ThirdParty = () => {
     setVisible(true);
   };
 
-    const [dates, setDates] = useState([]);
+  const [dates, setDates] = useState([]);
 
-    const getDisableDates = async () => {
-      const res = await Axios.get("/dates");
-      const dateArray = res.data
-        .map((range) => {
-          return eachDayOfInterval({
-            start: new Date(range.dateRange[0]),
-            end: new Date(range.dateRange[1]),
-          });
-        })
-        .flat(1)
-        .map((s) => s.getTime())
-        .filter((s, i, a) => a.indexOf(s) === i)
-        .map((s) => moment(new Date(s)).format("YYYY-MM-DD"));
-      setDates(dateArray);
-    };
+  const getDisableDates = async () => {
+    const res = await Axios.get("/dates");
+    const dateArray = res.data
+      .map((range) => {
+        return eachDayOfInterval({
+          start: new Date(range.dateRange[0]),
+          end: new Date(range.dateRange[1]),
+        });
+      })
+      .flat(1)
+      .map((s) => s.getTime())
+      .filter((s, i, a) => a.indexOf(s) === i)
+      .map((s) => moment(new Date(s)).format("YYYY-MM-DD"));
+    setDates(dateArray);
+  };
 
-    useEffect(() => {
-      getDisableDates();
-    }, []);
+  useEffect(() => {
+    getDisableDates();
+  }, []);
 
   return (
     <div>
@@ -390,10 +393,34 @@ export const ThirdParty = () => {
                 },
               ]}
             >
-              <Radio.Group buttonStyle="solid" size="middle">
+              <Radio.Group
+                onChange={(e) => setCampaignType(e.target.value)}
+                buttonStyle="solid"
+                size="middle"
+              >
                 <Radio.Button value="Default">Default</Radio.Button>
                 <Radio.Button value="Advert">Advert</Radio.Button>
               </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              name="selectedScreen"
+              label={`Select ${campaignType} Screen`}
+              rules={[
+                {
+                  required: true,
+                  message: "Please choose the screen you'll like to replace",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select a screen"
+                options={screens
+                  .filter((x) => x.type === campaignType)
+                  .map(({ title }) => ({
+                    label: title,
+                    value: title,
+                  }))}
+              />
             </Form.Item>
             <Form.Item
               name="campaignScreen"

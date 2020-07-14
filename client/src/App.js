@@ -50,6 +50,7 @@ import Axios from "axios";
 import HBLogo from "./images/hb-logo.png";
 import { useDispatch } from "react-redux";
 import { fetchRequests } from "./Scenes/Requests/requestsSlice";
+import { fetchAllScreens } from "./Scenes/Campaigns/screensSlice";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -104,6 +105,7 @@ function App({ username }) {
   // Fetch State
   useEffect(() => {
     dispatch(fetchRequests());
+    dispatch(fetchAllScreens());
   }, [dispatch]);
 
   // Sider Hook

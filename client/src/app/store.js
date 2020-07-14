@@ -17,6 +17,7 @@ import storage from "redux-persist/lib/storage";
 import counterReducer from "../features/counter/counterSlice";
 import campaignsReducer from "../Scenes/Campaigns/CampaignsSlice";
 import requestsReducer from "../Scenes/Requests/requestsSlice";
+import screensReducer from "../Scenes/Campaigns/screensSlice";
 
 const persistConfig = {
   key: "root",
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   counter: counterReducer,
   campaigns: campaignsReducer,
   requests: requestsReducer,
+  screens: screensReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
