@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
+import { eachDayOfInterval } from "date-fns";
 import {
   Row,
   Col,
@@ -266,6 +267,20 @@ export const Internal = () => {
     setVisible(true);
   };
 
+  const [dates, setDates] = useState([])
+
+  const getDisableDates = async () => {
+    const res = await Axios.get('/dates')
+    const dateArray = res.data.map(range => {
+      return eachDayOfInterval({start: new Date(range.dateRange[0]), end: new Date(range.dateRange[1])})
+    }).flat(1).map(s => s.getTime()).filter((s, i, a) => a.indexOf(s) === i).map(s => moment(new Date(s)).format('YYYY-MM-DD'));
+    setDates(dateArray)
+  }
+
+  useEffect(() => {
+    getDisableDates()
+  }, [])
+
   return (
     <div>
       <Row>
@@ -309,7 +324,7 @@ export const Internal = () => {
             initialValues={{
               approval: "false",
               atmSelect: atm,
-              campaignType: 'default'
+              campaignType: 'Default'
             }}
           >
             <Form.Item
@@ -536,8 +551,7 @@ export const Internal = () => {
               help="Note: Campaign processing requires 48hrs minimum."
             >
               <RangePicker
-                disabledDate={(current) =>
-                  current && current < moment().endOf("day")
+                disabledDate={(current) => current && (current < moment().endOf("day") || dates.includes(current.format('YYYY-MM-DD'))) 
                 }
               />
             </Form.Item>
@@ -602,7 +616,7 @@ export const Internal = () => {
           columns={columns}
           dataSource={data}
           pagination={{
-            defaultPageSize: 5,
+            DPageSize: 5,
             pageSizeOptions: ["5", "10", "20", "50", "100"],
           }}
           size="small"

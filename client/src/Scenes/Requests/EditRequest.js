@@ -27,6 +27,7 @@ import { selectRequestById, updateRequest } from "../Requests/requestsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { storageRef } from "../../client_utils";
 import { useParams } from "react-router-dom";
+import { eachDayOfInterval } from "date-fns";
 
 const { RangePicker } = DatePicker;
 
@@ -285,6 +286,28 @@ export const EditRequest = () => {
     setVisible(true);
   };
 
+    const [dates, setDates] = useState([]);
+
+    const getDisableDates = async () => {
+      const res = await Axios.get("/dates");
+      const dateArray = res.data
+        .map((range) => {
+          return eachDayOfInterval({
+            start: new Date(range.dateRange[0]),
+            end: new Date(range.dateRange[1]),
+          });
+        })
+        .flat(1)
+        .map((s) => s.getTime())
+        .filter((s, i, a) => a.indexOf(s) === i)
+        .map((s) => moment(new Date(s)).format("YYYY-MM-DD"));
+      setDates(dateArray);
+    };
+
+    useEffect(() => {
+      getDisableDates();
+    }, []);
+
   return (
     <div>
       <Row>
@@ -317,7 +340,7 @@ export const EditRequest = () => {
             initialValues={{
               atmSelect: atm,
               requesterName: request.requesterName,
-              [request.customerName && 'customerName']: request.customerName,
+              [request.customerName && "customerName"]: request.customerName,
               campaignName: request.campaignName,
               campaignType: request.campaignType,
               atmSelectStates: request.atmSelectStates,
@@ -363,7 +386,6 @@ export const EditRequest = () => {
                 onSelect={onSelect}
                 onSearch={onSearch}
                 placeholder="Search for user..."
-                allowClear
               />
             </Form.Item>
             {request.customerName && (
@@ -584,7 +606,9 @@ export const EditRequest = () => {
             >
               <RangePicker
                 disabledDate={(current) =>
-                  current && current < moment().endOf("day")
+                  current &&
+                  (current < moment().endOf("day") ||
+                    dates.includes(current.format("YYYY-MM-DD")))
                 }
               />
             </Form.Item>

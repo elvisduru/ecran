@@ -14,6 +14,7 @@ const atms = require("./routes/atms");
 const verifyToken = require("./verifyToken");
 
 const dir = require("node-dir");
+const { Request } = require("./models");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -88,6 +89,18 @@ app.get("/states", async (req, res) => {
     console.log(err);
   }
 });
+
+app.get("/dates", async (req, res) => {
+  try {
+    const dates = await Request.find({ status: "Approved" }).select({
+      _id: 0,
+      dateRange: 1,
+    });
+    res.status(200).json(dates)
+  } catch (err) {
+    console.log(err)
+  }
+})
 
 app.get("/logout", async (req, res) => {
   try {

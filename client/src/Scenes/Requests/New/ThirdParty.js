@@ -26,6 +26,7 @@ import Axios from "axios";
 import { addRequest } from "../requestsSlice";
 import { useDispatch } from "react-redux";
 import { storageRef } from "../../../client_utils";
+import { eachDayOfInterval } from "date-fns";
 
 const { RangePicker } = DatePicker;
 
@@ -266,6 +267,28 @@ export const ThirdParty = () => {
     setVisible(true);
   };
 
+    const [dates, setDates] = useState([]);
+
+    const getDisableDates = async () => {
+      const res = await Axios.get("/dates");
+      const dateArray = res.data
+        .map((range) => {
+          return eachDayOfInterval({
+            start: new Date(range.dateRange[0]),
+            end: new Date(range.dateRange[1]),
+          });
+        })
+        .flat(1)
+        .map((s) => s.getTime())
+        .filter((s, i, a) => a.indexOf(s) === i)
+        .map((s) => moment(new Date(s)).format("YYYY-MM-DD"));
+      setDates(dateArray);
+    };
+
+    useEffect(() => {
+      getDisableDates();
+    }, []);
+
   return (
     <div>
       <Row>
@@ -311,7 +334,7 @@ export const ThirdParty = () => {
             initialValues={{
               approval: "false",
               atmSelect: atm,
-              campaignType: 'default'
+              campaignType: "Default",
             }}
           >
             <Form.Item
@@ -548,7 +571,9 @@ export const ThirdParty = () => {
             >
               <RangePicker
                 disabledDate={(current) =>
-                  current && current < moment().endOf("day")
+                  current &&
+                  (current < moment().endOf("day") ||
+                    dates.includes(current.format("YYYY-MM-DD")))
                 }
               />
             </Form.Item>

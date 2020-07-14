@@ -22,7 +22,6 @@ export const getRequests = async () => {
 export const updateRequestByID = async (id, fields) => {
   try {
     const res = await axios.put("/api/request/", { id, fields });
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.log("Error:", error);
