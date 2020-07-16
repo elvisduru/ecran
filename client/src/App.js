@@ -51,6 +51,7 @@ import HBLogo from "./images/hb-logo.png";
 import { useDispatch } from "react-redux";
 import { fetchRequests } from "./Scenes/Requests/requestsSlice";
 import { fetchAllScreens } from "./Scenes/Campaigns/screensSlice";
+import { Incoming } from "./Scenes/Campaigns/Incoming";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -75,8 +76,8 @@ const links = [
     path: "/requests/declined",
   },
   {
-    value: "Campaigns",
-    path: "/campaigns",
+    value: "Incoming Requests",
+    path: "/campaigns/incoming",
   },
   {
     value: "Monitoring",
@@ -218,6 +219,7 @@ function App({ username }) {
             <Menu.Item key="/requests/declined">Declined</Menu.Item>
           </SubMenu>
           <SubMenu key="sub2" title="Campaigns" icon={<NotificationOutlined />}>
+            <Menu.Item key="/campaigns/incoming">Incoming</Menu.Item>
             <Menu.Item key="/campaigns/add">Upload Screen</Menu.Item>
             <Menu.Item key="/campaigns">Campaigns</Menu.Item>
           </SubMenu>
@@ -304,6 +306,7 @@ function App({ username }) {
             <Route path="/requests/declined" component={Declined} />
             <Route path="/requests/edit/:id" component={EditRequest} />
             <Route path="/campaigns/add" component={AddCampaign} />
+            <Route path="/campaigns/incoming" component={Incoming} />
             <Route path="/campaigns" component={Campaigns} />
             <Route path="/monitoring" component={Monitoring} />
             <Route path="/reporting" component={Reporting} />
