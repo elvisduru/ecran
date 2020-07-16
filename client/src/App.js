@@ -44,7 +44,7 @@ import { Campaigns } from "./Scenes/Campaigns/Campaigns";
 import { Internal } from "./Scenes/Requests/New/Internal";
 import { ThirdParty } from "./Scenes/Requests/New/ThirdParty";
 import { EditRequest } from "./Scenes/Requests/EditRequest";
-import { AddCampaign } from "./Scenes/Campaigns/AddCampaign";
+// import { AddCampaign } from "./Scenes/Campaigns/AddCampaign";
 import Axios from "axios";
 
 import HBLogo from "./images/hb-logo.png";
@@ -52,6 +52,7 @@ import { useDispatch } from "react-redux";
 import { fetchRequests } from "./Scenes/Requests/requestsSlice";
 import { fetchAllScreens } from "./Scenes/Campaigns/screensSlice";
 import { Incoming } from "./Scenes/Campaigns/Incoming";
+import { Replace } from "./Scenes/Campaigns/Replace";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -220,8 +221,8 @@ function App({ username }) {
           </SubMenu>
           <SubMenu key="sub2" title="Campaigns" icon={<NotificationOutlined />}>
             <Menu.Item key="/campaigns/incoming">Incoming</Menu.Item>
-            <Menu.Item key="/campaigns/add">Upload Screen</Menu.Item>
-            <Menu.Item key="/campaigns">Campaigns</Menu.Item>
+            {/* <Menu.Item key="/campaigns/add">Upload Screen</Menu.Item> */}
+            <Menu.Item key="/campaigns">Active</Menu.Item>
           </SubMenu>
           <Menu.Item key="/monitoring" icon={<SignalFilled />}>
             Monitoring
@@ -305,8 +306,9 @@ function App({ username }) {
             <Route path="/requests/approved" component={Approved} />
             <Route path="/requests/declined" component={Declined} />
             <Route path="/requests/edit/:id" component={EditRequest} />
-            <Route path="/campaigns/add" component={AddCampaign} />
+            {/* <Route path="/campaigns/add" component={AddCampaign} /> */}
             <Route path="/campaigns/incoming" component={Incoming} />
+            <Route path="/campaigns/replace/:id" component={Replace} />
             <Route path="/campaigns" component={Campaigns} />
             <Route path="/monitoring" component={Monitoring} />
             <Route path="/reporting" component={Reporting} />

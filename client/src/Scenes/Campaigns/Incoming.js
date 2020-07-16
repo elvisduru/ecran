@@ -200,11 +200,11 @@ export const Incoming = () => {
         >
           <Button
             type="primary"
-            title="Edit Request"
+            title="Replace Screen"
             icon={<SwapOutlined />}
             size="small"
             onClick={() => {
-              history.push(`/requests/edit/${record.key}`);
+              history.push(`/campaigns/replace/${record.key}`);
             }}
           >
             Replace
