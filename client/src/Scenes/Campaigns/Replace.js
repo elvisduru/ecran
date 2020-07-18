@@ -16,9 +16,11 @@ export const Replace = () => {
     .filter((x) => x.type === request.campaignType)
     .map(({ _id, src, title }) => ({ _id, src, title }));
 
-  const defaultScreen = screens.find((x) => x.title === request.selectedScreen);
-  let initialScreen = [
-    request.selectedScreen,
+  const defaultScreen =
+    screens.find((x) => x.title === request.selectedScreen) ||
+    screens.find((x) => x.title === request.campaignName);
+  const initialScreen = [
+    defaultScreen.title,
     defaultScreen.src,
     defaultScreen._id,
   ];
@@ -59,7 +61,7 @@ export const Replace = () => {
             disabled={buttonState}
             icon={<SwapOutlined />}
             onClick={() => {
-              const update = dispatch(
+              dispatch(
                 updateScreen({
                   id: screen[2],
                   src: request.campaignScreen,
@@ -67,7 +69,6 @@ export const Replace = () => {
                 })
               )
                 .then(() => {
-                  initialScreen = [];
                   setScreen((prevScreen) => [
                     request.campaignName,
                     request.campaignScreen,
