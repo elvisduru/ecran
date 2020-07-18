@@ -90,6 +90,18 @@ const updateRequest = async (req, res) => {
   }
 };
 
+// Campaigns
+
+const updateScreen = async (req, res) => {
+  try {
+    const { id, fields } = req.body;
+    const screen = await Screen.findByIdAndUpdate(id, fields, { new: true });
+    res.status(200).json({ id, changes: fields });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // ATMS
 
 const fetchATMs = async (req, res) => {
@@ -111,3 +123,4 @@ exports.addRequest = addRequest;
 exports.fetchRequests = fetchRequests;
 exports.fetchATMs = fetchATMs;
 exports.updateRequest = updateRequest;
+exports.updateScreen = updateScreen;

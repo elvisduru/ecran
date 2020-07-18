@@ -1,24 +1,29 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Row, Col, Typography, Button, Space, Select } from "antd";
+import { Row, Col, Typography, Button, Space, Select, message } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectRequestById } from "../Requests/requestsSlice";
-import { selectAllScreens } from "./screensSlice";
+import { selectAllScreens, updateScreen } from "./screensSlice";
 import styles from "../../Scenes/Dashboard.module.css";
 
 export const Replace = () => {
   const { id } = useParams();
   const { Option } = Select;
+  const dispatch = useDispatch();
   const request = useSelector((state) => selectRequestById(state, id));
   const screens = useSelector(selectAllScreens)
     .filter((x) => x.type === request.campaignType)
     .map(({ _id, src, title }) => ({ _id, src, title }));
 
-  const defaultSrc = screens.find((x) => x.title === request.selectedScreen)
-    .src;
-  const defaultScreen = [request.selectedScreen, defaultSrc];
-  const [screen, setScreen] = useState(defaultScreen);
+  const defaultScreen = screens.find((x) => x.title === request.selectedScreen);
+  let initialScreen = [
+    request.selectedScreen,
+    defaultScreen.src,
+    defaultScreen._id,
+  ];
+  const [screen, setScreen] = useState(initialScreen);
+  const [buttonState, setButtonState] = useState(false);
 
   return (
     <div>
@@ -51,7 +56,28 @@ export const Replace = () => {
             type="primary"
             size="large"
             title="Replace Screen"
+            disabled={buttonState}
             icon={<SwapOutlined />}
+            onClick={() => {
+              const update = dispatch(
+                updateScreen({
+                  id: screen[2],
+                  src: request.campaignScreen,
+                  title: request.campaignName,
+                })
+              )
+                .then(() => {
+                  initialScreen = [];
+                  setScreen((prevScreen) => [
+                    request.campaignName,
+                    request.campaignScreen,
+                    prevScreen[2],
+                  ]);
+                  setButtonState(true);
+                  message.success("Success replaced screen");
+                })
+                .catch((error) => console.log(error));
+            }}
           >
             Replace
           </Button>
@@ -67,10 +93,10 @@ export const Replace = () => {
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
-              defaultValue={defaultScreen}
+              defaultValue={initialScreen}
             >
               {screens.map(({ _id, title, src }) => (
-                <Option key={_id} value={[title, src]}>
+                <Option key={_id} value={[title, src, _id]}>
                   {title}
                 </Option>
               ))}

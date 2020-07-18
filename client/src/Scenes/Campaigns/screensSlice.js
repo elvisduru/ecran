@@ -4,7 +4,7 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 
-import { fetchScreens } from "../../helpers";
+import { fetchScreens, updateScreenByID } from "../../helpers";
 
 export const fetchAllScreens = createAsyncThunk(
   "screens/fetchAll",
@@ -12,6 +12,19 @@ export const fetchAllScreens = createAsyncThunk(
     try {
       const screens = await fetchScreens();
       return screens;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+export const updateScreen = createAsyncThunk(
+  "screens/update",
+  async (screenData, { rejectWithValue }) => {
+    const { id, ...fields } = screenData;
+    try {
+      const screen = await updateScreenByID(id, fields);
+      return screen;
     } catch (error) {
       console.log(error);
     }
@@ -30,6 +43,7 @@ export const screensSlice = createSlice({
   initialState,
   extraReducers: (builder) => {
     builder.addCase(fetchAllScreens.fulfilled, screensAdapter.upsertMany);
+    builder.addCase(updateScreen.fulfilled, screensAdapter.updateOne);
   },
 });
 
