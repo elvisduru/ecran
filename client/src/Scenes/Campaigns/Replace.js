@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Row, Col, Typography, Button, Space, Select, message } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { selectRequestById } from "../Requests/requestsSlice";
+import { selectRequestById, updateRequest } from "../Requests/requestsSlice";
 import { selectAllScreens, updateScreen } from "./screensSlice";
 import styles from "../../Scenes/Dashboard.module.css";
 
@@ -68,6 +68,9 @@ export const Replace = () => {
                   title: request.campaignName,
                 })
               )
+                .then(() =>
+                  dispatch(updateRequest({ id: request._id, active: true }))
+                )
                 .then(() => {
                   setScreen((prevScreen) => [
                     request.campaignName,

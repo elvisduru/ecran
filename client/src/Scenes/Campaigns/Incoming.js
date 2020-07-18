@@ -11,7 +11,7 @@ export const Incoming = () => {
 
   const allRequests = useSelector(selectAllRequests);
   const requests = allRequests.filter(
-    (request) => request.status === "Approved"
+    (request) => request.status === "Approved" && request.active === false
   );
 
   // Preview

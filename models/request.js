@@ -42,7 +42,11 @@ const requestSchema = new mongoose.Schema(
     approveComment: String,
     declineComment: String,
     undoComment: String,
-    selectedScreen: String
+    selectedScreen: String,
+    active: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
