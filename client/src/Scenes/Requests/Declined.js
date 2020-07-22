@@ -283,23 +283,28 @@ export const Declined = () => {
           visible={confirmAction}
           title={`Confirm Action`}
           onOk={() => {
-            dispatch(
-              updateRequest({
-                id: selectedRequest.key,
-                status: "Pending",
-                undoComment: comment,
-              })
-            )
-              .then(() => {
-                message.success(
-                  `${selectedRequest.campaignName} has been restored successfully`
+            if (comment) {
+              dispatch(
+                updateRequest({
+                  id: selectedRequest.key,
+                  status: "Pending",
+                  undoComment: comment,
+                })
+              )
+                .then(() => {
+                  message.success(
+                    `${selectedRequest.campaignName} has been restored successfully`
+                  );
+                  setConfirmAction(false);
+                })
+                .catch(() =>
+                  message.error("There was an error updating the request")
                 );
-                setConfirmAction(false);
-              })
-              .catch(() =>
-                message.error("There was an error updating the request")
-              );
+            } else {
+              message.warn("Please write a comment in the comment box")
+            }
           }}
+          onCancel={() => setConfirmAction(false)}
         >
           <TextArea
             rows={4}

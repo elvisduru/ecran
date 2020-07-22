@@ -93,12 +93,16 @@ export const EditRequest = () => {
       .put(e.file.originFileObj, { contentType: e.file.type })
       .then(() => {
         console.log("File uploaded successfully");
+        let deletedImage = oldImage.substring(
+          oldImage.indexOf("/o/") + 3,
+          oldImage.indexOf("?")
+        )
+        if (e.file.name === deletedImage) {
+          return
+        }
         return storageRef
           .child(
-            oldImage.substring(
-              oldImage.indexOf("/o/") + 3,
-              oldImage.indexOf("?")
-            )
+            deletedImage
           )
           .delete();
       })

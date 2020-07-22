@@ -65,7 +65,6 @@ export const Replace = () => {
                 updateScreen({
                   id: screen[2],
                   src: request.campaignScreen,
-                  title: request.campaignName,
                 })
               )
                 .then(() =>
@@ -73,7 +72,7 @@ export const Replace = () => {
                 )
                 .then(() => {
                   setScreen((prevScreen) => [
-                    request.campaignName,
+                    prevScreen[0],
                     request.campaignScreen,
                     prevScreen[2],
                   ]);

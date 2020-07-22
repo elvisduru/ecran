@@ -300,27 +300,32 @@ export const Pending = () => {
           visible={confirmAction}
           title={`Confirm ${reason}`}
           onOk={() => {
-            dispatch(
-              updateRequest({
-                id: selectedRequest.key,
-                status: reason === "Decline" ? "Declined" : "Approved",
-                [reason === "Decline"
-                  ? "declineComment"
-                  : "approveComment"]: comment,
-              })
-            )
-              .then(() => {
-                message.success(
-                  `${selectedRequest.campaignName} has been successfully ${
-                    reason === "Decline" ? "Declined" : "Approved"
-                  }`
+            if (comment) {
+              dispatch(
+                updateRequest({
+                  id: selectedRequest.key,
+                  status: reason === "Decline" ? "Declined" : "Approved",
+                  [reason === "Decline"
+                    ? "declineComment"
+                    : "approveComment"]: comment,
+                })
+              )
+                .then(() => {
+                  message.success(
+                    `${selectedRequest.campaignName} has been successfully ${
+                      reason === "Decline" ? "Declined" : "Approved"
+                    }`
+                  );
+                  setConfirmAction(false);
+                })
+                .catch(() =>
+                  message.error("There was an error updating the request")
                 );
-                setConfirmAction(false);
-              })
-              .catch(() =>
-                message.error("There was an error updating the request")
-              );
+            } else {
+              message.warn("Please write a comment in the comment box")
+            }   
           }}
+          onCancel={() => setConfirmAction(false)}
         >
           <TextArea
             rows={4}

@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "../../Scenes/Dashboard.module.css";
-import { Row, Col, Typography, Card, Carousel, Statistic } from "antd";
+import { Row, Col, Typography, Carousel } from "antd";
 import { useSelector } from "react-redux";
 import { selectAllScreens } from "./screensSlice";
 
