@@ -27,7 +27,7 @@ import { selectRequestById, updateRequest } from "../Requests/requestsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { storageRef } from "../../client_utils";
 import { useParams } from "react-router-dom";
-import { eachDayOfInterval } from "date-fns";
+import { eachDayOfInterval, isWithinInterval } from "date-fns";
 import { selectAllScreens } from "../Campaigns/screensSlice";
 
 const { RangePicker } = DatePicker;
@@ -96,15 +96,11 @@ export const EditRequest = () => {
         let deletedImage = oldImage.substring(
           oldImage.indexOf("/o/") + 3,
           oldImage.indexOf("?")
-        )
+        );
         if (e.file.name === deletedImage) {
-          return
+          return;
         }
-        return storageRef
-          .child(
-            deletedImage
-          )
-          .delete();
+        return storageRef.child(deletedImage).delete();
       })
       .then(() => console.log("old image deleted successfully"))
       .catch((error) => console.log(error));
@@ -315,6 +311,11 @@ export const EditRequest = () => {
     getDisableDates();
   }, []);
 
+  const [dateError, setDateError] = useState();
+  const [dateNote, setDateNote] = useState(
+    "Note: Campaign processing requires 48hrs minimum."
+  );
+
   return (
     <div>
       <Row>
@@ -350,6 +351,7 @@ export const EditRequest = () => {
               [request.customerName && "customerName"]: request.customerName,
               campaignName: request.campaignName,
               campaignType: request.campaignType,
+              selectedScreen: request.selectedScreen,
               atmSelectStates: request.atmSelectStates,
               atmSelectRegion: request.atmSelectRegion,
               dateRange: request.dateRange.map((date) => moment(date)),
@@ -633,7 +635,8 @@ export const EditRequest = () => {
                   message: "Please select date range!",
                 },
               ]}
-              help="Note: Campaign processing requires 48hrs minimum."
+              validateStatus={dateError}
+              help={dateNote}
             >
               <RangePicker
                 disabledDate={(current) =>
@@ -641,6 +644,32 @@ export const EditRequest = () => {
                   (current < moment().endOf("day") ||
                     dates.includes(current.format("YYYY-MM-DD")))
                 }
+                onCalendarChange={(range, datestrings) => {
+                  if (datestrings[1]) {
+                    let startDate = range[0].toDate();
+                    let endDate = range[1].toDate();
+                    const withindate = dates.some((date) =>
+                      isWithinInterval(new Date(date), {
+                        start: startDate,
+                        end: endDate,
+                      })
+                    );
+                    if (withindate) {
+                      setDateError("error");
+                      setDateNote(
+                        "Error. Campaign cannot run in selected date range"
+                      );
+                      message.error(
+                        "Invalid date range selected! Please choose a range that contains no disabled date."
+                      );
+                    } else {
+                      setDateError("success");
+                      setDateNote(
+                        "Note: Campaign processing requires 48hrs minimum"
+                      );
+                    }
+                  }
+                }}
               />
             </Form.Item>
             <Form.Item

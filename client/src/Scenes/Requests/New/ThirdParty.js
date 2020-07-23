@@ -26,7 +26,7 @@ import Axios from "axios";
 import { addRequest } from "../requestsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { storageRef } from "../../../client_utils";
-import { eachDayOfInterval } from "date-fns";
+import { eachDayOfInterval, isWithinInterval } from "date-fns";
 import { selectAllScreens } from "../../Campaigns/screensSlice";
 
 const { RangePicker } = DatePicker;
@@ -291,6 +291,11 @@ export const ThirdParty = () => {
   useEffect(() => {
     getDisableDates();
   }, []);
+
+  const [dateError, setDateError] = useState();
+  const [dateNote, setDateNote] = useState(
+    "Note: Campaign processing requires 48hrs minimum."
+  );
 
   return (
     <div>
@@ -594,7 +599,8 @@ export const ThirdParty = () => {
                   message: "Please select date range!",
                 },
               ]}
-              help="Note: Campaign processing requires 48hrs minimum."
+              validateStatus={dateError}
+              help={dateNote}
             >
               <RangePicker
                 disabledDate={(current) =>
@@ -602,6 +608,32 @@ export const ThirdParty = () => {
                   (current < moment().endOf("day") ||
                     dates.includes(current.format("YYYY-MM-DD")))
                 }
+                onCalendarChange={(range, datestrings) => {
+                  if (datestrings[1]) {
+                    let startDate = range[0].toDate();
+                    let endDate = range[1].toDate();
+                    const withindate = dates.some((date) =>
+                      isWithinInterval(new Date(date), {
+                        start: startDate,
+                        end: endDate,
+                      })
+                    );
+                    if (withindate) {
+                      setDateError("error");
+                      setDateNote(
+                        "Error. Campaign cannot run in selected date range"
+                      );
+                      message.error(
+                        "Invalid date range selected! Please choose a range that contains no disabled date."
+                      );
+                    } else {
+                      setDateError("success");
+                      setDateNote(
+                        "Note: Campaign processing requires 48hrs minimum"
+                      );
+                    }
+                  }
+                }}
               />
             </Form.Item>
             <Form.Item

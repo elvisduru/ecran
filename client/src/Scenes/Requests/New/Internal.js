@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import { eachDayOfInterval } from "date-fns";
+import { eachDayOfInterval, isWithinInterval } from "date-fns";
 import {
   Row,
   Col,
@@ -292,6 +292,11 @@ export const Internal = () => {
     getDisableDates();
   }, []);
 
+  const [dateError, setDateError] = useState();
+  const [dateNote, setDateNote] = useState(
+    "Note: Campaign processing requires 48hrs minimum."
+  );
+
   return (
     <div>
       <Row>
@@ -580,7 +585,8 @@ export const Internal = () => {
                   message: "Please select date range!",
                 },
               ]}
-              help="Note: Campaign processing requires 48hrs minimum."
+              validateStatus={dateError}
+              help={dateNote}
             >
               <RangePicker
                 disabledDate={(current) =>
@@ -588,6 +594,32 @@ export const Internal = () => {
                   (current < moment().endOf("day") ||
                     dates.includes(current.format("YYYY-MM-DD")))
                 }
+                onCalendarChange={(range, datestrings) => {
+                  if (datestrings[1]) {
+                    let startDate = range[0].toDate();
+                    let endDate = range[1].toDate();
+                    const withindate = dates.some((date) =>
+                      isWithinInterval(new Date(date), {
+                        start: startDate,
+                        end: endDate,
+                      })
+                    );
+                    if (withindate) {
+                      setDateError("error");
+                      setDateNote(
+                        "Error. Campaign cannot run in selected date range"
+                      );
+                      message.error(
+                        "Invalid date range selected! Please choose a range that contains no disabled date."
+                      );
+                    } else {
+                      setDateError("success");
+                      setDateNote(
+                        "Note: Campaign processing requires 48hrs minimum"
+                      );
+                    }
+                  }
+                }}
               />
             </Form.Item>
             <Form.Item
