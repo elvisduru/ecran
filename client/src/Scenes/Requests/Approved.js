@@ -101,14 +101,6 @@ export const Approved = () => {
       },
     },
     {
-      title: "Campaign Type",
-      dataIndex: "campaignType",
-      key: "campaignType",
-      sorter: {
-        compare: (a, b) => a.campaignType.localeCompare(b.campaignType),
-      },
-    },
-    {
       title: "Campaign Screen",
       dataIndex: "campaignScreen",
       key: "campaignScreen",
@@ -130,81 +122,12 @@ export const Approved = () => {
       ),
     },
     {
-      title: "ATM Selection",
-      dataIndex: "atmSelect",
-      key: "atmSelect",
-      sorter: {
-        compare: (a, b) => a.atmSelect.localeCompare(b.atmSelect),
-      },
-    },
-    {
-      title: "Region",
-      dataIndex: "atmSelectRegion",
-      key: "atmSelectRegion",
-      sorter: {
-        compare: (a, b) => a.atmSelectRegion.localeCompare(b.atmSelectRegion),
-      },
-      render: (tags) => (
-        <span>
-          {tags.map((tag) => {
-            return (
-              <Tag color="green" key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </span>
-      ),
-    },
-    {
-      title: "States",
-      dataIndex: "atmSelectStates",
-      key: "atmSelectStates",
-      sorter: {
-        compare: (a, b) => a.atmSelectStates.localeCompare(b.atmSelectStates),
-      },
-      render: (tags) => (
-        <span>
-          {tags.map((tag) => {
-            return (
-              <Tag color="green" key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </span>
-      ),
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (text) => (
         <Typography.Text style={{ color: "#1D9918" }}>{text}</Typography.Text>
       ),
-    },
-    {
-      title: "Approval",
-      dataIndex: "approval",
-      key: "approval",
-      render: (text) => (
-        <Typography.Text>{text ? "Yes" : "No"}</Typography.Text>
-      ),
-    },
-    {
-      title: "Approval Document",
-      dataIndex: "approvalDocument",
-      key: "approvalDocument",
-      render: (text) => (
-        <Button type="link" href={`${text}`} style={{ padding: 0 }}>
-          {text && "Download"}
-        </Button>
-      ),
-    },
-    {
-      title: "Comment",
-      dataIndex: "approveComment",
-      key: "approveComment",
     },
     {
       title: "Action",
@@ -244,6 +167,80 @@ export const Approved = () => {
     },
   ];
 
+  const expandedRowRender = (record) => {
+    const innercolumn = [
+      {
+        title: "Campaign Type",
+        dataIndex: "campaignType",
+        key: "campaignType",
+      },
+      {
+        title: "ATM Selection",
+        dataIndex: "atmSelect",
+        key: "atmSelect",
+      },
+      {
+        title: "Region",
+        dataIndex: "atmSelectRegion",
+        key: "atmSelectRegion",
+        render: (tags) => (
+          <span>
+            {tags.map((tag) => {
+              return (
+                <Tag color="green" key={tag}>
+                  {tag.toUpperCase()}
+                </Tag>
+              );
+            })}
+          </span>
+        ),
+      },
+      {
+        title: "States",
+        dataIndex: "atmSelectStates",
+        key: "atmSelectStates",
+        render: (tags) => (
+          <span>
+            {tags.map((tag) => {
+              return (
+                <Tag color="green" key={tag}>
+                  {tag.toUpperCase()}
+                </Tag>
+              );
+            })}
+          </span>
+        ),
+      },
+      {
+        title: "Approval",
+        dataIndex: "approval",
+        key: "approval",
+        render: (text) => (
+          <Typography.Text>{text ? "Yes" : "No"}</Typography.Text>
+        ),
+      },
+      {
+        title: "Approval Document",
+        dataIndex: "approvalDocument",
+        key: "approvalDocument",
+        render: (text) => (
+          <Button type="link" href={`${text}`} style={{ padding: 0 }}>
+            {text && "Download"}
+          </Button>
+        ),
+      },
+      {
+        title: "Comment",
+        dataIndex: "approveComment",
+        key: "approveComment",
+      },
+    ];
+
+    return (
+      <Table columns={innercolumn} dataSource={[record]} pagination={false} />
+    );
+  };
+
   return (
     <div>
       <Row>
@@ -262,9 +259,11 @@ export const Approved = () => {
                 onChange={search}
               />
               <Table
-                scroll={{ x: 1500 }}
                 // loading={requests.length < 1 ? true : false}
                 columns={columns}
+                expandable={{
+                  expandedRowRender,
+                }}
                 dataSource={filterTable == null ? requests : filterTable}
               />
             </Col>
@@ -303,7 +302,7 @@ export const Approved = () => {
                   message.error("There was an error updating the request")
                 );
             } else {
-              message.warn("Please write a comment in the comment box")
+              message.warn("Please write a comment in the comment box");
             }
           }}
           onCancel={() => setConfirmAction(false)}
