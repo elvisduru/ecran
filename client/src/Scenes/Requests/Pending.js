@@ -124,6 +124,21 @@ export const Pending = () => {
       ),
     },
     {
+      title: "Duration",
+      dataIndex: "dateRange",
+      key: "dateRange",
+      render: (dates) =>
+        dates.map((date, index) => {
+          if (index === 0) {
+            return (
+              <span key={index}>{moment(date).format("DD/MM/YYYY")} - </span>
+            );
+          } else {
+            return <span key={index}>{moment(date).format("DD/MM/YYYY")}</span>;
+          }
+        }),
+    },
+    {
       title: "Status",
       dataIndex: "status",
       key: "status",
