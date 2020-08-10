@@ -39,6 +39,10 @@ const requestSchema = new mongoose.Schema(
       type: String,
       default: "Pending",
     },
+    campaignActive: {
+      type: Boolean,
+      default: false,
+    },
     approveComment: String,
     declineComment: String,
     undoComment: String,

@@ -33,12 +33,9 @@ export const Pending = () => {
   //   (request) => request.status === "Pending"
   // );
 
-  const allScreens = useSelector(selectAllScreens).filter(
+  const screens = useSelector(selectAllScreens).filter(
     (screen) => screen.request
   );
-  const allRequests = useSelector(selectAllRequests);
-
-  const screens = [];
 
   // Preview
   const [preview, setPreview] = useState(false);
@@ -70,50 +67,53 @@ export const Pending = () => {
   const columns = [
     {
       title: "Date",
-      dataIndex: "createdAt",
-      key: "createdAt",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
       sorter: {
-        compare: (a, b) => a.createdAt.localeCompare(b.createdAt),
+        compare: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
       },
       render: (text) => <span>{moment(text).format("DD/MM/YYYY h:mm a")}</span>,
       defaultSortOrder: "descend",
     },
     {
-      title: "Request Type",
-      dataIndex: "requestType",
-      key: "requestType",
-      sorter: {
-        compare: (a, b) => a.requestType.localeCompare(b.requestType),
-      },
-    },
-    {
-      title: "Requester's Name",
-      dataIndex: "requesterName",
-      key: "requesterName",
-      sorter: {
-        compare: (a, b) => a.requesterName.localeCompare(b.requesterName),
-      },
-    },
-    {
-      title: "Customer's Name",
-      dataIndex: "customerName",
-      key: "customerName",
-      sorter: {
-        compare: (a, b) => a.customerName.localeCompare(b.customerName),
-      },
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
     },
     {
       title: "Campaign Name",
-      dataIndex: "campaignName",
-      key: "campaignName",
+      dataIndex: ["request", "campaignName"],
+      key: "request.campaignName",
       sorter: {
-        compare: (a, b) => a.campaignName.localeCompare(b.campaignName),
+        compare: (a, b) =>
+          a.request.campaignName.localeCompare(b.request.campaignName),
       },
     },
     {
+      title: "Running Screen",
+      dataIndex: "src",
+      key: "src",
+      render: (text) => (
+        <div
+          className="preview-card"
+          style={{ width: "50px", height: "50px", padding: "3px" }}
+          onClick={() => handlePreview(text)}
+        >
+          <img src={text} alt="campaign" />
+          <span>
+            <Button
+              icon={<EyeOutlined />}
+              type="ghost"
+              style={{ border: 0, color: "#fff" }}
+            />
+          </span>
+        </div>
+      ),
+    },
+    {
       title: "Campaign Screen",
-      dataIndex: "campaignScreen",
-      key: "campaignScreen",
+      dataIndex: ["request", "campaignScreen"],
+      key: "request.campaignScreen",
       render: (text) => (
         <div
           className="preview-card"
@@ -133,8 +133,8 @@ export const Pending = () => {
     },
     {
       title: "Duration",
-      dataIndex: "dateRange",
-      key: "dateRange",
+      dataIndex: ["request", "dateRange"],
+      key: "request.dateRange",
       render: (dates) =>
         dates.map((date, index) => {
           if (index === 0) {
@@ -206,21 +206,44 @@ export const Pending = () => {
   ];
 
   const expandedRowRender = (record) => {
+    console.log(record);
     const innercolumn = [
       {
-        title: "Campaign Type",
-        dataIndex: "campaignType",
-        key: "campaignType",
+        title: "Request Type",
+        dataIndex: ["request", "requestType"],
+        key: "request.requestType",
+        sorter: {
+          compare: (a, b) =>
+            a.request.requestType.localeCompare(b.request.requestType),
+        },
+      },
+      {
+        title: "Requester's Name",
+        dataIndex: ["request", "requesterName"],
+        key: "request.requesterName",
+        sorter: {
+          compare: (a, b) =>
+            a.request.requesterName.localeCompare(b.request.requesterName),
+        },
+      },
+      {
+        title: "Customer's Name",
+        dataIndex: ["request", "customerName"],
+        key: "request.customerName",
+        sorter: {
+          compare: (a, b) =>
+            a.request.customerName.localeCompare(b.request.customerName),
+        },
       },
       {
         title: "ATM Selection",
-        dataIndex: "atmSelect",
-        key: "atmSelect",
+        dataIndex: ["request", "atmSelect"],
+        key: "request.atmSelect",
       },
       {
         title: "Region",
-        dataIndex: "atmSelectRegion",
-        key: "atmSelectRegion",
+        dataIndex: ["request", "atmSelectRegion"],
+        key: "request.atmSelectRegion",
         render: (tags) => (
           <span>
             {tags.map((tag) => {
@@ -235,8 +258,8 @@ export const Pending = () => {
       },
       {
         title: "States",
-        dataIndex: "atmSelectStates",
-        key: "atmSelectStates",
+        dataIndex: ["request", "atmSelectStates"],
+        key: "request.atmSelectStates",
         render: (tags) => (
           <span>
             {tags.map((tag) => {
@@ -250,27 +273,14 @@ export const Pending = () => {
         ),
       },
       {
-        title: "Approval",
-        dataIndex: "approval",
-        key: "approval",
-        render: (text) => (
-          <Typography.Text>{text ? "Yes" : "No"}</Typography.Text>
-        ),
-      },
-      {
         title: "Approval Document",
-        dataIndex: "approvalDocument",
-        key: "approvalDocument",
+        dataIndex: ["request", "approvalDocument"],
+        key: "request.approvalDocument",
         render: (text) => (
           <Button type="link" href={`${text}`} style={{ padding: 0 }}>
             {text && "Download"}
           </Button>
         ),
-      },
-      {
-        title: "Comment",
-        dataIndex: "undoComment",
-        key: "undoComment",
       },
     ];
 

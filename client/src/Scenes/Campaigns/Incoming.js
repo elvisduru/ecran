@@ -39,10 +39,10 @@ export const Incoming = () => {
   const columns = [
     {
       title: "Date",
-      dataIndex: "createdAt",
-      key: "createdAt",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
       sorter: {
-        compare: (a, b) => a.createdAt.localeCompare(b.createdAt),
+        compare: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
       },
       render: (text) => <span>{moment(text).format("DD/MM/YYYY h:mm a")}</span>,
       defaultSortOrder: "descend",
@@ -116,12 +116,17 @@ export const Incoming = () => {
         }),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
+      title: "Campaign Status",
+      dataIndex: "campaignActive",
+      key: "campaignActive",
       render: (text) => (
-        <Typography.Text style={{ color: "#1D9918" }}>{text}</Typography.Text>
+        <Typography.Text style={{ color: "#1D9918" }}>
+          {text ? "Pending Approval" : "Not submitted"}
+        </Typography.Text>
       ),
+      sorter: {
+        compare: (a, b) => a.campaignActive.localeCompare(b.campaignActive),
+      },
     },
     {
       title: "Action",
@@ -144,6 +149,7 @@ export const Incoming = () => {
             onClick={() => {
               history.push(`/campaigns/replace/${record.key}`);
             }}
+            disabled={record.campaignActive}
           >
             Replace
           </Button>

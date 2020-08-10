@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { Row, Col, Typography, Button, Space, Select, message } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -26,6 +26,9 @@ export const Replace = () => {
   ];
   const [screen, setScreen] = useState(initialScreen);
   const [buttonState, setButtonState] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const history = useHistory();
 
   return (
     <div>
@@ -60,8 +63,19 @@ export const Replace = () => {
             title="Replace Screen"
             disabled={buttonState}
             icon={<SwapOutlined />}
+            loading={loading}
             onClick={() => {
-              dispatch(updateScreen({ status: "Pending" }))
+              setLoading(true);
+              dispatch(updateRequest({ id: request._id, campaignActive: true }))
+                .then(() =>
+                  dispatch(
+                    updateScreen({
+                      id: screen[2],
+                      status: "Pending",
+                      request: request._id,
+                    })
+                  )
+                )
                 .then(() => {
                   setScreen((prevScreen) => [
                     prevScreen[0],
@@ -69,10 +83,19 @@ export const Replace = () => {
                     prevScreen[2],
                   ]);
                   setButtonState(true);
-                  message.success(
-                    "Successfully replaced screen. Awaiting approval."
+                  setLoading(false);
+                  return message.success(
+                    "Successfully replaced screen. Awaiting approval.",
+                    2.5
                   );
                 })
+                .then(() =>
+                  message.loading(
+                    "Redirecting to 'Incoming Requests' in 3 seconds...",
+                    3
+                  )
+                )
+                .then(() => history.goBack())
                 .catch((error) => console.log(error));
               // dispatch(
               //   updateScreen({

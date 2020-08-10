@@ -6,7 +6,7 @@ const db = require("../db");
 
 const fetchScreens = async (req, res) => {
   try {
-    const screens = await Screen.find({});
+    const screens = await Screen.find({}).populate("request");
     res.json({ screens });
   } catch (error) {
     console.log("Unable to fetch screens", error);
@@ -95,8 +95,11 @@ const updateRequest = async (req, res) => {
 const updateScreen = async (req, res) => {
   try {
     const { id, fields } = req.body;
-    const screen = await Screen.findByIdAndUpdate(id, fields, { new: true });
-    res.status(200).json({ id, changes: fields });
+    const screen = await Screen.findByIdAndUpdate(id, fields, {
+      new: true,
+    }).populate("request");
+    console.log(screen);
+    res.status(200).json({ id, changes: { fields, ...screen.request } });
   } catch (error) {
     console.log(error);
   }
