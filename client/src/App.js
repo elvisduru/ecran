@@ -32,6 +32,7 @@ import {
 import Logo from "./images/logo-white.png";
 import { Dashboard } from "./Scenes/Dashboard";
 import { Pending } from "./Scenes/Requests/Pending";
+import { Pending as PendingCampaigns } from "./Scenes/Campaigns/Pending";
 import PageNotFound from "./Scenes/PageNotFound";
 import { Approved } from "./Scenes/Requests/Approved";
 import { Declined } from "./Scenes/Requests/Declined";
@@ -79,6 +80,10 @@ const links = [
   {
     value: "Incoming Requests",
     path: "/campaigns/incoming",
+  },
+  {
+    value: "Pending Campaigns",
+    path: "/campaigns/pending",
   },
   {
     value: "Monitoring",
@@ -223,6 +228,7 @@ function App({ username }) {
             <Menu.Item key="/campaigns/incoming">Incoming</Menu.Item>
             {/* <Menu.Item key="/campaigns/add">Upload Screen</Menu.Item> */}
             <Menu.Item key="/campaigns">Active</Menu.Item>
+            <Menu.Item key="/campaigns/pending">Pending</Menu.Item>
           </SubMenu>
           <Menu.Item key="/monitoring" icon={<SignalFilled />}>
             Monitoring
@@ -307,6 +313,7 @@ function App({ username }) {
             <Route path="/requests/declined" component={Declined} />
             <Route path="/requests/edit/:id" component={EditRequest} />
             {/* <Route path="/campaigns/add" component={AddCampaign} /> */}
+            <Route path="/campaigns/pending" component={PendingCampaigns} />
             <Route path="/campaigns/incoming" component={Incoming} />
             <Route path="/campaigns/replace/:id" component={Replace} />
             <Route path="/campaigns" component={Campaigns} />

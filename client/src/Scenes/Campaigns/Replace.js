@@ -61,15 +61,7 @@ export const Replace = () => {
             disabled={buttonState}
             icon={<SwapOutlined />}
             onClick={() => {
-              dispatch(
-                updateScreen({
-                  id: screen[2],
-                  src: request.campaignScreen,
-                })
-              )
-                .then(() =>
-                  dispatch(updateRequest({ id: request._id, active: true }))
-                )
+              dispatch(updateScreen({ status: "Pending" }))
                 .then(() => {
                   setScreen((prevScreen) => [
                     prevScreen[0],
@@ -77,9 +69,30 @@ export const Replace = () => {
                     prevScreen[2],
                   ]);
                   setButtonState(true);
-                  message.success("Success replaced screen");
+                  message.success(
+                    "Successfully replaced screen. Awaiting approval."
+                  );
                 })
                 .catch((error) => console.log(error));
+              // dispatch(
+              //   updateScreen({
+              //     id: screen[2],
+              //     src: request.campaignScreen,
+              //   })
+              // )
+              //   .then(() =>
+              //     dispatch(updateRequest({ id: request._id, active: true }))
+              //   )
+              //   .then(() => {
+              //     setScreen((prevScreen) => [
+              //       prevScreen[0],
+              //       request.campaignScreen,
+              //       prevScreen[2],
+              //     ]);
+              //     setButtonState(true);
+              //     message.success("Success replaced screen");
+              //   })
+              //   .catch((error) => console.log(error));
             }}
           >
             Replace
