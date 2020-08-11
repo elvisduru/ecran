@@ -206,7 +206,6 @@ export const Pending = () => {
   ];
 
   const expandedRowRender = (record) => {
-    console.log(record);
     const innercolumn = [
       {
         title: "Request Type",

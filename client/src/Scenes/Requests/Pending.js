@@ -316,6 +316,11 @@ export const Pending = () => {
           title={`Confirm ${reason}`}
           onOk={() => {
             if (comment) {
+              message.loading({
+                content: "Action in progress...",
+                key: "loader",
+                duration: 0,
+              });
               dispatch(
                 updateRequest({
                   id: selectedRequest.key,
@@ -326,11 +331,15 @@ export const Pending = () => {
                 })
               )
                 .then(() => {
-                  message.success(
-                    `${selectedRequest.campaignName} has been successfully ${
+                  message.success({
+                    content: `${
+                      selectedRequest.campaignName
+                    } has been successfully ${
                       reason === "Decline" ? "Declined" : "Approved"
-                    }`
-                  );
+                    }`,
+                    key: "loader",
+                    duration: 2,
+                  });
                   setConfirmAction(false);
                 })
                 .catch(() =>

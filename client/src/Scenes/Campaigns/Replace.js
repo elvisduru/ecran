@@ -66,6 +66,11 @@ export const Replace = () => {
             loading={loading}
             onClick={() => {
               setLoading(true);
+              message.loading({
+                content: "Action in progress...",
+                key: "loader",
+                duration: 0,
+              });
               dispatch(updateRequest({ id: request._id, campaignActive: true }))
                 .then(() =>
                   dispatch(
@@ -84,10 +89,11 @@ export const Replace = () => {
                   ]);
                   setButtonState(true);
                   setLoading(false);
-                  return message.success(
-                    "Successfully replaced screen. Awaiting approval.",
-                    2.5
-                  );
+                  return message.success({
+                    content: "Successfully replaced screen. Awaiting approval.",
+                    key: "loader",
+                    duration: 2.5,
+                  });
                 })
                 .then(() =>
                   message.loading(

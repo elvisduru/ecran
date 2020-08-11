@@ -299,6 +299,11 @@ export const Declined = () => {
           title={`Confirm Action`}
           onOk={() => {
             if (comment) {
+              message.loading({
+                content: "Action in progress...",
+                key: "loader",
+                duration: 0,
+              });
               dispatch(
                 updateRequest({
                   id: selectedRequest.key,
@@ -307,9 +312,11 @@ export const Declined = () => {
                 })
               )
                 .then(() => {
-                  message.success(
-                    `${selectedRequest.campaignName} has been restored successfully`
-                  );
+                  message.success({
+                    content: `${selectedRequest.campaignName} has been restored successfully`,
+                    key: "loader",
+                    duration: 2,
+                  });
                   setConfirmAction(false);
                 })
                 .catch(() =>

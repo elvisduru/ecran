@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-import { getRequests, updateRequestByID } from "../../helpers";
+import { getRequests, updateRequestByID, addNewRequest } from "../../helpers";
 
 export const fetchRequests = createAsyncThunk("requests/fetchAll", async () => {
   try {
@@ -27,6 +27,18 @@ export const updateRequest = createAsyncThunk(
   }
 );
 
+export const addRequest = createAsyncThunk(
+  "requests/addOne",
+  async (requestData, { rejectWithValue }) => {
+    try {
+      const request = await addNewRequest(requestData);
+      return request;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
 export const requestsAdapter = createEntityAdapter({
   selectId: (request) => request._id,
   sortComparer: (a, b) => a.createdAt.localeCompare(b.createdAt),
@@ -37,16 +49,13 @@ const initialState = requestsAdapter.getInitialState();
 export const requestsSlice = createSlice({
   name: "requests",
   initialState,
-  reducers: {
-    addRequest: requestsAdapter.addOne,
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchRequests.fulfilled, requestsAdapter.upsertMany);
     builder.addCase(updateRequest.fulfilled, requestsAdapter.updateOne);
+    builder.addCase(addRequest.fulfilled, requestsAdapter.addOne);
   },
 });
-
-export const { addRequest } = requestsSlice.actions;
 
 export const {
   selectAll: selectAllRequests,
