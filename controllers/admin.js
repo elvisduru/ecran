@@ -98,7 +98,6 @@ const updateScreen = async (req, res) => {
     const screen = await Screen.findByIdAndUpdate(id, fields, {
       new: true,
     }).populate("request");
-    console.log(screen);
     res.status(200).json({ id, changes: { fields, ...screen.request } });
   } catch (error) {
     console.log(error);

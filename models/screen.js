@@ -10,6 +10,8 @@ const screenSchema = new mongoose.Schema(
       ref: "Request",
     },
     status: String,
+    approveComment: String,
+    declineComment: String,
   },
   { timestamps: true }
 );

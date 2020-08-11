@@ -244,8 +244,8 @@ export const Declined = () => {
       },
       {
         title: "Comment",
-        dataIndex: "undoComment",
-        key: "undoComment",
+        dataIndex: "declineComment",
+        key: "declineComment",
       },
     ];
 

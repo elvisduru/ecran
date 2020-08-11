@@ -1,32 +1,13 @@
 import React, { useState } from "react";
 import moment from "moment";
-import {
-  Typography,
-  Row,
-  Button,
-  Col,
-  message,
-  Table,
-  Input,
-  Modal,
-  Tag,
-} from "antd";
-import {
-  SearchOutlined,
-  EyeOutlined,
-  StopOutlined,
-  CheckOutlined,
-} from "@ant-design/icons";
-import { useSelector, useDispatch } from "react-redux";
-import { updateRequest } from "../Requests/requestsSlice";
-import { selectAllScreens, updateScreen } from "./screensSlice";
-import TextArea from "antd/lib/input/TextArea";
+import { Typography, Row, Button, Col, Table, Input, Modal, Tag } from "antd";
+import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { selectAllScreens } from "./screensSlice";
 
-export const Pending = () => {
-  const dispatch = useDispatch();
-
+export const Approved = () => {
   const screens = useSelector(selectAllScreens).filter(
-    (screen) => screen.request && screen.status === "Pending"
+    (screen) => screen.request && screen.status === "Approved"
   );
 
   // Preview
@@ -50,11 +31,6 @@ export const Pending = () => {
 
     setFilterTable(filterTable);
   };
-
-  const [comment, setComment] = useState("");
-  const [selectedCampaign, setSelectedCampaign] = useState();
-  const [reason, setReason] = useState();
-  const [confirmAction, setConfirmAction] = useState(false);
 
   const columns = [
     {
@@ -139,50 +115,16 @@ export const Pending = () => {
         }),
     },
     {
+      title: "Comment",
+      dataIndex: "approveComment",
+      key: "approveComment",
+    },
+    {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (text) => (
-        <Typography.Text type="warning">{text}</Typography.Text>
-      ),
-    },
-    {
-      title: "Action",
-      key: "action",
-      width: 150,
-      fixed: "right",
-      render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-          }}
-        >
-          <Button
-            type="primary"
-            size="small"
-            title="Approve Campaign"
-            icon={<CheckOutlined />}
-            onClick={() => {
-              setConfirmAction(true);
-              setReason("Approval");
-              setSelectedCampaign(record);
-            }}
-          />
-          <Button
-            type="primary"
-            title="Decline Campaign"
-            danger
-            icon={<StopOutlined />}
-            size="small"
-            onClick={() => {
-              setConfirmAction(true);
-              setReason("Decline");
-              setSelectedCampaign(record);
-            }}
-          />
-        </div>
+        <Typography.Text style={{ color: "#1D9918" }}>{text}</Typography.Text>
       ),
     },
   ];
@@ -276,7 +218,7 @@ export const Pending = () => {
         <Col span={24}>
           <Row gutter={[16, 32]}>
             <Col flex="auto">
-              <Typography.Title level={4}>Pending Campaigns</Typography.Title>
+              <Typography.Title level={4}>Approved Campaigns</Typography.Title>
             </Col>
           </Row>
           <Row>
@@ -307,61 +249,6 @@ export const Pending = () => {
           onCancel={() => setPreview(false)}
         >
           <img alt="campaign" style={{ width: "100%" }} src={previewImage} />
-        </Modal>
-      )}
-      {confirmAction && (
-        <Modal
-          visible={confirmAction}
-          title={`Confirm ${reason}`}
-          onOk={() => {
-            if (comment) {
-              message.loading({
-                content: "Action in progress...",
-                key: "loader",
-                duration: 0,
-              });
-              dispatch(
-                updateScreen({
-                  id: selectedCampaign.key,
-                  src: selectedCampaign.request.campaignScreen,
-                  status: reason === "Decline" ? "Declined" : "Approved",
-                  [reason === "Decline"
-                    ? "declineComment"
-                    : "approveComment"]: comment,
-                })
-              )
-                .then(() =>
-                  dispatch(
-                    updateRequest({
-                      id: selectedCampaign.request._id,
-                      active: true,
-                    })
-                  )
-                )
-                .then(() => {
-                  message.success({
-                    content: `Successfully replaced screen: '${selectedCampaign.title}'`,
-                    key: "loader",
-                    duration: 2,
-                  });
-                  setConfirmAction(false);
-                })
-                .catch(() =>
-                  message.error("There was an error replacing the screen")
-                );
-            } else {
-              message.warn("Please write a comment in the comment box");
-            }
-          }}
-          onCancel={() => setConfirmAction(false)}
-        >
-          <TextArea
-            rows={4}
-            placeholder="Write your comments here..."
-            onChange={(e) => {
-              setComment(e.target.value);
-            }}
-          />
         </Modal>
       )}
     </div>
