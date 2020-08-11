@@ -43,7 +43,11 @@ export const EditRequest = () => {
   const dispatch = useDispatch();
 
   const onFinish = (values) => {
-    message.success("Request was updated successfully");
+    message.loading({
+      content: "Action in progress...",
+      key: "loader",
+      duration: 0,
+    });
     console.log("Success:", values);
 
     if (values.campaignScreen[0].name === request.campaignScreen) {
@@ -64,6 +68,11 @@ export const EditRequest = () => {
 
     dispatch(updateRequest({ id, ...values }))
       .then(() => {
+        message.success({
+          content: "Request was created successfully",
+          key: "loader",
+          duration: 2,
+        });
         form.resetFields();
       })
       .catch((error) => console.log(error));

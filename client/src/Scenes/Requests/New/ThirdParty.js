@@ -38,7 +38,11 @@ export const ThirdParty = () => {
   const screens = useSelector(selectAllScreens);
 
   const onFinish = (values) => {
-    message.success("Request was created successfully");
+    message.loading({
+      content: "Action in progress...",
+      key: "loader",
+      duration: 0,
+    });
     console.log("Success:", values);
     if (values.campaignScreen) {
       let campaignScreen = values.campaignScreen[0].originFileObj;
@@ -64,10 +68,14 @@ export const ThirdParty = () => {
         formData.append(key, value);
       }
     }
-    Axios.post("/api/request/new", formData)
-      .then((res) => {
-        dispatch(addRequest(res.data));
-      })
+    dispatch(addRequest(formData))
+      .then(() =>
+        message.success({
+          content: "Request was created successfully",
+          key: "loader",
+          duration: 2,
+        })
+      )
       .catch((error) => console.log(error));
     setShowSubmit(false);
     form.resetFields();
