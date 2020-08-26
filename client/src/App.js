@@ -37,7 +37,7 @@ import { Approved as ApprovedCampaigns } from "./Scenes/Campaigns/Approved";
 import PageNotFound from "./Scenes/PageNotFound";
 import { Approved } from "./Scenes/Requests/Approved";
 import { Declined } from "./Scenes/Requests/Declined";
-import { Monitoring } from "./Scenes/Monitoring";
+import { Monitoring } from "./Scenes/Monitoring/Monitoring";
 import { Reporting } from "./Scenes/Reporting";
 import { Profiling } from "./Scenes/Profiling";
 import { Auditing } from "./Scenes/Auditing";
@@ -55,6 +55,7 @@ import { fetchRequests } from "./Scenes/Requests/requestsSlice";
 import { fetchAllScreens } from "./Scenes/Campaigns/screensSlice";
 import { Incoming } from "./Scenes/Campaigns/Incoming";
 import { Replace } from "./Scenes/Campaigns/Replace";
+import { Screens } from "./Scenes/Monitoring/Screens";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -325,6 +326,7 @@ function App({ username }) {
             <Route path="/campaigns/incoming" component={Incoming} />
             <Route path="/campaigns/replace/:id" component={Replace} />
             <Route path="/campaigns" component={Campaigns} />
+            <Route path="/monitoring/:id" component={Screens} />
             <Route path="/monitoring" component={Monitoring} />
             <Route path="/reporting" component={Reporting} />
             <Route path="/profiling" component={Profiling} />

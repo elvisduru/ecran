@@ -4,6 +4,9 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
+const realFs = require("fs");
+const gracefulFs = require("graceful-fs");
+gracefulFs.gracefulify(realFs);
 
 const db = require("./db");
 
@@ -14,6 +17,18 @@ const atms = require("./routes/atms");
 const verifyToken = require("./verifyToken");
 
 const dir = require("node-dir");
+
+const admin = require("firebase-admin");
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "ecran-fe278.appspot.com",
+});
+
+const bucket = admin.storage().bucket();
+
 const { Request, Screen } = require("./models");
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -47,18 +62,53 @@ app.get("/api/home", verifyToken, (req, res) => {
   res.send("Welcome!");
 });
 
-app.get("/readfiles", async (req, res) => {
-  try {
-    const files = await dir.files(path.join(__dirname, "uploads"), {
-      sync: true,
-      shortName: true,
-    });
-    res.json({ files });
-  } catch (err) {
-    console.log("err reading files: ", err);
-    res.send("err reading files");
-  }
-});
+// app.get("/readfiles", async (req, res) => {
+//   try {
+//     const files = await dir.files(path.join(__dirname, "uploads"), {
+//       sync: true,
+//       shortName: true,
+//     });
+//     res.json({ files });
+//   } catch (err) {
+//     console.log("err reading files: ", err);
+//     res.send("err reading files");
+//   }
+// });
+
+// (async function () {
+//   try {
+//     const directory = path.join(__dirname, "uploads/screens");
+//     const screens = Array.from(
+//       new Set(
+//         await dir.files(directory, {
+//           sync: true,
+//           shortName: true,
+//         })
+//       )
+//     );
+
+//     const atmsCursor = await db.collection("atms").find({});
+//     while (await atmsCursor.hasNext()) {
+//       const atm = await atmsCursor.next();
+//       const terminal = atm["Terminal ID"];
+
+//       await Promise.all(
+//         screens.map(async (screen) => {
+//           try {
+//             const file = bucket.file(`screens/${screen}`);
+//             await file.copy(`atms/${terminal}/S4PICT/${screen}`);
+//           } catch (error) {
+//             console.log(error);
+//           }
+//         })
+//       );
+//     }
+
+//     console.log("FINISHED UPLOADING FILES");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })();
 
 app.get("/regions", async (req, res) => {
   try {
