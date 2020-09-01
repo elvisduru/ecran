@@ -1,5 +1,12 @@
 import axios from "axios";
 
+export const fetchATMs = async () => {
+  try {
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const fetchScreens = async () => {
   try {
     const res = await axios.get("/api/campaigns/");

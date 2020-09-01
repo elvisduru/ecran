@@ -16,4 +16,15 @@ require("firebase/storage");
 firebase.initializeApp(firebaseConfig);
 const storageRef = firebase.storage().ref();
 
-module.exports = { secret, storageRef };
+const admin = require("firebase-admin");
+
+var serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "ecran-fe278.appspot.com",
+});
+
+const bucket = admin.storage().bucket();
+
+module.exports = { secret, storageRef, bucket };
