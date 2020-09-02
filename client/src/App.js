@@ -126,10 +126,10 @@ function App({ username }) {
     dispatch(fetchAllScreens());
 
     const socket = io(ENDPOINT);
-    // socket.emit("loadATMs", (atms) => {
-    //   console.log(atms);
-    //   dispatch(atmsReceived(atms));
-    // });
+    socket.emit("loadATMs", (atms) => {
+      console.log(atms);
+      dispatch(atmsReceived(atms));
+    });
   }, [dispatch, ENDPOINT]);
 
   // Sider Hook
