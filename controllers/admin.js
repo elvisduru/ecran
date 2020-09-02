@@ -121,18 +121,22 @@ const fetchATMs = async (req, res) => {
   }
 };
 
-const checkScreens = async (req, res) => {
+const transformATMs = async () => {
   try {
-    console.time("timer");
+    console.log("Checking ATMs");
 
     const atmsCursor = await db.collection("atms").find({});
     const atms = [];
+    let count = 0;
     while (await atmsCursor.hasNext()) {
+      console.log(`completed ${count}`);
       const atm = await atmsCursor.next();
-
+      count++;
       const [screens] = await bucket.getFiles({
         prefix: `atms/${atm["Terminal ID"]}/S4PICT`,
       });
+
+      atm.key = atm._id;
 
       // check atm screen stats
       atm.stats = {
@@ -180,9 +184,19 @@ const checkScreens = async (req, res) => {
 
       atms.push(atm);
     }
-    console.timeEnd("timer");
-    console.log(atms.length);
+    console.log("Completed checking ATMs");
+    return atms;
   } catch (error) {
+    console.log(error);
+  }
+};
+
+const checkAllATMs = async (req, res) => {
+  try {
+    const atms = await transformATMs();
+    res.status(200).json(atms);
+  } catch (error) {
+    res.send(error);
     console.log(error);
   }
 };
@@ -193,4 +207,5 @@ exports.fetchRequests = fetchRequests;
 exports.fetchATMs = fetchATMs;
 exports.updateRequest = updateRequest;
 exports.updateScreen = updateScreen;
-exports.checkScreens = checkScreens;
+exports.checkAllATMs = checkAllATMs;
+exports.transformATMs = transformATMs;

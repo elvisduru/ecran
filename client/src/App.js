@@ -57,6 +57,9 @@ import { Incoming } from "./Scenes/Campaigns/Incoming";
 import { Replace } from "./Scenes/Campaigns/Replace";
 import { Screens } from "./Scenes/Monitoring/Screens";
 
+import io from "socket.io-client";
+import { atmsReceived } from "./Scenes/Monitoring/atmsSlice";
+
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 const { Search } = Input;
@@ -114,12 +117,20 @@ const links = [
 ];
 
 function App({ username }) {
+  const ENDPOINT = "localhost:5000";
+
   const dispatch = useDispatch();
   // Fetch State
   useEffect(() => {
     dispatch(fetchRequests());
     dispatch(fetchAllScreens());
-  }, [dispatch]);
+
+    const socket = io(ENDPOINT);
+    // socket.emit("loadATMs", (atms) => {
+    //   console.log(atms);
+    //   dispatch(atmsReceived(atms));
+    // });
+  }, [dispatch, ENDPOINT]);
 
   // Sider Hook
   const [collapsed, setCollapse] = useState(false);

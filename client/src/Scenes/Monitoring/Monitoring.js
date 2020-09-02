@@ -2,21 +2,15 @@ import React, { useState } from "react";
 import { Typography, Row, Col, Table, Input, Modal } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
-import campaignScreen1 from "../../images/campaignImg1.jpg";
-import campaignScreen2 from "../../images/campaignImg2.jpg";
 
 import styles from "./Monitoring.module.css";
 
-import atms from "../../atm-list.json";
-
-const data = atms.map((atm) => {
-  atm.defaultScreen = campaignScreen1;
-  atm.screen = campaignScreen2;
-  atm.key = atm["S/N"];
-  return atm;
-});
+import { selectAllATMs } from "./atmsSlice";
+import { useSelector } from "react-redux";
 
 export const Monitoring = () => {
+  const atms = useSelector(selectAllATMs);
+
   // Preview
   const [preview, setPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -29,7 +23,7 @@ export const Monitoring = () => {
 
   const search = (e) => {
     const value = e.target.value;
-    const filterTable = data.filter((o) =>
+    const filterTable = atms.filter((o) =>
       Object.keys(o).some((k) =>
         String(o[k]).toLowerCase().includes(value.toLowerCase())
       )
@@ -58,27 +52,19 @@ export const Monitoring = () => {
       },
     },
     {
-      title: "Sol ID",
-      dataIndex: "Sol ID",
-      key: "Sol ID",
-      sorter: {
-        compare: (a, b) => a["Sol ID"] - b["Sol ID"],
-      },
-    },
-    {
-      title: "Location",
-      dataIndex: "Location",
-      key: "Location",
-      sorter: {
-        compare: (a, b) => a["Location"].localeCompare(b["Location"]),
-      },
-    },
-    {
       title: "Last Txn Date",
       dataIndex: "Last Txn Date",
       key: "Last Txn Date",
       sorter: {
         compare: (a, b) => a["Last Txn Date"].localeCompare(b["Last Txn Date"]),
+      },
+    },
+    {
+      title: "Address",
+      dataIndex: "Address",
+      key: "Address",
+      sorter: {
+        compare: (a, b) => a["Address"].localeCompare(b["Address"]),
       },
     },
     {
@@ -98,19 +84,71 @@ export const Monitoring = () => {
       ),
     },
     {
-      title: "Address",
-      dataIndex: "Address",
-      key: "Address",
+      title: "Current Campaign",
+      dataIndex: ["stats", "currentCampaign"],
+      key: "stats.currentCampaign",
+      render: (data) => (
+        <Typography.Text type="warning">{data.length}</Typography.Text>
+      ),
       sorter: {
-        compare: (a, b) => a["Address"].localeCompare(b["Address"]),
+        compare: (a, b) =>
+          a.stats.currentCampaign.length - b.stats.currentCampaign.length,
       },
     },
     {
-      title: "Type",
-      dataIndex: "Type",
-      key: "Type",
+      title: "Old Campaign",
+      dataIndex: ["stats", "oldCampaign"],
+      key: "stats.oldCampaign",
+      render: (data) => (
+        <Typography.Text type="warning">{data.length}</Typography.Text>
+      ),
       sorter: {
-        compare: (a, b) => a["Type"].localeCompare(b["Type"]),
+        compare: (a, b) =>
+          a.stats.oldCampaign.length - b.stats.oldCampaign.length,
+      },
+    },
+    {
+      title: "No Campaign",
+      dataIndex: ["stats", "noCampaign"],
+      key: "stats.noCampaign",
+      render: (text) => (
+        <Typography.Text
+          type={!text && "danger"}
+          style={text && { color: "#1D9918" }}
+        >
+          {text ? "true" : "false"}
+        </Typography.Text>
+      ),
+      sorter: {
+        compare: (a, b) => a.stats.noCampaign - b.stats.noCampaign,
+      },
+    },
+    {
+      title: "Incomplete Screens",
+      dataIndex: ["stats", "incompleteScreens"],
+      key: "stats.incompleteScreens",
+      render: (data) => (
+        <Typography.Text type="secondary">{data.length}</Typography.Text>
+      ),
+      sorter: {
+        compare: (a, b) =>
+          a.stats.incompleteScreens.length - b.stats.incompleteScreens.length,
+      },
+    },
+    {
+      title: "No Screen",
+      dataIndex: ["stats", "noScreen"],
+      key: "stats.noScreen",
+      render: (text) => (
+        <Typography.Text
+          type={!text && "danger"}
+          style={text && { color: "#1D9918" }}
+        >
+          {text ? "true" : "false"}
+        </Typography.Text>
+      ),
+      sorter: {
+        compare: (a, b) => a.stats.noScreen - b.stats.noScreen,
       },
     },
     {
@@ -119,14 +157,6 @@ export const Monitoring = () => {
       key: "IP Address",
       sorter: {
         compare: (a, b) => a["IP Address"].localeCompare(b["IP Address"]),
-      },
-    },
-    {
-      title: "Location Type",
-      dataIndex: "Location Type",
-      key: "Location Type",
-      sorter: {
-        compare: (a, b) => a["Location Type"].localeCompare(b["Location Type"]),
       },
     },
     {
@@ -146,6 +176,48 @@ export const Monitoring = () => {
       },
     },
   ];
+
+  const expandedRowRender = (record) => {
+    const innerColumn = [
+      {
+        title: "Sol ID",
+        dataIndex: "Sol ID",
+        key: "Sol ID",
+        sorter: {
+          compare: (a, b) => a["Sol ID"] - b["Sol ID"],
+        },
+      },
+      {
+        title: "Location",
+        dataIndex: "Location",
+        key: "Location",
+        sorter: {
+          compare: (a, b) => a["Location"].localeCompare(b["Location"]),
+        },
+      },
+      {
+        title: "Type",
+        dataIndex: "Type",
+        key: "Type",
+        sorter: {
+          compare: (a, b) => a["Type"].localeCompare(b["Type"]),
+        },
+      },
+      {
+        title: "Location Type",
+        dataIndex: "Location Type",
+        key: "Location Type",
+        sorter: {
+          compare: (a, b) =>
+            a["Location Type"].localeCompare(b["Location Type"]),
+        },
+      },
+    ];
+
+    return (
+      <Table columns={innerColumn} dataSource={[record]} pagination={false} />
+    );
+  };
 
   return (
     <div className={styles.Monitoring}>
@@ -170,12 +242,15 @@ export const Monitoring = () => {
                   return {
                     onClick: (event) => {
                       console.log("Clicked: ", rowIndex, "\nData: ", record);
-                      const id = record["Terminal ID"];
+                      const id = record._id;
                       history.push(`/monitoring/${id}`);
                     },
                   };
                 }}
-                dataSource={filterTable == null ? data : filterTable}
+                expandable={{
+                  expandedRowRender,
+                }}
+                dataSource={filterTable == null ? atms : filterTable}
                 size="small"
               />
             </Col>

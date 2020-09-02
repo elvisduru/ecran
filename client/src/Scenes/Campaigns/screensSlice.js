@@ -31,14 +31,14 @@ export const updateScreen = createAsyncThunk(
   }
 );
 
-export const screensAdapter = createEntityAdapter({
+const screensAdapter = createEntityAdapter({
   selectId: (screen) => screen._id,
   sortComparer: (a, b) => a.createdAt - b.createdAt,
 });
 
 const initialState = screensAdapter.getInitialState();
 
-export const screensSlice = createSlice({
+const screensSlice = createSlice({
   name: "screens",
   initialState,
   extraReducers: (builder) => {

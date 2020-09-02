@@ -1,12 +1,15 @@
 import axios from "axios";
 
-// export const fetchATMs = async () => {
-//   try {
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+export const fetchATMs = async () => {
+  try {
+    console.log("fetching atms");
+    const res = await axios.get("/api/atms/monitor");
+    console.log("done");
+    console.log(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const fetchScreens = async () => {
   try {

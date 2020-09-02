@@ -18,6 +18,7 @@ import counterReducer from "../features/counter/counterSlice";
 import campaignsReducer from "../Scenes/Campaigns/CampaignsSlice";
 import requestsReducer from "../Scenes/Requests/requestsSlice";
 import screensReducer from "../Scenes/Campaigns/screensSlice";
+import atmsReducer from "../Scenes/Monitoring/atmsSlice";
 
 const persistConfig = {
   key: "root",
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   campaigns: campaignsReducer,
   requests: requestsReducer,
   screens: screensReducer,
+  atms: atmsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
