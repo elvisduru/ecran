@@ -117,7 +117,7 @@ const links = [
 ];
 
 function App({ username }) {
-  const ENDPOINT = location.origin;
+  const ENDPOINT = window.location.origin;
 
   const dispatch = useDispatch();
   // Fetch State
