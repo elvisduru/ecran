@@ -117,7 +117,7 @@ const links = [
 ];
 
 function App({ username }) {
-  const ENDPOINT = "localhost:5000";
+  const ENDPOINT = location.origin;
 
   const dispatch = useDispatch();
   // Fetch State
