@@ -338,7 +338,7 @@ export const Pending = () => {
                   dispatch(
                     updateScreen({
                       id: selectedCampaign.key,
-                      src: selectedCampaign.request.campaignScreen,
+                      newSrc: selectedCampaign.request.campaignScreen,
                       status: reason === "Decline" ? "Declined" : "Approved",
                       [reason === "Decline"
                         ? "declineComment"
