@@ -361,6 +361,7 @@ export const Pending = () => {
                     duration: 2,
                   });
                   setConfirmAction(false);
+                  window.location.reload();
                 })
                 .catch(() =>
                   message.error("There was an error replacing the screen")
