@@ -21,6 +21,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateRequest } from "../Requests/requestsSlice";
 import { selectAllScreens, updateScreen } from "./screensSlice";
 import TextArea from "antd/lib/input/TextArea";
+import { updateATMs } from "../Monitoring/atmsSlice";
 
 export const Pending = () => {
   const dispatch = useDispatch();
@@ -321,15 +322,30 @@ export const Pending = () => {
                 duration: 0,
               });
               dispatch(
-                updateScreen({
-                  id: selectedCampaign.key,
-                  src: selectedCampaign.request.campaignScreen,
-                  status: reason === "Decline" ? "Declined" : "Approved",
-                  [reason === "Decline"
-                    ? "declineComment"
-                    : "approveComment"]: comment,
+                updateATMs({
+                  atmSelect: selectedCampaign.request.atmSelect,
+                  atmSelectData:
+                    selectedCampaign.request.atmSelect === "all"
+                      ? "all"
+                      : selectedCampaign.request.atmSelect === "state"
+                      ? selectedCampaign.request.atmSelectStates
+                      : selectedCampaign.request.atmSelectRegion,
+                  screen: selectedCampaign.request.campaignScreen,
+                  src: selectedCampaign.src,
                 })
               )
+                .then(() =>
+                  dispatch(
+                    updateScreen({
+                      id: selectedCampaign.key,
+                      src: selectedCampaign.request.campaignScreen,
+                      status: reason === "Decline" ? "Declined" : "Approved",
+                      [reason === "Decline"
+                        ? "declineComment"
+                        : "approveComment"]: comment,
+                    })
+                  )
+                )
                 .then(() =>
                   dispatch(
                     updateRequest({

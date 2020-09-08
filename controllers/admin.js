@@ -4,6 +4,7 @@ const fs = require("fs");
 const { Screen, Request } = require("../models/");
 const db = require("../db");
 const { bucket } = require("../utils");
+const { default: fetch } = require("node-fetch");
 
 const fetchScreens = async (req, res) => {
   try {
@@ -171,13 +172,15 @@ const transformATMs = async () => {
           screen.name.lastIndexOf("PIC"),
           screen.name.lastIndexOf(".")
         );
-        const lastModified = new Date(screen.metadata.updated).getTime();
-
-        if (lastModified === atm.screens[screenName].lastModified) {
+        const lastModified = new Date(screen.metadata.updated).getHours();
+        const lastModifiedDB = new Date(
+          atm.screens[screenName].lastModified
+        ).getHours();
+        if (lastModified === lastModifiedDB) {
           atm.stats.currentCampaign.push(atm.screens[screenName]);
         }
 
-        if (lastModified < atm.screens[screenName].lastModified) {
+        if (lastModified < lastModifiedDB) {
           atm.stats.oldCampaign.push(atm.screens[screenName]);
         }
       });
@@ -201,6 +204,174 @@ const checkAllATMs = async (req, res) => {
   }
 };
 
+const updateATMs = async (req, res) => {
+  try {
+    const { atmSelect, atmSelectData, screen, src } = req.body;
+    // const fileName = screen.substring(
+    //   screen.lastIndexOf("/o/") + 3,
+    //   screen.lastIndexOf("?alt=media")
+    // );
+    const targetFileName = src.substring(src.lastIndexOf("PIC"));
+    console.log("SOURCE", targetFileName);
+
+    const atms = [];
+    let count = 0;
+
+    let date;
+
+    if (atmSelect === "all") {
+      const atmsCursor = await db.collection("atms").find({});
+
+      while (await atmsCursor.hasNext()) {
+        console.log(`completed ${count}`);
+        const atm = await atmsCursor.next();
+        console.log(atm["Terminal ID"]);
+        const file = bucket.file(
+          `atms/${atm["Terminal ID"]}/S4PICT/${targetFileName}`
+        );
+        if (count === 0) {
+          const res = await fetch(screen);
+          await new Promise((resolve, reject) => {
+            const contentType = res.headers.get("content-type");
+            const writeStream = file.createWriteStream({
+              metadata: {
+                contentType,
+              },
+            });
+            res.body.pipe(writeStream);
+            res.body.on("error", (error) => {
+              reject(error);
+            });
+            writeStream.on("finish", () => {
+              resolve();
+              date = new Date().getTime();
+            });
+          });
+
+          console.log("completed file uploading");
+        } else {
+          await file.copy(
+            `atms/${atm["Terminal ID"]}/S4PICT/${targetFileName}`
+          );
+        }
+        const fieldName = `screens.${targetFileName.substring(
+          0,
+          targetFileName.lastIndexOf(".")
+        )}.lastModified`;
+        await db
+          .collection("atms")
+          .updateOne({ _id: atm._id }, { $set: { [fieldName]: date } });
+
+        console.log("Updated DB. Last modified: ", date);
+        count++;
+      }
+    } else if (atmSelect === "state") {
+      console.log("states loading");
+      const atmsCursor = await db
+        .collection("atms")
+        .find({ State: { $in: atmSelectData } });
+
+      while (await atmsCursor.hasNext()) {
+        console.log(`completed ${count}`);
+        const atm = await atmsCursor.next();
+        console.log(atm["Terminal ID"]);
+        const file = bucket.file(
+          `atms/${atm["Terminal ID"]}/S4PICT/${targetFileName}`
+        );
+        if (count === 0) {
+          const res = await fetch(screen);
+          await new Promise((resolve, reject) => {
+            const contentType = res.headers.get("content-type");
+            const writeStream = file.createWriteStream({
+              metadata: {
+                contentType,
+              },
+            });
+            res.body.pipe(writeStream);
+            res.body.on("error", (error) => {
+              reject(error);
+            });
+            writeStream.on("finish", () => {
+              resolve();
+              date = new Date().getTime();
+            });
+          });
+
+          console.log("completed file uploading");
+        } else {
+          await file.copy(
+            `atms/${atm["Terminal ID"]}/S4PICT/${targetFileName}`
+          );
+        }
+        const fieldName = `screens.${targetFileName.substring(
+          0,
+          targetFileName.lastIndexOf(".")
+        )}.lastModified`;
+        await db
+          .collection("atms")
+          .updateOne({ _id: atm._id }, { $set: { [fieldName]: date } });
+
+        console.log("Updated DB. Last modified: ", date);
+        count++;
+      }
+    } else {
+      console.log("regions loading");
+      const atmsCursor = await db
+        .collection("atms")
+        .find({ Region: { $in: atmSelectData } });
+
+      while (await atmsCursor.hasNext()) {
+        console.log(`completed ${count}`);
+        const atm = await atmsCursor.next();
+        console.log(atm["Terminal ID"]);
+        const file = bucket.file(
+          `atms/${atm["Terminal ID"]}/S4PICT/${targetFileName}`
+        );
+        if (count === 0) {
+          const res = await fetch(screen);
+          await new Promise((resolve, reject) => {
+            const contentType = res.headers.get("content-type");
+            const writeStream = file.createWriteStream({
+              metadata: {
+                contentType,
+              },
+            });
+            res.body.pipe(writeStream);
+            res.body.on("error", (error) => {
+              reject(error);
+            });
+            writeStream.on("finish", () => {
+              resolve();
+              date = new Date().getTime();
+            });
+          });
+
+          console.log("completed file uploading");
+        } else {
+          await file.copy(
+            `atms/${atm["Terminal ID"]}/S4PICT/${targetFileName}`
+          );
+        }
+        const fieldName = `screens.${targetFileName.substring(
+          0,
+          targetFileName.lastIndexOf(".")
+        )}.lastModified`;
+        await db
+          .collection("atms")
+          .updateOne({ _id: atm._id }, { $set: { [fieldName]: date } });
+
+        console.log("Updated DB. Last modified: ", date);
+        count++;
+      }
+    }
+
+    res.status(200).json({ msg: "success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "failure" });
+  }
+};
+
 exports.fetchScreens = fetchScreens;
 exports.addRequest = addRequest;
 exports.fetchRequests = fetchRequests;
@@ -209,3 +380,4 @@ exports.updateRequest = updateRequest;
 exports.updateScreen = updateScreen;
 exports.checkAllATMs = checkAllATMs;
 exports.transformATMs = transformATMs;
+exports.updateATMs = updateATMs;

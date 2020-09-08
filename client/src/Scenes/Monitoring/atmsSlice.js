@@ -1,4 +1,19 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSlice,
+} from "@reduxjs/toolkit";
+import { updateManyATMs } from "../../helpers";
+
+export const updateATMs = createAsyncThunk("atms/updateMany", async (data) => {
+  try {
+    console.log(data);
+    const atms = await updateManyATMs(data);
+    return atms;
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 const atmsAdapter = createEntityAdapter({
   selectId: (atm) => atm._id,

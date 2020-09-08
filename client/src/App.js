@@ -127,7 +127,6 @@ function App({ username }) {
 
     const socket = io(ENDPOINT);
     socket.emit("loadATMs", (atms) => {
-      console.log(atms);
       dispatch(atmsReceived(atms));
     });
   }, [dispatch, ENDPOINT]);

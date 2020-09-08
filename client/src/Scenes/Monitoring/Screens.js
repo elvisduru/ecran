@@ -9,7 +9,7 @@ import {
   Statistic,
   Tooltip,
 } from "antd";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectATMBYID } from "./atmsSlice";
 
@@ -24,12 +24,14 @@ export const Screens = () => {
 
   const { Option } = Select;
 
+  const history = useHistory();
+
   const advertScreens = ["PIC010", "PIC065", "PIC068"];
 
   return (
     <div>
       <Row gutter={[0, 24]}>
-        <Col>
+        <Col onClick={() => history.goBack()}>
           <Typography.Title level={4}>
             Monitoring - ATM ({atm["Terminal ID"]})
           </Typography.Title>

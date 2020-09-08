@@ -6,10 +6,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
-const realFs = require("fs");
-const gracefulFs = require("graceful-fs");
-gracefulFs.gracefulify(realFs);
-
+// const realFs = require("fs");
+// const gracefulFs = require("graceful-fs");
+// gracefulFs.gracefulify(realFs);
+const fetch = require("node-fetch");
 const db = require("./db");
 
 const auth = require("./routes/auth");
@@ -22,6 +22,7 @@ const verifyToken = require("./verifyToken");
 
 const { Request, Screen } = require("./models");
 const { transformATMs } = require("./controllers/admin");
+const { bucket } = require("./utils");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -58,7 +59,7 @@ io.on("connection", (socket) => {
       const atms = await transformATMs();
       callback(atms);
     } catch (error) {
-      callback(error);
+      socket.emit("loadError");
     }
   });
 
@@ -66,6 +67,34 @@ io.on("connection", (socket) => {
     console.log("user has left");
   });
 });
+
+// (async function () {
+//   try {
+//     const file = bucket.file("add.png");
+//     const res = await fetch(
+//       "https://firebasestorage.googleapis.com/v0/b/ecran-fe278.appspot.com/o/ad2.png?alt=media"
+//     );
+//     await new Promise((resolve, reject) => {
+//       const contentType = res.headers.get("content-type");
+//       const writeStream = file.createWriteStream({
+//         metadata: {
+//           contentType,
+//         },
+//       });
+//       res.body.pipe(writeStream);
+//       res.body.on("error", (error) => {
+//         reject(error);
+//       });
+//       writeStream.on("finish", () => {
+//         resolve();
+//       });
+//     });
+
+//     console.log("completed file uploading");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })();
 
 app.get("/api/home", verifyToken, (req, res) => {
   res.send("Welcome!");
