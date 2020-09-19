@@ -34,8 +34,8 @@ app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 global.__basedir = __dirname;
 
 const whitelist = [
-  "http://localhost:3000/",
-  "http://localhost:5000/",
+  "http://localhost:3000",
+  "http://localhost:5000",
   "https://ecran.herokuapp.com",
 ];
 app.use(
