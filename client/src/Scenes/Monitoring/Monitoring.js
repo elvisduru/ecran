@@ -3,6 +3,7 @@ import { Typography, Row, Col, Table, Input, Modal, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { CSVLink } from "react-csv";
+import { format } from "date-fns";
 
 import styles from "./Monitoring.module.css";
 
@@ -252,7 +253,15 @@ export const Monitoring = () => {
             </Col>
             <Col>
               <Button type="primary">
-                <CSVLink data={csvData}>Export Data</CSVLink>
+                <CSVLink
+                  filename={`Ecran - monitoring(${format(
+                    new Date(),
+                    "MM/dd/yyyy-hh:mm"
+                  )}).csv`}
+                  data={csvData}
+                >
+                  Export Data
+                </CSVLink>
               </Button>
             </Col>
           </Row>
@@ -269,7 +278,6 @@ export const Monitoring = () => {
                 onRow={(record, rowIndex) => {
                   return {
                     onClick: (event) => {
-                      console.log("Clicked: ", rowIndex, "\nData: ", record);
                       const id = record._id;
                       history.push(`/monitoring/${id}`);
                     },
