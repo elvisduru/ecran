@@ -1,15 +1,38 @@
-import React, { useState } from "react";
-import { Typography, Row, Col, Table, Input, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import { Typography, Row, Col, Table, Input, Modal, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
+import { CSVLink } from "react-csv";
 
 import styles from "./Monitoring.module.css";
 
 import { selectAllATMs } from "./atmsSlice";
 import { useSelector } from "react-redux";
-
+const transformATMs = (data) =>
+  data.map((atm) => {
+    let atmClone = Object.assign({}, atm);
+    delete atmClone._id;
+    delete atmClone.screens;
+    atmClone["Current Campaign"] = atmClone.currentCampaign;
+    atmClone["Incomplete Screens"] = atmClone.incompleteScreens;
+    atmClone["Old Campaign"] = atmClone.oldCampaign;
+    atmClone["No Campaign"] = atmClone.stats.noCampaign;
+    atmClone["No Screen"] = atmClone.stats.noScreen;
+    delete atmClone.stats;
+    delete atmClone.currentCampaign;
+    delete atmClone.incompleteScreens;
+    delete atmClone.oldCampaign;
+    return atmClone;
+  });
 export const Monitoring = () => {
   const atms = useSelector(selectAllATMs);
+
+  const [csvData, setCSVData] = useState([]);
+  useEffect(() => {
+    if (atms) {
+      setCSVData(transformATMs([...atms]));
+    }
+  }, []);
 
   // Preview
   const [preview, setPreview] = useState(false);
@@ -226,6 +249,11 @@ export const Monitoring = () => {
           <Row gutter={[16, 32]}>
             <Col flex="auto">
               <Typography.Title level={4}>Monitoring</Typography.Title>
+            </Col>
+            <Col>
+              <Button type="primary">
+                <CSVLink data={csvData}>Export Data</CSVLink>
+              </Button>
             </Col>
           </Row>
           <Row>
