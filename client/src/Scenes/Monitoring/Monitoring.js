@@ -23,6 +23,7 @@ const transformATMs = (data) =>
     delete atmClone.currentCampaign;
     delete atmClone.incompleteScreens;
     delete atmClone.oldCampaign;
+    delete atmClone.key;
     return atmClone;
   });
 export const Monitoring = () => {
