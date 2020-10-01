@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Typography, Row, Col, Table, Input, Modal, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
-import { CSVLink } from "react-csv";
 import { format } from "date-fns";
 
 import styles from "./Monitoring.module.css";
@@ -28,13 +27,6 @@ const transformATMs = (data) =>
   });
 export const Monitoring = () => {
   const atms = useSelector(selectAllATMs);
-
-  const [csvData, setCSVData] = useState([]);
-  useEffect(() => {
-    if (atms) {
-      setCSVData(transformATMs([...atms]));
-    }
-  }, []);
 
   // Preview
   const [preview, setPreview] = useState(false);
@@ -251,19 +243,6 @@ export const Monitoring = () => {
           <Row gutter={[16, 32]}>
             <Col flex="auto">
               <Typography.Title level={4}>Monitoring</Typography.Title>
-            </Col>
-            <Col>
-              <Button type="primary">
-                <CSVLink
-                  filename={`Ecran - monitoring(${format(
-                    new Date(),
-                    "MM/dd/yyyy-hh:mm"
-                  )}).csv`}
-                  data={csvData}
-                >
-                  Export Data
-                </CSVLink>
-              </Button>
             </Col>
           </Row>
           <Row>
