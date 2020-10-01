@@ -17,13 +17,17 @@ const transformATMs = (data) =>
     atmClone["Current Campaign"] = atmClone.currentCampaign;
     atmClone["Incomplete Screens"] = atmClone.incompleteScreens;
     atmClone["Old Campaign"] = atmClone.oldCampaign;
-    atmClone["No Campaign"] = atmClone.stats.noCampaign;
-    atmClone["No Screen"] = atmClone.stats.noScreen;
+    atmClone["No Campaign"] = String(atmClone.stats.noCampaign);
+    atmClone["No Screen"] = String(atmClone.stats.noScreen);
     delete atmClone.stats;
     delete atmClone.currentCampaign;
     delete atmClone.incompleteScreens;
     delete atmClone.oldCampaign;
     delete atmClone.key;
+    delete atmClone["S/N"];
+    delete atmClone["IP Address"];
+    delete atmClone["Address"];
+    delete atmClone["Sol ID"];
     return atmClone;
   });
 export const Reporting = () => {
@@ -56,8 +60,6 @@ export const Reporting = () => {
 
     setFilterTable(filterTable);
   };
-
-  const history = useHistory();
 
   const columns = [
     {
