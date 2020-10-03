@@ -124,9 +124,9 @@ function App({ username }) {
     dispatch(fetchAllScreens());
     dispatch(fetchAllActivities());
 
-    socket.emit("loadATMs", (atms) => {
-      dispatch(atmsReceived(atms));
-    });
+    // socket.emit("loadATMs", (atms) => {
+    //   dispatch(atmsReceived(atms));
+    // });
   }, [dispatch]);
 
   // Sider Hook
