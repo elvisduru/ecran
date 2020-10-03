@@ -40,13 +40,12 @@ import { Declined } from "./Scenes/Requests/Declined";
 import { Monitoring } from "./Scenes/Monitoring/Monitoring";
 import { Reporting } from "./Scenes/Reporting";
 import { Profiling } from "./Scenes/Profiling";
-import { Auditing } from "./Scenes/Auditing";
+import { Auditing } from "./Scenes/Auditing/Auditing";
 import { Maintenance } from "./Scenes/Maintenance/Maintenance";
 import { Campaigns } from "./Scenes/Campaigns/Campaigns";
 import { Internal } from "./Scenes/Requests/New/Internal";
 import { ThirdParty } from "./Scenes/Requests/New/ThirdParty";
 import { EditRequest } from "./Scenes/Requests/EditRequest";
-// import { AddCampaign } from "./Scenes/Campaigns/AddCampaign";
 import Axios from "axios";
 
 import HBLogo from "./images/hb-logo.png";
@@ -57,8 +56,9 @@ import { Incoming } from "./Scenes/Campaigns/Incoming";
 import { Replace } from "./Scenes/Campaigns/Replace";
 import { Screens } from "./Scenes/Monitoring/Screens";
 
-import io from "socket.io-client";
 import { atmsReceived } from "./Scenes/Monitoring/atmsSlice";
+import { socket } from "./socket";
+import { fetchAllActivities } from "./Scenes/Auditing/activitySlice";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -117,19 +117,17 @@ const links = [
 ];
 
 function App({ username }) {
-  const ENDPOINT = window.location.origin;
-
   const dispatch = useDispatch();
   // Fetch State
   useEffect(() => {
     dispatch(fetchRequests());
     dispatch(fetchAllScreens());
+    dispatch(fetchAllActivities());
 
-    const socket = io(ENDPOINT);
-    socket.emit("loadATMs", (atms) => {
-      dispatch(atmsReceived(atms));
-    });
-  }, [dispatch, ENDPOINT]);
+    // socket.emit("loadATMs", (atms) => {
+    //   dispatch(atmsReceived(atms));
+    // });
+  }, [dispatch]);
 
   // Sider Hook
   const [collapsed, setCollapse] = useState(false);
@@ -246,7 +244,6 @@ function App({ username }) {
             <Menu.Item key="/campaigns">Active</Menu.Item>
             <Menu.Item key="/campaigns/pending">Pending</Menu.Item>
             <Menu.Item key="/campaigns/approved">Approved</Menu.Item>
-            <Menu.Item key="/campaigns/declined">Declined</Menu.Item>
           </SubMenu>
           <Menu.Item key="/monitoring" icon={<SignalFilled />}>
             Monitoring

@@ -35,6 +35,16 @@ export const fetchScreens = async () => {
   }
 };
 
+export const fetchActivities = async () => {
+  try {
+    const res = await axios.get("/api/activities/");
+    res.data.forEach((item) => (item.key = item._id));
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const addNewRequest = async (fields) => {
   try {
     const res = await axios.post("/api/request/new", fields);

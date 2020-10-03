@@ -1,9 +1,9 @@
 const formidable = require("formidable");
 const path = require("path");
 const fs = require("fs");
-const { Screen, Request } = require("../models/");
+const { Screen, Request, Activity } = require("../models/");
 const db = require("../db");
-const { bucket } = require("../utils");
+const { bucket, em } = require("../utils");
 const { default: fetch } = require("node-fetch");
 
 const fetchScreens = async (req, res) => {
@@ -53,6 +53,19 @@ const addRequest = async (req, res) => {
       .on("end", async () => {
         const newRequest = new Request(request);
         const savedRequest = await newRequest.save();
+
+        const activity = new Activity({
+          ip: req.ip,
+          user: req.user.username,
+          role: "Super Admin",
+          type: "Request",
+          action: "Created",
+          resource: savedRequest.campaignName,
+        });
+        const savedActivity = await activity.save();
+
+        em.emit("activity", savedActivity);
+
         res.status(200).json(savedRequest);
       });
   } catch (error) {
@@ -86,6 +99,23 @@ const updateRequest = async (req, res) => {
     }
 
     const request = await Request.findByIdAndUpdate(id, fields, { new: true });
+
+    const fieldsArray = Object.keys(fields);
+
+    if (fieldsArray.length > 1) {
+      const activity = new Activity({
+        ip: req.ip,
+        user: req.user.username,
+        role: "Super Admin",
+        type: "Request",
+        action: fieldsArray.length <= 2 ? fields.status : "Edited",
+        resource: request.campaignName,
+      });
+      const savedActivity = await activity.save();
+
+      em.emit("activity", savedActivity);
+    }
+
     res.status(200).json({ id, changes: fields });
   } catch (error) {
     console.log(error);
@@ -100,6 +130,18 @@ const updateScreen = async (req, res) => {
     const screen = await Screen.findByIdAndUpdate(id, fields, {
       new: true,
     }).populate("request");
+
+    const activity = new Activity({
+      ip: req.ip,
+      user: req.user.username,
+      role: "Super Admin",
+      type: "Campaign",
+      action: fields.newSrc ? fields.status : "Replaced (Pending)",
+      resource: screen.title,
+    });
+    const savedActivity = await activity.save();
+
+    em.emit("activity", savedActivity);
     res.status(200).json({ id, changes: { fields, ...screen.request } });
   } catch (error) {
     console.log(error);
@@ -372,6 +414,15 @@ const updateATMs = async (req, res) => {
   }
 };
 
+const fetchActivities = async (req, res) => {
+  try {
+    const activities = await Activity.find({}).sort({ createdAt: -1 });
+    res.status(200).json(activities);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.fetchScreens = fetchScreens;
 exports.addRequest = addRequest;
 exports.fetchRequests = fetchRequests;
@@ -381,3 +432,4 @@ exports.updateScreen = updateScreen;
 exports.checkAllATMs = checkAllATMs;
 exports.transformATMs = transformATMs;
 exports.updateATMs = updateATMs;
+exports.fetchActivities = fetchActivities;

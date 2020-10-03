@@ -27,4 +27,7 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
-module.exports = { secret, storageRef, bucket };
+const Emitter = require("events").EventEmitter;
+const em = new Emitter();
+
+module.exports = { secret, storageRef, bucket, em };

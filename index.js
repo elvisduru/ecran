@@ -16,13 +16,15 @@ const auth = require("./routes/auth");
 const campaigns = require("./routes/campaigns");
 const request = require("./routes/request");
 const atms = require("./routes/atms");
+const activities = require("./routes/activities");
 const verifyToken = require("./verifyToken");
 
 // const dir = require("node-dir");
 
 const { Request, Screen } = require("./models");
 const { transformATMs } = require("./controllers/admin");
-const { bucket } = require("./utils");
+const { bucket, em } = require("./utils");
+const activity = require("./models/activity");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -66,6 +68,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user has left");
   });
+});
+
+em.on("activity", (activity) => {
+  io.emit("newActivity", activity);
 });
 
 // (async function () {
@@ -160,6 +166,7 @@ app.use("/api/authenticate", auth);
 app.use("/api/campaigns", campaigns);
 app.use("/api/request", request);
 app.use("/api/atms", atms);
+app.use("/api/activities", activities);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/client/build/index.html"));

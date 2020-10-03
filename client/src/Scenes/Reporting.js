@@ -14,9 +14,9 @@ const transformATMs = (data) =>
     let atmClone = Object.assign({}, atm);
     delete atmClone._id;
     delete atmClone.screens;
-    atmClone["Current Campaign"] = atmClone.currentCampaign;
-    atmClone["Incomplete Screens"] = atmClone.incompleteScreens;
-    atmClone["Old Campaign"] = atmClone.oldCampaign;
+    atmClone["Current Campaign"] = String(atmClone.currentCampaign);
+    atmClone["Incomplete Screens"] = String(atmClone.incompleteScreens);
+    atmClone["Old Campaign"] = String(atmClone.oldCampaign);
     atmClone["No Campaign"] = String(atmClone.stats.noCampaign);
     atmClone["No Screen"] = String(atmClone.stats.noScreen);
     delete atmClone.stats;
