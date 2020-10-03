@@ -13,6 +13,8 @@
     "babel-plugin-import": "^1.13.0",
     "customize-cra": "^1.0.0-alpha.0",
     "firebase": "^7.15.5",
+    "jspdf": "^2.1.1",
+    "jspdf-autotable": "^3.5.13",
     "less": "^3.11.1",
     "less-loader": "^6.0.0",
     "react": "^16.13.1",

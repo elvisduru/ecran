@@ -9,6 +9,7 @@ import styles from "./Monitoring/Monitoring.module.css";
 
 import { selectAllATMs } from "./Monitoring/atmsSlice";
 import { useSelector } from "react-redux";
+import generatePDF from "../services/reportGenerator";
 const transformATMs = (data) =>
   data.map((atm) => {
     let atmClone = Object.assign({}, atm);
@@ -63,14 +64,6 @@ export const Reporting = () => {
 
   const columns = [
     {
-      title: "S/N",
-      dataIndex: "S/N",
-      key: "S/N",
-      sorter: {
-        compare: (a, b) => a["S/N"] - b["S/N"],
-      },
-    },
-    {
       title: "Terminal ID",
       dataIndex: "Terminal ID",
       key: "Terminal ID",
@@ -84,14 +77,6 @@ export const Reporting = () => {
       key: "Last Txn Date",
       sorter: {
         compare: (a, b) => a["Last Txn Date"].localeCompare(b["Last Txn Date"]),
-      },
-    },
-    {
-      title: "Address",
-      dataIndex: "Address",
-      key: "Address",
-      sorter: {
-        compare: (a, b) => a["Address"].localeCompare(b["Address"]),
       },
     },
     {
@@ -179,14 +164,6 @@ export const Reporting = () => {
       },
     },
     {
-      title: "IP Address",
-      dataIndex: "IP Address",
-      key: "IP Address",
-      sorter: {
-        compare: (a, b) => a["IP Address"].localeCompare(b["IP Address"]),
-      },
-    },
-    {
       title: "State",
       dataIndex: "State",
       key: "State",
@@ -263,8 +240,11 @@ export const Reporting = () => {
                   )}).csv`}
                   data={csvData}
                 >
-                  Export Data
+                  Export as Excel
                 </CSVLink>
+              </Button>
+              <Button type="default" onClick={() => generatePDF(csvData)}>
+                Export as PDF
               </Button>
             </Col>
           </Row>
